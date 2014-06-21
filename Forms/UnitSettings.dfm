@@ -37,9 +37,9 @@ object SettingsForm: TSettingsForm
   object OpenOutBtn: TsCheckBox
     Left = 8
     Top = 33
-    Width = 215
+    Width = 201
     Height = 19
-    Caption = 'Open output after downloading images'
+    Caption = 'Open output after downloading files'
     Checked = True
     State = cbChecked
     TabOrder = 1
@@ -57,15 +57,13 @@ object SettingsForm: TSettingsForm
     TabOrder = 2
     OnClick = sButton1Click
     SkinData.SkinSection = 'BUTTON'
-    ExplicitLeft = 180
-    ExplicitTop = 83
   end
   object DontDoubleDownloadBtn: TsCheckBox
     Left = 8
     Top = 58
-    Width = 238
+    Width = 224
     Height = 19
-    Caption = 'Don'#39't download already downloaded images'
+    Caption = 'Don'#39't download already downloaded files'
     Checked = True
     State = cbChecked
     TabOrder = 3
@@ -129,7 +127,7 @@ object SettingsForm: TSettingsForm
     AddedTitle.Font.Style = []
     SkinData.SkinSection = 'PANEL'
     TitleButtons = <>
-    Left = 160
-    Top = 8
+    Left = 152
+    Top = 104
   end
 end

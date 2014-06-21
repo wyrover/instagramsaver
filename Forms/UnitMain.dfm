@@ -3726,4 +3726,20 @@ object MainForm: TMainForm
     Left = 624
     Top = 80
   end
+  object AboutMenu: TPopupMenu
+    Left = 496
+    Top = 104
+    object A1: TMenuItem
+      Caption = 'About'
+      OnClick = A1Click
+    end
+    object c1: TMenuItem
+      Caption = 'Change log'
+      OnClick = c1Click
+    end
+    object H1: TMenuItem
+      Caption = 'Homepage'
+      OnClick = H1Click
+    end
+  end
 end

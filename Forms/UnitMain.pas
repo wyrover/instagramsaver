@@ -9,7 +9,7 @@ uses
   Vcl.Mask, sSkinProvider, sSkinManager, sMaskEdit,
   sCustomComboEdit, sToolEdit, Vcl.Buttons, sBitBtn, sEdit, Vcl.ComCtrls,
   sStatusBar, sGauge, sBevel, sPanel, JvComputerInfoEx, IniFiles, sLabel, ShellAPI, windows7taskbar, UnitImageTypeExtractor,
-  Generics.Collections, JvThread;
+  Generics.Collections, JvThread, Vcl.Menus;
 
 type
   TURLType = (Img=0, Video=1);
@@ -50,6 +50,10 @@ type
     VideoLinkDownloader1: TJvHttpUrlGrabber;
     UpdateThread: TJvThread;
     UpdateDownloader: TJvHttpUrlGrabber;
+    AboutMenu: TPopupMenu;
+    A1: TMenuItem;
+    c1: TMenuItem;
+    H1: TMenuItem;
     procedure DownloadBtnClick(Sender: TObject);
     procedure ImagePageDownloader1DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
     procedure ImagePageDownloader2DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
@@ -89,6 +93,9 @@ type
     procedure UpdateThreadExecute(Sender: TObject; Params: Pointer);
     procedure UpdateDownloaderDoneStream(Sender: TObject; Stream: TStream;
       StreamSize: Integer; Url: string);
+    procedure A1Click(Sender: TObject);
+    procedure c1Click(Sender: TObject);
+    procedure H1Click(Sender: TObject);
   private
     { Private declarations }
     FImageIndex: integer;
@@ -138,16 +145,30 @@ implementation
 
 uses UnitSettings, UnitAbout, UnitLog;
 
-procedure TMainForm.AboutBtnClick(Sender: TObject);
+procedure TMainForm.A1Click(Sender: TObject);
 begin
   Self.Enabled := False;
   AboutForm.Show;
 end;
 
+procedure TMainForm.AboutBtnClick(Sender: TObject);
+var
+  P: TPoint;
+begin
+  P := AboutBtn.ClientToScreen(Point(0, 0));
+
+  AboutMenu.Popup(P.X, P.Y + AboutBtn.Height)
+end;
+
+procedure TMainForm.c1Click(Sender: TObject);
+begin
+  ShellExecute(Handle, 'open', pwidechar(ExtractFileDir(Application.ExeName) + '\changelog.txt'), nil, nil, SW_SHOWNORMAL);
+end;
+
 function TMainForm.CheckFiles: Boolean;
 var
   i: integer;
-  LITE: TImageType;
+  LITE: TImageTypeEx;
 begin
   Result := True;
 
@@ -163,7 +184,7 @@ begin
         // check image files
         if LowerCase(ExtractFileExt(FFilesToCheck[i])) = '.jpg' then
         begin
-          LITE := TImageType.Create(FFilesToCheck[i]);
+          LITE := TImageTypeEx.Create(FFilesToCheck[i]);
           try
             if Length(LITE.ImageType) < 1 then
             begin
@@ -369,6 +390,11 @@ var
 begin
   CreateGUID(LGUID);
   Result := GUIDToString(LGUID);
+end;
+
+procedure TMainForm.H1Click(Sender: TObject);
+begin
+  ShellExecute(Handle, 'open', 'https://sourceforge.net/projects/instagramsaver/', nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TMainForm.ImageDownloader1DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
@@ -700,7 +726,8 @@ begin
       end
       else
       begin
-        Application.MessageBox('No image links were extracted.', 'Error', MB_ICONERROR);
+        Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        EnableUI;
       end;
     end;
   end;
@@ -825,7 +852,8 @@ begin
       end
       else
       begin
-        Application.MessageBox('No image links were extracted.', 'Error', MB_ICONERROR);
+        Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        EnableUI;
       end;
     end;
   end;
@@ -1158,7 +1186,6 @@ begin
           LURL.URLType := Video;
           FLinksToDownload.Add(LURL);
           ProgressEdit.Text := '0/' + FloatToStr(FLinksToDownload.Count);
-          LogForm.LogList.Lines.Add('Video1: ' + LURL.URL);
         end;
       end;
     finally
@@ -1169,7 +1196,6 @@ begin
     // run next video page link
     CurrentLinkEdit.Caption := 'Link: ' + FPageURLs[FVideoPageIndex];
     VideoLinkDownloader2.Url := FPageURLs[FVideoPageIndex];
-    LogForm.LogList.Lines.Add('Video1: ' + FPageURLs[FVideoPageIndex]);
     VideoLinkDownloader2.Start;
   end
   else
@@ -1187,7 +1213,8 @@ begin
     end
     else
     begin
-      Application.MessageBox('No image links were extracted.', 'Error', MB_ICONERROR);
+      Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+      EnableUI;
     end;
   end;
 end;
@@ -1231,7 +1258,6 @@ begin
           LURL.URLType := Video;
           FLinksToDownload.Add(LURL);
           ProgressEdit.Text := '0/' + FloatToStr(FLinksToDownload.Count);
-          LogForm.LogList.Lines.Add('Video2: ' + LURL.URL);
         end;
       end;
     finally
@@ -1242,7 +1268,6 @@ begin
     // run next video page link
     CurrentLinkEdit.Caption := 'Link: ' + FPageURLs[FVideoPageIndex];
     VideoLinkDownloader1.Url := FPageURLs[FVideoPageIndex];
-    LogForm.LogList.Lines.Add('Video2: ' + FPageURLs[FVideoPageIndex]);
     VideoLinkDownloader1.Start;
   end
   else
@@ -1260,7 +1285,8 @@ begin
     end
     else
     begin
-      Application.MessageBox('No image links were extracted.', 'Error', MB_ICONERROR);
+      Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+      EnableUI;
     end;
   end;
 end;

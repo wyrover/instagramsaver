@@ -12,7 +12,8 @@ uses
   UnitAbout in 'Forms\UnitAbout.pas' {AboutForm},
   windows7taskbar in 'Units\windows7taskbar.pas',
   UnitLog in 'Forms\UnitLog.pas' {LogForm},
-  UnitImageTypeExtractor in 'Units\UnitImageTypeExtractor.pas';
+  UnitImageTypeExtractor in 'Units\UnitImageTypeExtractor.pas',
+  UnitEncoder in 'Units\UnitEncoder.pas';
 
 {$R *.res}
 

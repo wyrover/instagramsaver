@@ -25,7 +25,7 @@ interface
 uses Classes, Windows, SysUtils, Messages, StrUtils;
 
 type
-  TImageType = class(TObject)
+  TImageTypeEx = class(TObject)
   private
     FType: string;
 
@@ -49,7 +49,7 @@ const
 
   { TImageType }
 
-constructor TImageType.Create(const ImagePath: string);
+constructor TImageTypeEx.Create(const ImagePath: string);
 begin
   if FileExists(ImagePath) then
   begin
@@ -61,13 +61,13 @@ begin
   end;
 end;
 
-destructor TImageType.Destroy;
+destructor TImageTypeEx.Destroy;
 begin
 
   inherited;
 end;
 
-function TImageType.ReadType(const ImagePath: string): string;
+function TImageTypeEx.ReadType(const ImagePath: string): string;
 var
   LFS: TFileStream;
   LMS: TMemoryStream;

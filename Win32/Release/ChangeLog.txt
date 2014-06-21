@@ -1,0 +1,8 @@
+--1.1
+-Fixed: Extracted video links were added to log
+-Fixed: Interface wasn't reseted if link extraction failed
+-Fixed: A few minor UI problems
+-Removed: 64bit version
+
+--1.0 (17.06.2014)
+-First release
