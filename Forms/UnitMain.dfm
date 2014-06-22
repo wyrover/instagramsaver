@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'InstagramSaver'
-  ClientHeight = 203
+  ClientHeight = 207
   ClientWidth = 754
   Color = 5066061
   DoubleBuffered = True
@@ -20,43 +20,29 @@ object MainForm: TMainForm
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnResize = FormResize
   OnShow = FormShow
   DesignSize = (
     754
-    203)
+    207)
   PixelsPerInch = 96
   TextHeight = 13
   object GroupBox1: TGroupBox
     Left = 8
     Top = 91
     Width = 738
-    Height = 104
+    Height = 89
     Anchors = [akLeft, akTop, akRight, akBottom]
     Caption = 'Progress'
     TabOrder = 2
     DesignSize = (
       738
-      104)
-    object CurrentBar: TsGauge
-      Left = 16
-      Top = 55
-      Width = 579
-      Height = 15
-      Hint = 'Current process progress'
-      Anchors = [akLeft, akRight, akBottom]
-      Animated = False
-      SkinData.SkinSection = 'GAUGE'
-      ForeColor = clBlack
-      Progress = 0
-      Suffix = '%'
-      ExplicitTop = 74
-      ExplicitWidth = 616
-    end
+      89)
     object TotalBar: TsGauge
       Left = 16
-      Top = 76
-      Width = 579
-      Height = 15
+      Top = 56
+      Width = 529
+      Height = 21
       Hint = 'Total download progress'
       Anchors = [akLeft, akRight, akBottom]
       Animated = False
@@ -64,7 +50,7 @@ object MainForm: TMainForm
       ForeColor = clBlack
       Progress = 0
       Suffix = '%'
-      ExplicitTop = 95
+      ExplicitTop = 71
     end
     object CurrentLinkEdit: TsLabel
       Left = 16
@@ -86,7 +72,7 @@ object MainForm: TMainForm
     end
     object ProgressEdit: TsEdit
       Left = 601
-      Top = 71
+      Top = 56
       Width = 121
       Height = 21
       Hint = 'Downloaded items/Total items'
@@ -111,7 +97,7 @@ object MainForm: TMainForm
       BoundLabel.Font.Height = -11
       BoundLabel.Font.Name = 'Tahoma'
       BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclTopCenter
+      BoundLabel.Layout = sclLeft
       BoundLabel.MaxWidth = 0
       BoundLabel.UseSkinColor = True
     end
@@ -320,9 +306,9 @@ object MainForm: TMainForm
       Width = 75
       Height = 58
       Cursor = crHandPoint
-      Hint = 'About this software'
+      Hint = 'Help about this software'
       Align = alRight
-      Caption = 'About'
+      Caption = 'Help'
       Glyph.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000000000000000000000000000000000000008B37FF008B
@@ -700,6 +686,25 @@ object MainForm: TMainForm
       Reflected = True
     end
   end
+  object sStatusBar1: TsStatusBar
+    Left = 0
+    Top = 186
+    Width = 754
+    Height = 21
+    Panels = <
+      item
+        Text = 'InstagramSaver 1.1'
+        Width = 125
+      end
+      item
+        Width = 50
+      end
+      item
+        Text = '00:00:00'
+        Width = 100
+      end>
+    SkinData.SkinSection = 'STATUSBAR'
+  end
   object ImagePageDownloader1: TJvHttpUrlGrabber
     FileName = 'C:\insta.txt'
     Agent = 
@@ -710,9 +715,8 @@ object MainForm: TMainForm
     ProxyIgnoreList = '<local>'
     OnDoneFile = ImagePageDownloader1DoneFile
     OnError = ImagePageDownloader1Error
-    OnProgress = ImagePageDownloader1Progress
-    Left = 160
-    Top = 114
+    Left = 336
+    Top = 98
   end
   object ImagePageDownloader2: TJvHttpUrlGrabber
     FileName = 'C:\insta2.txt'
@@ -724,37 +728,8 @@ object MainForm: TMainForm
     ProxyIgnoreList = '<local>'
     OnDoneFile = ImagePageDownloader2DoneFile
     OnError = ImagePageDownloader2Error
-    OnProgress = ImagePageDownloader2Progress
-    Left = 40
-    Top = 122
-  end
-  object ImageDownloader2: TJvHttpUrlGrabber
-    FileName = 'output.txt'
-    Agent = 
-      'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHT' +
-      'ML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
-    Port = 0
-    ProxyAddresses = 'proxyserver'
-    ProxyIgnoreList = '<local>'
-    OnDoneFile = ImageDownloader2DoneFile
-    OnError = ImageDownloader2Error
-    OnProgress = ImageDownloader2Progress
-    Left = 384
-    Top = 114
-  end
-  object ImageDownloader1: TJvHttpUrlGrabber
-    FileName = 'output.txt'
-    Agent = 
-      'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHT' +
-      'ML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
-    Port = 0
-    ProxyAddresses = 'proxyserver'
-    ProxyIgnoreList = '<local>'
-    OnDoneFile = ImageDownloader1DoneFile
-    OnError = ImageDownloader1Error
-    OnProgress = ImageDownloader1Progress
-    Left = 280
-    Top = 114
+    Left = 184
+    Top = 98
   end
   object sSkinManager1: TsSkinManager
     ExtendedBorders = True
@@ -3723,8 +3698,8 @@ object MainForm: TMainForm
     ProxyAddresses = 'proxyserver'
     ProxyIgnoreList = '<local>'
     OnDoneStream = UpdateDownloaderDoneStream
-    Left = 624
-    Top = 80
+    Left = 584
+    Top = 16
   end
   object AboutMenu: TPopupMenu
     Left = 496
@@ -3741,5 +3716,22 @@ object MainForm: TMainForm
       Caption = 'Homepage'
       OnClick = H1Click
     end
+    object R1: TMenuItem
+      Caption = 'Report a bug'
+      OnClick = R1Click
+    end
+  end
+  object PosTimer: TTimer
+    Enabled = False
+    Interval = 250
+    OnTimer = PosTimerTimer
+    Left = 680
+    Top = 96
+  end
+  object TimeTimer: TTimer
+    Enabled = False
+    OnTimer = TimeTimerTimer
+    Left = 624
+    Top = 96
   end
 end

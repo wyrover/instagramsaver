@@ -40,14 +40,10 @@ type
 implementation
 
 const
-  // taken from http://www.delphipages.com/forum/showthread.php?t=174008
   JPG_HEADER: array [0 .. 2] of byte = ($FF, $D8, $FF);
-  GIF_HEADER: array [0 .. 2] of byte = ($47, $49, $46);
-  BMP_HEADER: array [0 .. 1] of byte = ($42, $4D);
-  PNG_HEADER: array [0 .. 3] of byte = ($89, $50, $4E, $47);
-  TIF_HEADER: array [0 .. 2] of byte = ($49, $49, $2A);
+  MP4_HEADER: array [0 .. 11] of byte = ($00, $00, $00, $20, $66, $74, $79, $70, $69, $73, $6F, $6D);
 
-  { TImageType }
+{ TImageTypeEx }
 
 constructor TImageTypeEx.Create(const ImagePath: string);
 begin
@@ -63,7 +59,6 @@ end;
 
 destructor TImageTypeEx.Destroy;
 begin
-
   inherited;
 end;
 
@@ -76,19 +71,17 @@ begin
   LFS := TFileStream.Create(ImagePath, fmOpenRead);
   LMS := TMemoryStream.Create;
   try
-    LMS.CopyFrom(LFS, 5);
+    LMS.CopyFrom(LFS, 12);
     if LMS.Size > 4 then
     begin
       if CompareMem(LMS.Memory, @JPG_HEADER, SizeOf(JPG_HEADER)) then
+      begin
         Result := '.jpg'
-      else if CompareMem(LMS.Memory, @GIF_HEADER, SizeOf(GIF_HEADER)) then
-        Result := '.gif'
-      else if CompareMem(LMS.Memory, @PNG_HEADER, SizeOf(PNG_HEADER)) then
-        Result := '.png'
-      else if CompareMem(LMS.Memory, @BMP_HEADER, SizeOf(BMP_HEADER)) then
-        Result := '.bmp'
-      else if CompareMem(LMS.Memory, @TIF_HEADER, SizeOf(TIF_HEADER)) then
-        Result := '.tiff';
+      end
+      else if CompareMem(LMS.Memory, @MP4_HEADER, SizeOf(MP4_HEADER)) then
+      begin
+        Result := '.mp4';
+      end;
     end;
   finally
     LFS.Free;

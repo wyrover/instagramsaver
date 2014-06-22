@@ -1,4 +1,7 @@
 --1.1
+-Added: Parallel downloads (up to 16)
+-Added: Program will check downloaded video files too
+-Fixed: A bug where program would crash when image link extraction fails
 -Fixed: Extracted video links were added to log
 -Fixed: Interface wasn't reseted if link extraction failed
 -Fixed: A few minor UI problems

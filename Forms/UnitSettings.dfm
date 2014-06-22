@@ -3,8 +3,8 @@ object SettingsForm: TSettingsForm
   Top = 0
   BorderStyle = bsToolWindow
   Caption = 'Settings'
-  ClientHeight = 165
-  ClientWidth = 295
+  ClientHeight = 174
+  ClientWidth = 312
   Color = 5066061
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -17,8 +17,8 @@ object SettingsForm: TSettingsForm
   OnClose = FormClose
   OnCreate = FormCreate
   DesignSize = (
-    295
-    165)
+    312
+    174)
   PixelsPerInch = 96
   TextHeight = 13
   object CheckUpdateBtn: TsCheckBox
@@ -48,9 +48,9 @@ object SettingsForm: TSettingsForm
     ImgUnchecked = 0
   end
   object sButton1: TsButton
-    Left = 212
-    Top = 132
-    Width = 75
+    Left = 223
+    Top = 141
+    Width = 81
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = 'Close'
@@ -85,7 +85,7 @@ object SettingsForm: TSettingsForm
     ImgUnchecked = 0
   end
   object SkinList: TsComboBox
-    Left = 48
+    Left = 223
     Top = 108
     Width = 81
     Height = 21
@@ -119,6 +119,54 @@ object SettingsForm: TSettingsForm
       'Dark'
       'Light')
   end
+  object ThreadList: TsComboBox
+    Left = 134
+    Top = 108
+    Width = 51
+    Height = 21
+    Alignment = taCenter
+    BoundLabel.Active = True
+    BoundLabel.Caption = 'Parallel download count:'
+    BoundLabel.Indent = 0
+    BoundLabel.Font.Charset = DEFAULT_CHARSET
+    BoundLabel.Font.Color = clWindowText
+    BoundLabel.Font.Height = -11
+    BoundLabel.Font.Name = 'Tahoma'
+    BoundLabel.Font.Style = []
+    BoundLabel.Layout = sclLeft
+    BoundLabel.MaxWidth = 0
+    BoundLabel.UseSkinColor = True
+    SkinData.SkinSection = 'COMBOBOX'
+    VerticalAlignment = taAlignTop
+    Style = csDropDownList
+    Color = 15917239
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlack
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ItemIndex = 0
+    ParentFont = False
+    TabOrder = 6
+    Text = '1'
+    Items.Strings = (
+      '1'
+      '2'
+      '3'
+      '4'
+      '5'
+      '6'
+      '7'
+      '8'
+      '9'
+      '10'
+      '11'
+      '12'
+      '13'
+      '14'
+      '15'
+      '16')
+  end
   object sSkinProvider1: TsSkinProvider
     AddedTitle.Font.Charset = DEFAULT_CHARSET
     AddedTitle.Font.Color = clNone
@@ -127,7 +175,7 @@ object SettingsForm: TSettingsForm
     AddedTitle.Font.Style = []
     SkinData.SkinSection = 'PANEL'
     TitleButtons = <>
-    Left = 152
-    Top = 104
+    Left = 208
+    Top = 32
   end
 end

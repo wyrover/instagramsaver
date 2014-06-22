@@ -20,7 +20,7 @@ object LogForm: TLogForm
     Top = 0
     Width = 635
     Height = 300
-    ActivePage = sTabSheet2
+    ActivePage = sTabSheet1
     Align = alClient
     TabOrder = 0
     SkinData.SkinSection = 'PAGECONTROL'
@@ -54,47 +54,13 @@ object LogForm: TLogForm
         BoundLabel.MaxWidth = 0
         BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'EDIT'
-        ExplicitWidth = 635
-        ExplicitHeight = 300
       end
     end
     object sTabSheet2: TsTabSheet
-      Caption = 'Command lines'
+      Caption = 'Downloader Errors'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      object CMDList: TsMemo
-        Left = 0
-        Top = 0
-        Width = 627
-        Height = 272
-        Align = alClient
-        Color = 15917239
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        ReadOnly = True
-        ScrollBars = ssBoth
-        TabOrder = 0
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
-        SkinData.SkinSection = 'EDIT'
-      end
-    end
-    object sTabSheet3: TsTabSheet
-      Caption = 'sTabSheet3'
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      object OutoutList: TsMemo
+      object ThreadsList: TsMemo
         Left = 0
         Top = 0
         Width = 627

@@ -16,6 +16,7 @@ type
     DontDoubleDownloadBtn: TsCheckBox;
     DownloadVideoBtn: TsCheckBox;
     SkinList: TsComboBox;
+    ThreadList: TsComboBox;
     procedure sButton1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -62,6 +63,7 @@ begin
       DontDoubleDownloadBtn.Checked := ReadBool('general', 'nodouble', True);
       DownloadVideoBtn.Checked := ReadBool('general', 'video', False);
       SkinList.ItemIndex := ReadInteger('general', 'skin', 0);
+      ThreadList.ItemIndex := ReadInteger('general', 'thread', CPUCount-1);
     end;
   finally
     LSetFile.Free;
@@ -82,6 +84,7 @@ begin
       WriteBool('general', 'nodouble', DontDoubleDownloadBtn.Checked);
       WriteBool('general', 'video', DownloadVideoBtn.Checked);
       WriteInteger('general', 'skin', SkinList.ItemIndex);
+      WriteInteger('general', 'thread', ThreadList.ItemIndex);
     end;
   finally
     LSetFile.Free;

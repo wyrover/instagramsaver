@@ -12,11 +12,9 @@ type
     sSkinProvider1: TsSkinProvider;
     sPageControl1: TsPageControl;
     sTabSheet1: TsTabSheet;
-    sTabSheet2: TsTabSheet;
-    sTabSheet3: TsTabSheet;
     LogList: TsMemo;
-    CMDList: TsMemo;
-    OutoutList: TsMemo;
+    sTabSheet2: TsTabSheet;
+    ThreadsList: TsMemo;
   private
     { Private declarations }
   public
