@@ -1,3 +1,23 @@
+{ *
+  * Copyright (C) 2014 ozok <ozok26@gmail.com>
+  *
+  * This file is part of InstagramSaver.
+  *
+  * InstagramSaver is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation, either version 2 of the License, or
+  * (at your option) any later version.
+  *
+  * InstagramSaver is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  *
+  * You should have received a copy of the GNU General Public License
+  * along with InstagramSaver.  If not, see <http://www.gnu.org/licenses/>.
+  *
+  * }
+
 unit UnitSettings;
 
 interface
@@ -17,6 +37,7 @@ type
     DownloadVideoBtn: TsCheckBox;
     SkinList: TsComboBox;
     ThreadList: TsComboBox;
+    DontCheckBtn: TsCheckBox;
     procedure sButton1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -64,6 +85,7 @@ begin
       DownloadVideoBtn.Checked := ReadBool('general', 'video', False);
       SkinList.ItemIndex := ReadInteger('general', 'skin', 0);
       ThreadList.ItemIndex := ReadInteger('general', 'thread', CPUCount-1);
+      DontCheckBtn.Checked := ReadBool('general', 'check', False);
     end;
   finally
     LSetFile.Free;
@@ -85,6 +107,7 @@ begin
       WriteBool('general', 'video', DownloadVideoBtn.Checked);
       WriteInteger('general', 'skin', SkinList.ItemIndex);
       WriteInteger('general', 'thread', ThreadList.ItemIndex);
+      WriteBool('general', 'check', DontCheckBtn.Checked);
     end;
   finally
     LSetFile.Free;
@@ -101,9 +124,19 @@ procedure TSettingsForm.SkinListChange(Sender: TObject);
 begin
   case SkinList.ItemIndex of
     0:
-      MainForm.sSkinManager1.SkinName := 'DarkMetro (internal)';
+      begin
+        MainForm.sSkinManager1.Active := True;
+        MainForm.sSkinManager1.SkinName := 'DarkMetro (internal)';
+      end;
     1:
-      MainForm.sSkinManager1.SkinName := 'AlterMetro (internal)';
+      begin
+        MainForm.sSkinManager1.Active := True;
+        MainForm.sSkinManager1.SkinName := 'AlterMetro (internal)';
+      end;
+    2:
+      begin
+        MainForm.sSkinManager1.Active := False;
+      end;
   end;
 end;
 

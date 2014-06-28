@@ -3,7 +3,7 @@ object SettingsForm: TSettingsForm
   Top = 0
   BorderStyle = bsToolWindow
   Caption = 'Settings'
-  ClientHeight = 174
+  ClientHeight = 194
   ClientWidth = 312
   Color = 5066061
   DoubleBuffered = True
@@ -18,7 +18,7 @@ object SettingsForm: TSettingsForm
   OnCreate = FormCreate
   DesignSize = (
     312
-    174)
+    194)
   PixelsPerInch = 96
   TextHeight = 13
   object CheckUpdateBtn: TsCheckBox
@@ -37,9 +37,9 @@ object SettingsForm: TSettingsForm
   object OpenOutBtn: TsCheckBox
     Left = 8
     Top = 33
-    Width = 201
+    Width = 277
     Height = 19
-    Caption = 'Open output after downloading files'
+    Caption = 'Open output folder after the download is completed'
     Checked = True
     State = cbChecked
     TabOrder = 1
@@ -49,7 +49,7 @@ object SettingsForm: TSettingsForm
   end
   object sButton1: TsButton
     Left = 223
-    Top = 141
+    Top = 161
     Width = 81
     Height = 25
     Anchors = [akRight, akBottom]
@@ -57,6 +57,7 @@ object SettingsForm: TSettingsForm
     TabOrder = 2
     OnClick = sButton1Click
     SkinData.SkinSection = 'BUTTON'
+    ExplicitTop = 141
   end
   object DontDoubleDownloadBtn: TsCheckBox
     Left = 8
@@ -86,9 +87,10 @@ object SettingsForm: TSettingsForm
   end
   object SkinList: TsComboBox
     Left = 223
-    Top = 108
+    Top = 134
     Width = 81
     Height = 21
+    Anchors = [akRight, akBottom]
     Alignment = taLeftJustify
     BoundLabel.Active = True
     BoundLabel.Caption = 'Look:'
@@ -117,13 +119,16 @@ object SettingsForm: TSettingsForm
     OnChange = SkinListChange
     Items.Strings = (
       'Dark'
-      'Light')
+      'Light'
+      'None')
+    ExplicitTop = 156
   end
   object ThreadList: TsComboBox
     Left = 134
-    Top = 108
+    Top = 134
     Width = 51
     Height = 21
+    Anchors = [akRight, akBottom]
     Alignment = taCenter
     BoundLabel.Active = True
     BoundLabel.Caption = 'Parallel download count:'
@@ -166,6 +171,18 @@ object SettingsForm: TSettingsForm
       '14'
       '15'
       '16')
+    ExplicitTop = 156
+  end
+  object DontCheckBtn: TsCheckBox
+    Left = 8
+    Top = 108
+    Width = 237
+    Height = 19
+    Caption = 'Don'#39't check files after downlod is completed'
+    TabOrder = 7
+    SkinData.SkinSection = 'CHECKBOX'
+    ImgChecked = 0
+    ImgUnchecked = 0
   end
   object sSkinProvider1: TsSkinProvider
     AddedTitle.Font.Charset = DEFAULT_CHARSET

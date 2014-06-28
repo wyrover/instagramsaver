@@ -13,8 +13,8 @@ uses
   windows7taskbar in 'Units\windows7taskbar.pas',
   UnitLog in 'Forms\UnitLog.pas' {LogForm},
   UnitImageTypeExtractor in 'Units\UnitImageTypeExtractor.pas',
-  UnitDownloadThread in 'Units\UnitDownloadThread.pas',
-  UnitPhotoDownloaderThread in 'Units\UnitPhotoDownloaderThread.pas';
+  UnitPhotoDownloaderThread in 'Units\UnitPhotoDownloaderThread.pas',
+  MediaInfoDLL in 'Units\MediaInfoDLL.pas';
 
 {$R *.res}
 

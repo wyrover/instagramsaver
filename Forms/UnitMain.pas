@@ -1,3 +1,23 @@
+{ *
+  * Copyright (C) 2014 ozok <ozok26@gmail.com>
+  *
+  * This file is part of InstagramSaver.
+  *
+  * InstagramSaver is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation, either version 2 of the License, or
+  * (at your option) any later version.
+  *
+  * InstagramSaver is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  *
+  * You should have received a copy of the GNU General Public License
+  * along with InstagramSaver.  If not, see <http://www.gnu.org/licenses/>.
+  *
+  * }
+
 unit UnitMain;
 
 interface
@@ -9,7 +29,8 @@ uses
   Vcl.Mask, sSkinProvider, sSkinManager, sMaskEdit,
   sCustomComboEdit, sToolEdit, Vcl.Buttons, sBitBtn, sEdit, Vcl.ComCtrls,
   sStatusBar, sGauge, sBevel, sPanel, JvComputerInfoEx, IniFiles, sLabel, ShellAPI, windows7taskbar, UnitImageTypeExtractor,
-  Generics.Collections, JvThread, Vcl.Menus, UnitPhotoDownloaderThread, System.Types;
+  Generics.Collections, JvThread, Vcl.Menus, UnitPhotoDownloaderThread, System.Types,
+  JvTrayIcon, MediaInfoDll;
 
 type
   TURLType = (Img=0, Video=1);
@@ -24,13 +45,8 @@ type
   TMainForm = class(TForm)
     ImagePageDownloader1: TJvHttpUrlGrabber;
     ImagePageDownloader2: TJvHttpUrlGrabber;
-    GroupBox1: TGroupBox;
-    ProgressEdit: TsEdit;
-    OutputEdit: TsDirectoryEdit;
-    OpenOutputBtn: TsBitBtn;
     sSkinManager1: TsSkinManager;
     sSkinProvider1: TsSkinProvider;
-    TotalBar: TsGauge;
     sPanel1: TsPanel;
     DownloadBtn: TsBitBtn;
     StopBtn: TsBitBtn;
@@ -39,8 +55,6 @@ type
     sPanel2: TsPanel;
     UserNameEdit: TsEdit;
     Info: TJvComputerInfoEx;
-    CurrentLinkEdit: TsLabel;
-    StateEdit: TsLabel;
     DonateBtn: TsBitBtn;
     LogBtn: TsBitBtn;
     VideoLinkDownloader2: TJvHttpUrlGrabber;
@@ -55,6 +69,16 @@ type
     sStatusBar1: TsStatusBar;
     TimeTimer: TTimer;
     R1: TMenuItem;
+    S1: TMenuItem;
+    TrayIcon: TJvTrayIcon;
+    sPanel3: TsPanel;
+    GroupBox1: TGroupBox;
+    TotalBar: TsGauge;
+    CurrentLinkEdit: TsLabel;
+    StateEdit: TsLabel;
+    ProgressEdit: TsEdit;
+    OpenOutputBtn: TsBitBtn;
+    OutputEdit: TsDirectoryEdit;
     procedure DownloadBtnClick(Sender: TObject);
     procedure ImagePageDownloader1DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
     procedure ImagePageDownloader2DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
@@ -70,22 +94,15 @@ type
     procedure DonateBtnClick(Sender: TObject);
     procedure ImagePageDownloader2Error(Sender: TObject; ErrorMsg: string);
     procedure ImagePageDownloader1Error(Sender: TObject; ErrorMsg: string);
-    procedure im1Error(Sender: TObject; ErrorMsg: string);
-    procedure im2Error(Sender: TObject; ErrorMsg: string);
     procedure LogBtnClick(Sender: TObject);
-    procedure VideoLinkDownloader1DoneFile(Sender: TObject; FileName: string;
-      FileSize: Integer; Url: string);
-    procedure VideoLinkDownloader2DoneFile(Sender: TObject; FileName: string;
-      FileSize: Integer; Url: string);
+    procedure VideoLinkDownloader1DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
+    procedure VideoLinkDownloader2DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
     procedure VideoLinkDownloader1Error(Sender: TObject; ErrorMsg: string);
     procedure VideoLinkDownloader2Error(Sender: TObject; ErrorMsg: string);
-    procedure VideoLinkDownloader1Progress(Sender: TObject; Position,
-      TotalSize: Int64; Url: string; var Continue: Boolean);
-    procedure VideoLinkDownloader2Progress(Sender: TObject; Position,
-      TotalSize: Int64; Url: string; var Continue: Boolean);
+    procedure VideoLinkDownloader1Progress(Sender: TObject; Position, TotalSize: Int64; Url: string; var Continue: Boolean);
+    procedure VideoLinkDownloader2Progress(Sender: TObject; Position, TotalSize: Int64; Url: string; var Continue: Boolean);
     procedure UpdateThreadExecute(Sender: TObject; Params: Pointer);
-    procedure UpdateDownloaderDoneStream(Sender: TObject; Stream: TStream;
-      StreamSize: Integer; Url: string);
+    procedure UpdateDownloaderDoneStream(Sender: TObject; Stream: TStream; StreamSize: Integer; Url: string);
     procedure A1Click(Sender: TObject);
     procedure c1Click(Sender: TObject);
     procedure H1Click(Sender: TObject);
@@ -93,6 +110,10 @@ type
     procedure FormResize(Sender: TObject);
     procedure TimeTimerTimer(Sender: TObject);
     procedure R1Click(Sender: TObject);
+    procedure S1Click(Sender: TObject);
+    procedure TrayIconBalloonClick(Sender: TObject);
+    procedure TrayIconBalloonHide(Sender: TObject);
+    procedure sSkinManager1Activate(Sender: TObject);
   private
     { Private declarations }
     FImageIndex: integer;
@@ -149,7 +170,7 @@ var
   MainForm: TMainForm;
 
 const
-  BuildInt = 235;
+  BuildInt = 341;
   Portable = False;
 
 implementation
@@ -210,7 +231,7 @@ begin
         try
           if Length(LITE.ImageType) < 1 then
           begin
-            AddToProgramLog('Invalid file: ' + FFilesToCheck[i]);
+            AddToProgramLog('[ERROR] Invalid file: ' + FFilesToCheck[i]);
             Result := True;
           end;
         finally
@@ -219,7 +240,7 @@ begin
       end
       else
       begin
-        AddToProgramLog('Unable to find file: ' + FFilesToCheck[i]);
+        AddToProgramLog('[ERROR] Unable to find file: ' + FFilesToCheck[i]);
         Result := True;
       end;
     end;
@@ -315,7 +336,14 @@ begin
     CurrentLinkEdit.Caption := 'Link: ' + 'http://web.stagram.com/n/' + UserNameEdit.Text + '/?vm=list';
     SetProgressState(Handle, tbpsNormal);
 
+    if LogForm.LogList.Lines.Count > 0 then
+    begin
+      AddToProgramLog('');
+    end;
     AddToProgramLog('Starting to download user: ' + UserNameEdit.Text);
+    AddToProgramLog('Don''t donwload already downloaded files: ' + BoolToStr(SettingsForm.DontDoubleDownloadBtn.Checked, True));
+    AddToProgramLog('Download videos: ' + BoolToStr(SettingsForm.DownloadVideoBtn.Checked, True));
+    AddToProgramLog('Check downloaded files: ' + BoolToStr(not SettingsForm.DontCheckBtn.Checked, True));
     AddToProgramLog('Extracting image links...');
     ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + UserNameEdit.Text + '/?vm=list';
     ImagePageDownloader1.Start;
@@ -409,6 +437,12 @@ begin
   VideoLinkDownloader2.FileName := FTempFolder + '\' + GenerateGUID + '.txt';
   VideoLinkDownloader1.FileName := FTempFolder + '\' + GenerateGUID + '.txt';
 
+  if not MediaInfoDLL_Load(ExtractFileDir(Application.ExeName) + '\MediaInfo.dll') then
+  begin
+    Application.MessageBox('Unable to init mediainfo.', 'Fatal Error', MB_ICONERROR);
+    Application.Terminate;
+  end;
+
   // windows 7 taskbar
   if CheckWin32Version(6, 1) then
   begin
@@ -455,16 +489,6 @@ end;
 procedure TMainForm.H1Click(Sender: TObject);
 begin
   ShellExecute(Handle, 'open', 'https://sourceforge.net/projects/instagramsaver/', nil, nil, SW_SHOWNORMAL);
-end;
-
-procedure TMainForm.im1Error(Sender: TObject; ErrorMsg: string);
-begin
-  LogForm.LogList.Lines.Add('ID1: ' + ErrorMsg);
-end;
-
-procedure TMainForm.im2Error(Sender: TObject; ErrorMsg: string);
-begin
-  LogForm.LogList.Lines.Add('ID2: ' + ErrorMsg);
 end;
 
 procedure TMainForm.ImagePageDownloader1DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
@@ -558,6 +582,7 @@ begin
       else
       begin
         Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        AddToProgramLog('Failed to extract links for ' + UserNameEdit.Text + '.');
         EnableUI;
       end;
     end
@@ -579,6 +604,7 @@ begin
       else
       begin
         Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        AddToProgramLog('Failed to extract links for ' + UserNameEdit.Text + '.');
         EnableUI;
       end;
     end;
@@ -686,6 +712,7 @@ begin
       else
       begin
         Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        AddToProgramLog('Failed to extract links for ' + UserNameEdit.Text + '.');
         EnableUI;
       end;
     end
@@ -707,6 +734,7 @@ begin
       else
       begin
         Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        AddToProgramLog('Failed to extract links for ' + UserNameEdit.Text + '.');
         EnableUI;
       end;
     end;
@@ -942,10 +970,20 @@ begin
       end;
       // skins
       case ReadInteger('general', 'skin', 0) of
-        0:
-          sSkinManager1.SkinName := 'DarkMetro (internal)';
-        1:
-          sSkinManager1.SkinName := 'AlterMetro (internal)';
+      0:
+        begin
+          MainForm.sSkinManager1.Active := True;
+          MainForm.sSkinManager1.SkinName := 'DarkMetro (internal)';
+        end;
+      1:
+        begin
+          MainForm.sSkinManager1.Active := True;
+          MainForm.sSkinManager1.SkinName := 'AlterMetro (internal)';
+        end;
+      2:
+        begin
+          MainForm.sSkinManager1.Active := False;
+        end;
       end;
     end;
   finally
@@ -1012,13 +1050,30 @@ begin
     begin
       ShellExecute(Handle, 'open', PWideChar(OutputEdit.Text + '\' + UserNameEdit.Text), nil, nil, SW_SHOWNORMAL);
     end;
-
+          //todo: create output folder each time a file is saved
     Sleep(100);
     TotalBar.Progress := 0;
     ProgressEdit.Text := FloatToStr(FLinksToDownload.Count) + '/' + FloatToStr(FLinksToDownload.Count);
-    if CheckFiles then
+    if not SettingsForm.DontCheckBtn.Checked then
     begin
-      LogForm.Show;
+      if CheckFiles then
+      begin
+        LogForm.Show;
+        TrayIcon.Active := True;
+        TrayIcon.BalloonHint('InstagramSaver', 'InstagramSaver finished downloading. Some problems occured. Please see logs.', btError, 5000, True);
+      end
+      else
+      begin
+        AddToProgramLog('File check did not report any problematic files.');
+        TrayIcon.Active := True;
+        TrayIcon.BalloonHint('InstagramSaver', 'InstagramSaver finished downloading succesfully.', btInfo, 5000, True);
+      end;
+    end
+    else
+    begin
+      AddToProgramLog('File check is disabled.');
+      TrayIcon.Active := True;
+      TrayIcon.BalloonHint('InstagramSaver', 'InstagramSaver finished downloading.', btInfo, 5000, True);
     end;
   end;
 end;
@@ -1026,6 +1081,28 @@ end;
 procedure TMainForm.R1Click(Sender: TObject);
 begin
   ShellExecute(Handle, 'open', 'http://sourceforge.net/p/instagramsaver/tickets/', nil, nil, SW_SHOWNORMAL);
+end;
+
+procedure TMainForm.S1Click(Sender: TObject);
+const
+  NewLine = '%0D%0A';
+var
+  mail: PChar;
+  mailbody: string;
+begin
+  mailbody := AboutForm.sLabel1.Caption;
+  if Portable then
+  begin
+    mailbody := mailbody + NewLine + 'Portable version';
+  end
+  else
+  begin
+    mailbody := mailbody + NewLine + 'Installed version';
+  end;
+  mailbody := mailbody + NewLine + 'Bugs: ' + NewLine + NewLine + NewLine + 'Suggestions: ' + NewLine + NewLine + NewLine;
+  mail := PwideChar('mailto:ozok26@gmail.com?subject=InstagramSaver&body=' + mailbody);
+
+  ShellExecute(0, 'open', mail, nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TMainForm.SaveSettings;
@@ -1047,6 +1124,11 @@ procedure TMainForm.SettingsBtnClick(Sender: TObject);
 begin
   Self.Enabled := False;
   SettingsForm.Show;
+end;
+
+procedure TMainForm.sSkinManager1Activate(Sender: TObject);
+begin
+  MainForm.Repaint;
 end;
 
 procedure TMainForm.StopBtnClick(Sender: TObject);
@@ -1078,16 +1160,13 @@ begin
       if Assigned(FDownloadThreads[i]) then
       begin
         FDownloadThreads[i].Stop;
-      end
-      else
-      begin
-        AddToProgramLog(FloatToStr(i));
       end;
     end;
 
     AddToProgramLog(Format('Download is stopped at %s.', [IntegerToTime(FTime)]));
     AddToProgramLog('');
     EnableUI;
+    ProgressEdit.Text := '0/0';
   end;
 end;
 
@@ -1095,6 +1174,16 @@ procedure TMainForm.TimeTimerTimer(Sender: TObject);
 begin
   Inc(FTime);
   sStatusBar1.Panels[2].Text := IntegerToTime(FTime);
+end;
+
+procedure TMainForm.TrayIconBalloonClick(Sender: TObject);
+begin
+  TrayIcon.Active := False;
+end;
+
+procedure TMainForm.TrayIconBalloonHide(Sender: TObject);
+begin
+  TrayIcon.Active := False;
 end;
 
 procedure TMainForm.UpdateDownloaderDoneStream(Sender: TObject; Stream: TStream; StreamSize: Integer; Url: string);
@@ -1209,6 +1298,7 @@ begin
     else
     begin
       Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        AddToProgramLog('Failed to extract links for ' + UserNameEdit.Text + '.');
       EnableUI;
     end;
   end;
@@ -1278,6 +1368,7 @@ begin
     else
     begin
       Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        AddToProgramLog('Failed to extract links for ' + UserNameEdit.Text + '.');
       EnableUI;
     end;
   end;

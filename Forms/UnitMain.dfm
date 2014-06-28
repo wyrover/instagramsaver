@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'InstagramSaver'
-  ClientHeight = 207
+  ClientHeight = 197
   ClientWidth = 754
   Color = 5066061
   DoubleBuffered = True
@@ -22,132 +22,8 @@ object MainForm: TMainForm
   OnDestroy = FormDestroy
   OnResize = FormResize
   OnShow = FormShow
-  DesignSize = (
-    754
-    207)
   PixelsPerInch = 96
   TextHeight = 13
-  object GroupBox1: TGroupBox
-    Left = 8
-    Top = 91
-    Width = 738
-    Height = 89
-    Anchors = [akLeft, akTop, akRight, akBottom]
-    Caption = 'Progress'
-    TabOrder = 2
-    DesignSize = (
-      738
-      89)
-    object TotalBar: TsGauge
-      Left = 16
-      Top = 56
-      Width = 529
-      Height = 21
-      Hint = 'Total download progress'
-      Anchors = [akLeft, akRight, akBottom]
-      Animated = False
-      SkinData.SkinSection = 'GAUGE'
-      ForeColor = clBlack
-      Progress = 0
-      Suffix = '%'
-      ExplicitTop = 71
-    end
-    object CurrentLinkEdit: TsLabel
-      Left = 16
-      Top = 35
-      Width = 22
-      Height = 13
-      Hint = 'Currently processed link'
-      Anchors = [akLeft, akTop, akRight]
-      Caption = 'Link:'
-    end
-    object StateEdit: TsLabel
-      Left = 16
-      Top = 16
-      Width = 30
-      Height = 13
-      Hint = 'Current state of download process'
-      Anchors = [akLeft, akTop, akRight]
-      Caption = 'State:'
-    end
-    object ProgressEdit: TsEdit
-      Left = 601
-      Top = 56
-      Width = 121
-      Height = 21
-      Hint = 'Downloaded items/Total items'
-      Alignment = taCenter
-      Anchors = [akRight, akBottom]
-      Color = 15917239
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ReadOnly = True
-      TabOrder = 0
-      Text = '0/0'
-      SkinData.SkinSection = 'EDIT'
-      BoundLabel.Active = True
-      BoundLabel.Caption = 'Progress:'
-      BoundLabel.Indent = 0
-      BoundLabel.Font.Charset = DEFAULT_CHARSET
-      BoundLabel.Font.Color = clWindowText
-      BoundLabel.Font.Height = -11
-      BoundLabel.Font.Name = 'Tahoma'
-      BoundLabel.Font.Style = []
-      BoundLabel.Layout = sclLeft
-      BoundLabel.MaxWidth = 0
-      BoundLabel.UseSkinColor = True
-    end
-  end
-  object OutputEdit: TsDirectoryEdit
-    Left = 80
-    Top = 64
-    Width = 560
-    Height = 21
-    Hint = 'Output folder where downloaded files will be stored'
-    Anchors = [akLeft, akTop, akRight]
-    AutoSize = False
-    Color = 15917239
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    MaxLength = 255
-    ParentFont = False
-    TabOrder = 1
-    Text = ''
-    BoundLabel.Active = True
-    BoundLabel.Caption = 'Output folder:'
-    BoundLabel.Indent = 0
-    BoundLabel.Font.Charset = DEFAULT_CHARSET
-    BoundLabel.Font.Color = clWindowText
-    BoundLabel.Font.Height = -11
-    BoundLabel.Font.Name = 'Tahoma'
-    BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
-    SkinData.SkinSection = 'EDIT'
-    GlyphMode.Blend = 0
-    GlyphMode.Grayed = False
-    Root = 'rfDesktop'
-  end
-  object OpenOutputBtn: TsBitBtn
-    Left = 646
-    Top = 64
-    Width = 100
-    Height = 21
-    Hint = 'Open output folder'
-    Anchors = [akTop, akRight]
-    Caption = 'Open'
-    TabOrder = 3
-    OnClick = OpenOutputBtnClick
-    SkinData.SkinSection = 'BUTTON'
-  end
   object sPanel1: TsPanel
     Left = 0
     Top = 0
@@ -688,7 +564,7 @@ object MainForm: TMainForm
   end
   object sStatusBar1: TsStatusBar
     Left = 0
-    Top = 186
+    Top = 176
     Width = 754
     Height = 21
     Panels = <
@@ -704,6 +580,141 @@ object MainForm: TMainForm
         Width = 100
       end>
     SkinData.SkinSection = 'STATUSBAR'
+  end
+  object sPanel3: TsPanel
+    Left = 0
+    Top = 58
+    Width = 754
+    Height = 118
+    Align = alClient
+    Caption = 'sPanel3'
+    TabOrder = 2
+    SkinData.SkinSection = 'PANEL'
+    DesignSize = (
+      754
+      118)
+    object GroupBox1: TGroupBox
+      Left = 1
+      Top = 28
+      Width = 752
+      Height = 89
+      Align = alBottom
+      Caption = 'Progress'
+      TabOrder = 0
+      DesignSize = (
+        752
+        89)
+      object TotalBar: TsGauge
+        Left = 16
+        Top = 56
+        Width = 543
+        Height = 21
+        Hint = 'Total download progress'
+        Anchors = [akLeft, akRight, akBottom]
+        Animated = False
+        SkinData.SkinSection = 'GAUGE'
+        ForeColor = clBlack
+        Progress = 0
+        Suffix = '%'
+        ExplicitTop = 71
+        ExplicitWidth = 529
+      end
+      object CurrentLinkEdit: TsLabel
+        Left = 16
+        Top = 35
+        Width = 22
+        Height = 13
+        Hint = 'Currently processed link'
+        Anchors = [akLeft, akTop, akRight]
+        Caption = 'Link:'
+      end
+      object StateEdit: TsLabel
+        Left = 16
+        Top = 16
+        Width = 30
+        Height = 13
+        Hint = 'Current state of download process'
+        Anchors = [akLeft, akTop, akRight]
+        Caption = 'State:'
+      end
+      object ProgressEdit: TsEdit
+        Left = 615
+        Top = 56
+        Width = 121
+        Height = 21
+        Hint = 'Downloaded items/Total items'
+        Alignment = taCenter
+        Anchors = [akRight, akBottom]
+        Color = 15917239
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ReadOnly = True
+        TabOrder = 0
+        Text = '0/0'
+        SkinData.SkinSection = 'EDIT'
+        BoundLabel.Active = True
+        BoundLabel.Caption = 'Progress:'
+        BoundLabel.Indent = 0
+        BoundLabel.Font.Charset = DEFAULT_CHARSET
+        BoundLabel.Font.Color = clWindowText
+        BoundLabel.Font.Height = -11
+        BoundLabel.Font.Name = 'Tahoma'
+        BoundLabel.Font.Style = []
+        BoundLabel.Layout = sclLeft
+        BoundLabel.MaxWidth = 0
+        BoundLabel.UseSkinColor = True
+      end
+    end
+    object OpenOutputBtn: TsBitBtn
+      Left = 646
+      Top = 6
+      Width = 100
+      Height = 21
+      Hint = 'Open output folder'
+      Anchors = [akTop, akRight]
+      Caption = 'Open'
+      TabOrder = 1
+      OnClick = OpenOutputBtnClick
+      SkinData.SkinSection = 'BUTTON'
+    end
+    object OutputEdit: TsDirectoryEdit
+      Left = 80
+      Top = 6
+      Width = 560
+      Height = 21
+      Hint = 'Output folder where downloaded files will be stored'
+      Anchors = [akLeft, akTop, akRight]
+      AutoSize = False
+      Color = 15917239
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      MaxLength = 255
+      ParentFont = False
+      TabOrder = 2
+      Text = ''
+      BoundLabel.Active = True
+      BoundLabel.Caption = 'Output folder:'
+      BoundLabel.Indent = 0
+      BoundLabel.Font.Charset = DEFAULT_CHARSET
+      BoundLabel.Font.Color = clWindowText
+      BoundLabel.Font.Height = -11
+      BoundLabel.Font.Name = 'Tahoma'
+      BoundLabel.Font.Style = []
+      BoundLabel.Layout = sclLeft
+      BoundLabel.MaxWidth = 0
+      BoundLabel.UseSkinColor = True
+      SkinData.SkinSection = 'EDIT'
+      GlyphMode.Blend = 0
+      GlyphMode.Grayed = False
+      Root = 'rfDesktop'
+    end
   end
   object ImagePageDownloader1: TJvHttpUrlGrabber
     FileName = 'C:\insta.txt'
@@ -3635,6 +3646,7 @@ object MainForm: TMainForm
     ThirdParty.ThirdUpDown = 'TSpinButton'#13#10'TUpDown'#13#10'TJvUpDown'#13#10'TJvDomainUpDown'#13#10
     ThirdParty.ThirdScrollBar = 'TScrollBar'#13#10
     ThirdParty.ThirdStaticText = 'TStaticText'#13#10
+    OnActivate = sSkinManager1Activate
     Left = 384
     Top = 34
   end
@@ -3720,18 +3732,29 @@ object MainForm: TMainForm
       Caption = 'Report a bug'
       OnClick = R1Click
     end
+    object S1: TMenuItem
+      Caption = 'Send email to author'
+      OnClick = S1Click
+    end
   end
   object PosTimer: TTimer
     Enabled = False
     Interval = 250
     OnTimer = PosTimerTimer
-    Left = 680
-    Top = 96
+    Left = 712
+    Top = 64
   end
   object TimeTimer: TTimer
     Enabled = False
     OnTimer = TimeTimerTimer
     Left = 624
     Top = 96
+  end
+  object TrayIcon: TJvTrayIcon
+    IconIndex = 0
+    OnBalloonHide = TrayIconBalloonHide
+    OnBalloonClick = TrayIconBalloonClick
+    Left = 424
+    Top = 104
   end
 end

@@ -15,6 +15,7 @@ object AboutForm: TAboutForm
   OldCreateOrder = False
   Position = poMainFormCenter
   OnClose = FormClose
+  OnCreate = FormCreate
   DesignSize = (
     256
     165)
@@ -552,7 +553,7 @@ object AboutForm: TAboutForm
     Height = 13
     Align = alTop
     Alignment = taCenter
-    Caption = 'InstagramSaver 1.0'
+    Caption = 'InstagramSaver 1.1'
     ExplicitWidth = 96
   end
   object sLabel2: TsLabel

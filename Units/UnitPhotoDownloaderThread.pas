@@ -1,3 +1,23 @@
+{ *
+  * Copyright (C) 2014 ozok <ozok26@gmail.com>
+  *
+  * This file is part of InstagramSaver.
+  *
+  * InstagramSaver is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation, either version 2 of the License, or
+  * (at your option) any later version.
+  *
+  * InstagramSaver is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  *
+  * You should have received a copy of the GNU General Public License
+  * along with InstagramSaver.  If not, see <http://www.gnu.org/licenses/>.
+  *
+  * }
+
 unit UnitPhotoDownloaderThread;
 
 interface
@@ -133,6 +153,7 @@ begin
   if not FDownloading then
   begin
     FStatus := done;
+    FURL := '';
     Self.Terminate;
     exit;
   end;
@@ -158,6 +179,7 @@ begin
       else
       begin
         FStatus := done;
+        FURL := '';
       end;
     end
     else
@@ -172,6 +194,7 @@ begin
   else
   begin
     FStatus := done;
+    FURL := '';
   end;
 end;
 
@@ -180,6 +203,7 @@ begin
   if not FDownloading then
   begin
     FStatus := done;
+    FURL := '';
     Self.Terminate;
     exit;
   end;
@@ -205,6 +229,7 @@ begin
       else
       begin
         FStatus := done;
+        FURL := '';
       end;
     end
     else
@@ -219,6 +244,7 @@ begin
   else
   begin
     FStatus := done;
+    FURL := '';
   end;
 end;
 
@@ -237,6 +263,7 @@ end;
 procedure TPhotoDownloadThread.ReportError;
 begin
   LogForm.ThreadsList.Lines.Add('[' + FloatToStr(FID) + '] ' + FErrorMsg);
+  FErrorMsg := '';
 end;
 
 procedure TPhotoDownloadThread.Reset;
@@ -256,6 +283,7 @@ procedure TPhotoDownloadThread.Stop;
 begin
   FDownloading := False;
   FStatus := done;
+  FURL := '';
   if FPicDownloader1.Status <> gsStopped then
   begin
     FPicDownloader1.Stop;
