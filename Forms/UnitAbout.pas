@@ -68,10 +68,10 @@ end;
 procedure TAboutForm.FormCreate(Sender: TObject);
 begin
   {$IFDEF WIN32}
-    sLabel1.Caption := 'InstagramSaver 1.1 32bit';
+    sLabel1.Caption := 'InstagramSaver 1.2 32bit';
   {$ENDIF}
   {$IFDEF WIN64}
-    sLabel1.Caption := 'InstagramSaver 1.1 64bit';
+    sLabel1.Caption := 'InstagramSaver 1.2 64bit';
   {$ENDIF}
 end;
 

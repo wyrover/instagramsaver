@@ -1,4 +1,4 @@
---1.2
+--1.2 (28.06.2014)
 -Added: Better file validity check
 -Added: An option to disable skin
 -Added: An option to disable file checks after download is done

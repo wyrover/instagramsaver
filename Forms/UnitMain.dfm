@@ -569,7 +569,7 @@ object MainForm: TMainForm
     Height = 21
     Panels = <
       item
-        Text = 'InstagramSaver 1.1'
+        Text = 'InstagramSaver 1.2'
         Width = 125
       end
       item

@@ -50,6 +50,8 @@ type
     procedure PageDownloaderDoneFile2(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
     // sync
     procedure ReportError;
+    // force directory creation everytime a file is downloaded
+    procedure CreateOutputFolder(const FileName: string);
   protected
     procedure Execute; override;
   public
@@ -107,6 +109,14 @@ begin
   FURLIndex := 0;
 end;
 
+procedure TPhotoDownloadThread.CreateOutputFolder(const FileName: string);
+begin
+  if not DirectoryExists(ExtractFileDir(FileName)) then
+  begin
+    ForceDirectories(ExtractFileDir(FileName))
+  end;
+end;
+
 destructor TPhotoDownloadThread.Destroy;
 begin
   inherited Destroy;
@@ -134,6 +144,7 @@ begin
     end;
     FPicDownloader1.Url := FURLs[FURLIndex];
     FURL := FURLs[FURLIndex];
+    CreateOutputFolder(FOutputFiles[FURLIndex]);
     FPicDownloader1.FileName := FOutputFiles[FURLIndex];
     FPicDownloader1.Start;
     FStatus := downloading;
@@ -142,6 +153,7 @@ begin
   begin
     FPicDownloader1.Url := FURLs[FURLIndex];
     FURL := FURLs[FURLIndex];
+    CreateOutputFolder(FOutputFiles[FURLIndex]);
     FPicDownloader1.FileName := FOutputFiles[FURLIndex];
     FPicDownloader1.Start;
     FStatus := downloading;
@@ -172,6 +184,7 @@ begin
       begin
         FPicDownloader2.Url := FURLs[FURLIndex];
         FURL := FURLs[FURLIndex];
+        CreateOutputFolder(FOutputFiles[FURLIndex]);
         FPicDownloader2.FileName := FOutputFiles[FURLIndex];
         FPicDownloader2.Start;
         FStatus := downloading;
@@ -186,6 +199,7 @@ begin
     begin
       FPicDownloader2.Url := FURLs[FURLIndex];
       FURL := FURLs[FURLIndex];
+      CreateOutputFolder(FOutputFiles[FURLIndex]);
       FPicDownloader2.FileName := FOutputFiles[FURLIndex];
       FPicDownloader2.Start;
       FStatus := downloading;
@@ -222,6 +236,7 @@ begin
       begin
         FPicDownloader1.Url := FURLs[FURLIndex];
         FURL := FURLs[FURLIndex];
+        CreateOutputFolder(FOutputFiles[FURLIndex]);
         FPicDownloader1.FileName := FOutputFiles[FURLIndex];
         FPicDownloader1.Start;
         FStatus := downloading;
@@ -236,6 +251,7 @@ begin
     begin
       FPicDownloader1.Url := FURLs[FURLIndex];
       FURL := FURLs[FURLIndex];
+      CreateOutputFolder(FOutputFiles[FURLIndex]);
       FPicDownloader1.FileName := FOutputFiles[FURLIndex];
       FPicDownloader1.Start;
       FStatus := downloading;

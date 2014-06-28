@@ -170,7 +170,7 @@ var
   MainForm: TMainForm;
 
 const
-  BuildInt = 341;
+  BuildInt = 364;
   Portable = False;
 
 implementation
@@ -1050,7 +1050,7 @@ begin
     begin
       ShellExecute(Handle, 'open', PWideChar(OutputEdit.Text + '\' + UserNameEdit.Text), nil, nil, SW_SHOWNORMAL);
     end;
-          //todo: create output folder each time a file is saved
+
     Sleep(100);
     TotalBar.Progress := 0;
     ProgressEdit.Text := FloatToStr(FLinksToDownload.Count) + '/' + FloatToStr(FLinksToDownload.Count);
