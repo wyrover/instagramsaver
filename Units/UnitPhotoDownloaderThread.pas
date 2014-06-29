@@ -178,6 +178,10 @@ begin
       while FileExists(FOutputFiles[FURLIndex]) do
       begin
         Inc(FURLIndex);
+        if FURLIndex >= FURLs.Count then
+        begin
+          Break;
+        end;
       end;
       // check if reached the end of the list
       if (FURLIndex < FURLs.Count) then

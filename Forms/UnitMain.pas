@@ -79,6 +79,10 @@ type
     ProgressEdit: TsEdit;
     OpenOutputBtn: TsBitBtn;
     OutputEdit: TsDirectoryEdit;
+    FavBtn: TsBitBtn;
+    FavMenu: TPopupMenu;
+    D1: TMenuItem;
+    E1: TMenuItem;
     procedure DownloadBtnClick(Sender: TObject);
     procedure ImagePageDownloader1DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
     procedure ImagePageDownloader2DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
@@ -114,6 +118,9 @@ type
     procedure TrayIconBalloonClick(Sender: TObject);
     procedure TrayIconBalloonHide(Sender: TObject);
     procedure sSkinManager1Activate(Sender: TObject);
+    procedure E1Click(Sender: TObject);
+    procedure FavBtnClick(Sender: TObject);
+    procedure D1Click(Sender: TObject);
   private
     { Private declarations }
     FImageIndex: integer;
@@ -123,6 +130,10 @@ type
     FLinksToDownload: TList<TURL>;
     FPageURLs: TStringList;
     FFilesToCheck: TStringList;
+    FFavLinks: TList<TURL>;
+    FFavs: TStringList;
+    FFavIndex: Integer;
+    FDownloadingFavs: Boolean;
 
     FDownloadThreads: array[0..15] of TPhotoDownloadThread;
     FURLs: array[0..15] of  TStringList;
@@ -164,6 +175,7 @@ type
     { Public declarations }
     FAppDataFolder: string;
     FTempFolder: string;
+    FFavFilePath: string;
   end;
 
 var
@@ -177,7 +189,7 @@ implementation
 
 {$R *.dfm}
 
-uses UnitSettings, UnitAbout, UnitLog;
+uses UnitSettings, UnitAbout, UnitLog, UnitFavs;
 
 procedure TMainForm.A1Click(Sender: TObject);
 begin
@@ -216,37 +228,44 @@ var
   i: integer;
   LITE: TImageTypeEx;
 begin
-  Self.Caption := 'Checking downloaded images...';
+  Self.Caption := 'Checking downloaded files...';
+  StateEdit.Caption := 'State: Checking files';
   Self.Enabled := False;
   Result := False;
   try
-    for I := 0 to FFilesToCheck.Count-1 do
+    if FFilesToCheck.Count > 0 then
     begin
-      Application.ProcessMessages;
-      Self.Caption := 'Checking downloaded images...(' + FloatToStr(i + 1) + '/' + FloatToStr(FFilesToCheck.Count) + ')';
-      if FileExists(FFilesToCheck[i]) then
+      for I := 0 to FFilesToCheck.Count-1 do
       begin
-        // check file
-        LITE := TImageTypeEx.Create(FFilesToCheck[i]);
-        try
-          if Length(LITE.ImageType) < 1 then
-          begin
-            AddToProgramLog('[ERROR] Invalid file: ' + FFilesToCheck[i]);
-            Result := True;
+        Application.ProcessMessages;
+        Self.Caption := 'Checking downloaded files...(' + FloatToStr(i + 1) + '/' + FloatToStr(FFilesToCheck.Count) + ')';
+        TotalBar.Progress := (100 * i) div FFilesToCheck.Count;
+        if FileExists(FFilesToCheck[i]) then
+        begin
+          // check file
+          LITE := TImageTypeEx.Create(FFilesToCheck[i]);
+          try
+            if Length(LITE.ImageType) < 1 then
+            begin
+              AddToProgramLog('[ERROR] Invalid file: ' + FFilesToCheck[i]);
+              Result := True;
+            end;
+          finally
+            LITE.Free;
           end;
-        finally
-          LITE.Free;
+        end
+        else
+        begin
+          AddToProgramLog('[ERROR] Unable to find file: ' + FFilesToCheck[i]);
+          Result := True;
         end;
-      end
-      else
-      begin
-        AddToProgramLog('[ERROR] Unable to find file: ' + FFilesToCheck[i]);
-        Result := True;
       end;
     end;
   finally
+    StateEdit.Caption := 'State:';
+    TotalBar.Progress := 0;
     Self.Caption := 'InstagramSaver';
-    Self.Enabled := True
+    Self.Enabled := True;
   end;
 end;
 
@@ -272,6 +291,116 @@ begin
   end;
 end;
 
+procedure TMainForm.D1Click(Sender: TObject);
+var
+  LFavFile: TStringList;
+  LFavCount: Integer;
+  LSplit: TStringList;
+  I: Integer;
+begin
+  LFavCount := 0;
+  if FileExists(FFavFilePath) then
+  begin
+    LFavFile := TStringList.Create;
+    LSplit := TStringList.Create;
+    FFavLinks.Clear;
+    FFavs.Clear;
+    FFavIndex := 0;
+    try
+      LFavFile.LoadFromFile(FFavFilePath);
+      LFavCount := LFavFile.Count;
+
+      if LFavCount > 0 then
+      begin
+        // add selected favs to download list
+        LSplit.StrictDelimiter := True;
+        LSplit.Delimiter := '|';
+        for I := 0 to LFavFile.Count-1 do
+        begin
+          LSplit.Clear;
+          LSplit.DelimitedText := LFavFile[i];
+          if LSplit.Count = 2 then
+          begin
+            if LSplit[1] = '1' then
+            begin
+              FFavs.Add(LSplit[0]);
+            end;
+          end;
+        end;
+        if FFavs.Count < 1 then
+        begin
+          Application.MessageBox('Please select one or more favourites.', 'Error', MB_ICONERROR);
+          Exit;
+        end;
+        FDownloadingFavs := True;
+        // create directory for favs
+        for I := 0 to FFavs.Count-1 do
+        begin
+          ForceDirectories(OutputEdit.Text + '\' + FFavs[i])
+        end;
+
+        // reset lists
+        FLinksToDownload.Clear;
+        FFilesToCheck.Clear;
+        FPageURLs.Clear;
+        FTime := 0;
+
+        // delete temp files
+        if FileExists(ImagePageDownloader1.FileName) then
+        begin
+          DeleteFile(ImagePageDownloader1.FileName)
+        end;
+        if FileExists(ImagePageDownloader2.FileName) then
+        begin
+          DeleteFile(ImagePageDownloader2.FileName)
+        end;
+        if FileExists(VideoLinkDownloader2.FileName) then
+        begin
+          DeleteFile(VideoLinkDownloader2.FileName)
+        end;
+        if FileExists(VideoLinkDownloader1.FileName) then
+        begin
+          DeleteFile(VideoLinkDownloader1.FileName)
+        end;
+
+        TotalBar.Progress := 0;
+
+        StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Extracting image links...';
+        ProgressEdit.Text := '0/0';
+        Self.Caption := '0% [InstagramSaver]';
+        DisableUI;
+        CurrentLinkEdit.Caption := 'Link: ' + 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+        SetProgressState(Handle, tbpsNormal);
+
+        if LogForm.LogList.Lines.Count > 0 then
+        begin
+          AddToProgramLog('');
+        end;
+        AddToProgramLog('Starting to download favourites.');
+        AddToProgramLog('Don''t download already downloaded files: ' + BoolToStr(SettingsForm.DontDoubleDownloadBtn.Checked, True));
+        AddToProgramLog('Download videos: ' + BoolToStr(SettingsForm.DownloadVideoBtn.Checked, True));
+        AddToProgramLog('Check downloaded files: ' + BoolToStr(not SettingsForm.DontCheckBtn.Checked, True));
+        AddToProgramLog('Extracting image links...');
+        UserNameEdit.Text := FFavs[FFavIndex];
+        ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+        ImagePageDownloader1.Start;
+        TimeTimer.Enabled := True;
+      end
+      else
+      begin
+        Application.MessageBox('You don''t have any favourites.', 'Error', MB_ICONERROR);
+      end;
+    finally
+      LFavFile.Free;
+      LSplit.Free;
+    end;
+  end
+  else
+  begin
+    Application.MessageBox('You don''t have any favourites.', 'Error', MB_ICONERROR);
+  end;
+end;
+
 procedure TMainForm.DisableUI;
 begin
   UserNameEdit.Enabled := False;
@@ -280,6 +409,7 @@ begin
   SettingsBtn.Enabled := False;
   AboutBtn.Enabled := False;
   OutputEdit.Enabled := False;
+  FavBtn.Enabled := False;
 end;
 
 procedure TMainForm.DonateBtnClick(Sender: TObject);
@@ -298,6 +428,9 @@ procedure TMainForm.DownloadBtnClick(Sender: TObject);
 begin
   if Length(UserNameEdit.Text) > 0 then
   begin
+    // only lowercase
+    UserNameEdit.Text := LowerCase(UserNameEdit.Text);
+
     if not ForceDirectories(OutputEdit.Text + '\' + UserNameEdit.Text) then
     begin
       Application.MessageBox('Cannot create output folder. Please enter a valid one.', 'Error', MB_ICONERROR);
@@ -335,13 +468,13 @@ begin
     DisableUI;
     CurrentLinkEdit.Caption := 'Link: ' + 'http://web.stagram.com/n/' + UserNameEdit.Text + '/?vm=list';
     SetProgressState(Handle, tbpsNormal);
-
+    FDownloadingFavs := False;
     if LogForm.LogList.Lines.Count > 0 then
     begin
       AddToProgramLog('');
     end;
     AddToProgramLog('Starting to download user: ' + UserNameEdit.Text);
-    AddToProgramLog('Don''t donwload already downloaded files: ' + BoolToStr(SettingsForm.DontDoubleDownloadBtn.Checked, True));
+    AddToProgramLog('Don''t download already downloaded files: ' + BoolToStr(SettingsForm.DontDoubleDownloadBtn.Checked, True));
     AddToProgramLog('Download videos: ' + BoolToStr(SettingsForm.DownloadVideoBtn.Checked, True));
     AddToProgramLog('Check downloaded files: ' + BoolToStr(not SettingsForm.DontCheckBtn.Checked, True));
     AddToProgramLog('Extracting image links...');
@@ -355,6 +488,12 @@ begin
   end;
 end;
 
+procedure TMainForm.E1Click(Sender: TObject);
+begin
+  Self.Enabled := False;
+  FavForm.Show;
+end;
+
 procedure TMainForm.EnableUI;
 begin
   TimeTimer.Enabled := False;
@@ -364,6 +503,7 @@ begin
   SettingsBtn.Enabled := True;
   AboutBtn.Enabled := True;
   OutputEdit.Enabled := True;
+  FavBtn.Enabled := True;
   TotalBar.Progress := 0;
   CurrentLinkEdit.Caption := 'Link: ';
   StateEdit.Caption := 'State: ';
@@ -371,6 +511,15 @@ begin
   SetProgressValue(Handle, 0, MaxInt);
   SetProgressState(Handle, tbpsNone);
   sStatusBar1.Panels[2].Text := '00:00:00';
+end;
+
+procedure TMainForm.FavBtnClick(Sender: TObject);
+var
+  P: TPoint;
+begin
+  P := FavBtn.ClientToScreen(Point(0, 0));
+
+  FavMenu.Popup(P.X, P.Y + FavBtn.Height)
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -407,8 +556,10 @@ var
   I: Integer;
 begin
   FLinksToDownload := TList<TURL>.Create;
+  FFavLinks := TList<TURL>.Create;
   FPageURLs := TStringList.Create;
   FFilesToCheck := TStringList.Create;
+  FFavs := TStringList.Create;
   for I := Low(FURLs) to High(FURLs) do
   begin
     FURLs[i] := TStringList.Create;
@@ -424,6 +575,7 @@ begin
     FAppDataFolder := Info.Folders.AppData + '\InstagramSaver\';
   end;
   FTempFolder := Info.Folders.Temp + '\InstagramSaver\';
+  FFavFilePath := FAppDataFolder + '\favs.dat';
   if not DirectoryExists(FAppDataFolder) then
   begin
     CreateDir(FAppDataFolder);
@@ -461,6 +613,8 @@ begin
   FLinksToDownload.Free;
   FPageURLs.Free;
   FFilesToCheck.Free;
+  FFavLinks.Free;
+  FFavs.Free;
   for I := Low(FURLs) to High(FURLs) do
   begin
     FURLs[i].Free;
@@ -572,7 +726,14 @@ begin
       if FPageURLs.Count > 0 then
       begin
         // search for video links
-        StateEdit.Caption := 'State: Extracting video links...';
+        if not FDownloadingFavs then
+        begin
+          StateEdit.Caption := 'State: Extracting video links...';
+        end
+        else
+        begin
+          StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Extracting video links...';
+        end;
         FVideoPageIndex := 0;
         AddToProgramLog('Searching for video links...');
         CurrentLinkEdit.Caption := 'Link: ' + FPageURLs[FVideoPageIndex];
@@ -581,6 +742,7 @@ begin
       end
       else
       begin
+        // todo: on no link error for favsi download next fav
         Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
         AddToProgramLog('Failed to extract links for ' + UserNameEdit.Text + '.');
         EnableUI;
@@ -591,7 +753,14 @@ begin
       // start downloading
       if FLinksToDownload.Count > 0 then
       begin
-        StateEdit.Caption := 'State: Downloading...';
+        if not FDownloadingFavs then
+        begin
+          StateEdit.Caption := 'State: Downloading...';
+        end
+        else
+        begin
+          StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Downloading...';
+        end;
         FImageIndex := 0;
         // parallel download count
         FThreadCount := SettingsForm.ThreadList.ItemIndex+1;
@@ -702,7 +871,14 @@ begin
       if FPageURLs.Count > 0 then
       begin
         // search for video links
-        StateEdit.Caption := 'State: Extracting video links...';
+        if not FDownloadingFavs then
+        begin
+          StateEdit.Caption := 'State: Extracting video links...';
+        end
+        else
+        begin
+          StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Extracting video links...';
+        end;
         FVideoPageIndex := 0;
         AddToProgramLog('Searching for video links...');
         CurrentLinkEdit.Caption := 'Link: ' + FPageURLs[FVideoPageIndex];
@@ -721,7 +897,14 @@ begin
       // start downloading
       if FLinksToDownload.Count > 0 then
       begin
-        StateEdit.Caption := 'State: Downloading...';
+        if not FDownloadingFavs then
+        begin
+          StateEdit.Caption := 'State: Downloading...';
+        end
+        else
+        begin
+          StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Downloading...';
+        end;
         FImageIndex := 0;
         // parallel download count
         FThreadCount := SettingsForm.ThreadList.ItemIndex+1;
@@ -820,7 +1003,14 @@ procedure TMainForm.LaunchDownloadThreads(const ThreadCount: Integer);
 var
   I: Integer;
 begin
-  AddToProgramLog('Starting to download.');
+  if FDownloadingFavs then
+  begin
+    AddToProgramLog('Starting to download ' + FFavs[FFavIndex] + '.');
+  end
+  else
+  begin
+    AddToProgramLog('Starting to download.');
+  end;
   AddToProgramLog(Format('Using %d threads.', [ThreadCount]));
 
   // clear lists
@@ -833,8 +1023,8 @@ begin
   for I := 0 to FLinksToDownload.Count-1 do
   begin
     FURLs[i mod ThreadCount].Add(FLinksToDownload[i].URL);
-    FOutputFiles[i mod ThreadCount].Add(ExcludeTrailingPathDelimiter(OutputEdit.Text) + '\' + UserNameEdit.Text + '\' + URLToFileName(FLinksToDownload[i]));
-    FFilesToCheck.Add(ExcludeTrailingPathDelimiter(OutputEdit.Text) + '\' + UserNameEdit.Text + '\' + URLToFileName(FLinksToDownload[i]));
+    FOutputFiles[i mod ThreadCount].Add(ExcludeTrailingPathDelimiter(OutputEdit.Text) + URLToFileName(FLinksToDownload[i]));
+    FFilesToCheck.Add(ExcludeTrailingPathDelimiter(OutputEdit.Text) + URLToFileName(FLinksToDownload[i]));
   end;
   // create threads
   for I := 0 to ThreadCount-1 do
@@ -1010,6 +1200,7 @@ var
   I: Integer;
   LTotalProgress: Integer;
   LCurURL: string;
+  LDone: Boolean;
 begin
   LStillRunning := False;
   LTotalProgress := 0;
@@ -1028,7 +1219,14 @@ begin
     // continue
     TotalBar.Progress := (100 * LTotalProgress) div FLinksToDownload.Count;
     ProgressEdit.Text := FloatToStr(LTotalProgress) + '/' + FloatToStr(FLinksToDownload.Count);
-    Self.Caption := FloatToStr(TotalBar.Progress) + '% [InstagramSaver]';
+    if not FDownloadingFavs then
+    begin
+      Self.Caption := FloatToStr(TotalBar.Progress) + '% [InstagramSaver]';
+    end
+    else
+    begin
+      Self.Caption := FloatToStr(TotalBar.Progress) + '% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
+    end;
     SetProgressValue(Handle, LTotalProgress, FLinksToDownload.Count);
 
     Randomize;
@@ -1040,41 +1238,116 @@ begin
   end
   else
   begin
-    // done
-    PosTimer.Enabled := False;
-    AddToProgramLog(Format('Finished downloading in %s.', [IntegerToTime(FTime)]));
-    AddToProgramLog('');
-    EnableUI;
-    Self.BringToFront;
-    if SettingsForm.OpenOutBtn.Checked then
+    if FDownloadingFavs then
     begin
-      ShellExecute(Handle, 'open', PWideChar(OutputEdit.Text + '\' + UserNameEdit.Text), nil, nil, SW_SHOWNORMAL);
-    end;
-
-    Sleep(100);
-    TotalBar.Progress := 0;
-    ProgressEdit.Text := FloatToStr(FLinksToDownload.Count) + '/' + FloatToStr(FLinksToDownload.Count);
-    if not SettingsForm.DontCheckBtn.Checked then
-    begin
-      if CheckFiles then
+      PosTimer.Enabled := False;
+      // downloading favourites
+      Inc(FFavIndex);
+      if FFavIndex < FFavs.Count then
       begin
-        LogForm.Show;
-        TrayIcon.Active := True;
-        TrayIcon.BalloonHint('InstagramSaver', 'InstagramSaver finished downloading. Some problems occured. Please see logs.', btError, 5000, True);
+        // start downloading next fav
+        LDone := False;
+
+        // reset lists
+        FLinksToDownload.Clear;
+        FPageURLs.Clear;
+        TotalBar.Progress := 0;
+        TotalBar.Progress := 0;
+        SetProgressValue(Handle, 0, MaxInt);
+
+        // delete temp files
+        if FileExists(ImagePageDownloader1.FileName) then
+        begin
+          DeleteFile(ImagePageDownloader1.FileName)
+        end;
+        if FileExists(ImagePageDownloader2.FileName) then
+        begin
+          DeleteFile(ImagePageDownloader2.FileName)
+        end;
+        if FileExists(VideoLinkDownloader2.FileName) then
+        begin
+          DeleteFile(VideoLinkDownloader2.FileName)
+        end;
+        if FileExists(VideoLinkDownloader1.FileName) then
+        begin
+          DeleteFile(VideoLinkDownloader1.FileName)
+        end;
+
+        StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Extracting image links...';
+        ProgressEdit.Text := '0/0';
+        Self.Caption := '0% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
+        DisableUI;
+        CurrentLinkEdit.Caption := 'Link: ' + 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+        SetProgressState(Handle, tbpsNormal);
+        if ImagePageDownloader1.Status <> gsStopped then
+        begin
+          ImagePageDownloader1.Stop;
+        end;
+        if ImagePageDownloader2.Status <> gsStopped then
+        begin
+          ImagePageDownloader2.Stop;
+        end;
+        UserNameEdit.Text := FFavs[FFavIndex];
+        ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+        ImagePageDownloader1.Start;
       end
       else
       begin
-        AddToProgramLog('File check did not report any problematic files.');
-        TrayIcon.Active := True;
-        TrayIcon.BalloonHint('InstagramSaver', 'InstagramSaver finished downloading succesfully.', btInfo, 5000, True);
+        // done
+        LDone := True;
       end;
     end
     else
     begin
-      AddToProgramLog('File check is disabled.');
-      TrayIcon.Active := True;
-      TrayIcon.BalloonHint('InstagramSaver', 'InstagramSaver finished downloading.', btInfo, 5000, True);
+      // normal account download
+      LDone := True;
     end;
+    if LDone then
+    begin
+      // done
+      PosTimer.Enabled := False;
+      AddToProgramLog(Format('Finished downloading in %s.', [IntegerToTime(FTime)]));
+      AddToProgramLog('');
+      EnableUI;
+      Self.BringToFront;
+      if SettingsForm.OpenOutBtn.Checked then
+      begin
+        if FDownloadingFavs then
+        begin
+          ShellExecute(Handle, 'open', PWideChar(OutputEdit.Text), nil, nil, SW_SHOWNORMAL);
+        end
+        else
+        begin
+          ShellExecute(Handle, 'open', PWideChar(OutputEdit.Text + '\' + UserNameEdit.Text), nil, nil, SW_SHOWNORMAL);
+        end;
+      end;
+
+      Sleep(100);
+      TotalBar.Progress := 0;
+      ProgressEdit.Text := FloatToStr(FLinksToDownload.Count) + '/' + FloatToStr(FLinksToDownload.Count);
+      if not SettingsForm.DontCheckBtn.Checked then
+      begin
+        if CheckFiles then
+        begin
+          LogForm.Show;
+          TrayIcon.Active := True;
+          TrayIcon.BalloonHint('InstagramSaver', 'InstagramSaver finished downloading. Some problems occured. Please see logs.', btError, 5000, True);
+        end
+        else
+        begin
+          AddToProgramLog('File check did not report any problematic files.');
+          TrayIcon.Active := True;
+          TrayIcon.BalloonHint('InstagramSaver', 'InstagramSaver finished downloading succesfully.', btInfo, 5000, True);
+        end;
+        end
+      else
+      begin
+        AddToProgramLog('File check is disabled.');
+        TrayIcon.Active := True;
+        TrayIcon.BalloonHint('InstagramSaver', 'InstagramSaver finished downloading.', btInfo, 5000, True);
+      end;
+    end;
+
   end;
 end;
 
@@ -1235,6 +1508,14 @@ begin
     Img: Result := ChangeFileExt(ExtractFileName(LURL), '.jpg');
     Video: Result := ChangeFileExt(ExtractFileName(LURL), '.mp4');
   end;
+  if FDownloadingFavs then
+  begin
+    Result := '\' + FFavs[FFavIndex] + '\' + Result
+  end
+  else
+  begin
+    Result :=  '\' + UserNameEdit.Text + '\' + Result
+  end;
 end;
 
 procedure TMainForm.UserNameEditKeyDown(Sender: TObject; var Key: Word;
@@ -1285,7 +1566,14 @@ begin
     // start downloading
     if FLinksToDownload.Count > 0 then
     begin
-      StateEdit.Caption := 'State: Downloading...';
+      if not FDownloadingFavs then
+      begin
+        StateEdit.Caption := 'State: Downloading...';
+      end
+      else
+      begin
+        StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Downloading...'
+      end;
       FImageIndex := 0;
       // parallel download count
       FThreadCount := SettingsForm.ThreadList.ItemIndex+1;
@@ -1355,7 +1643,14 @@ begin
     // start downloading
     if FLinksToDownload.Count > 0 then
     begin
-      StateEdit.Caption := 'State: Downloading...';
+      if not FDownloadingFavs then
+      begin
+        StateEdit.Caption := 'State: Downloading...';
+      end
+      else
+      begin
+        StateEdit.Caption := 'State [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Downloading...';
+      end;
       FImageIndex := 0;
       // parallel download count
       FThreadCount := SettingsForm.ThreadList.ItemIndex+1;
