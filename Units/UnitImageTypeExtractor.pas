@@ -66,18 +66,13 @@ begin
   Result := '';
   if (FileExists(ImagePath)) then
   begin
-    // New handle for mediainfo
     MediaInfoHandle := MediaInfo_New();
-
     if MediaInfoHandle <> 0 then
     begin
-
       try
-        // Open a file in complete mode
         MediaInfo_Open(MediaInfoHandle, PWideChar(ImagePath));
         MediaInfo_Option(0, 'Complete', '1');
 
-        // get length
         LFormat := MediaInfo_Get(MediaInfoHandle, Stream_General, 0, 'Format', Info_Text, Info_Name);
         if LFormat = 'JPEG' then
         begin

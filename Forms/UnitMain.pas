@@ -30,7 +30,7 @@ uses
   sCustomComboEdit, sToolEdit, Vcl.Buttons, sBitBtn, sEdit, Vcl.ComCtrls,
   sStatusBar, sGauge, sBevel, sPanel, JvComputerInfoEx, IniFiles, sLabel, ShellAPI, windows7taskbar, UnitImageTypeExtractor,
   Generics.Collections, JvThread, Vcl.Menus, UnitPhotoDownloaderThread, System.Types,
-  JvTrayIcon, MediaInfoDll;
+  JvTrayIcon, MediaInfoDll, acProgressBar;
 
 type
   TURLType = (Img=0, Video=1);
@@ -73,7 +73,7 @@ type
     TrayIcon: TJvTrayIcon;
     sPanel3: TsPanel;
     GroupBox1: TGroupBox;
-    TotalBar: TsGauge;
+    TotalBar: TsProgressBar;
     CurrentLinkEdit: TsLabel;
     StateEdit: TsLabel;
     ProgressEdit: TsEdit;
@@ -83,6 +83,7 @@ type
     FavMenu: TPopupMenu;
     D1: TMenuItem;
     E1: TMenuItem;
+    D2: TMenuItem;
     procedure DownloadBtnClick(Sender: TObject);
     procedure ImagePageDownloader1DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
     procedure ImagePageDownloader2DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
@@ -121,6 +122,7 @@ type
     procedure E1Click(Sender: TObject);
     procedure FavBtnClick(Sender: TObject);
     procedure D1Click(Sender: TObject);
+    procedure D2Click(Sender: TObject);
   private
     { Private declarations }
     FImageIndex: integer;
@@ -239,7 +241,7 @@ begin
       begin
         Application.ProcessMessages;
         Self.Caption := 'Checking downloaded files...(' + FloatToStr(i + 1) + '/' + FloatToStr(FFilesToCheck.Count) + ')';
-        TotalBar.Progress := (100 * i) div FFilesToCheck.Count;
+        TotalBar.Position := (100 * i) div FFilesToCheck.Count;
         if FileExists(FFilesToCheck[i]) then
         begin
           // check file
@@ -263,7 +265,7 @@ begin
     end;
   finally
     StateEdit.Caption := 'State:';
-    TotalBar.Progress := 0;
+    TotalBar.Position := 0;
     Self.Caption := 'InstagramSaver';
     Self.Enabled := True;
   end;
@@ -363,7 +365,7 @@ begin
           DeleteFile(VideoLinkDownloader1.FileName)
         end;
 
-        TotalBar.Progress := 0;
+        TotalBar.Position := 0;
 
         StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Extracting image links...';
         ProgressEdit.Text := '0/0';
@@ -401,6 +403,11 @@ begin
   end;
 end;
 
+procedure TMainForm.D2Click(Sender: TObject);
+begin
+  ShellExecute(0, 'open', 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=6MSWEDR4AGBQG', nil, nil, SW_SHOWNORMAL);
+end;
+
 procedure TMainForm.DisableUI;
 begin
   UserNameEdit.Enabled := False;
@@ -421,7 +428,7 @@ begin
 <img alt="" border="0" src="https://www.paypalobjects.com/tr_TR/i/scr/pixel.gif" width="1" height="1">
 </form>
 }
-ShellExecute(0, 'open', 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=6MSWEDR4AGBQG', nil, nil, SW_SHOWNORMAL);
+ShellExecute(0, 'open', 'https://play.google.com/store/apps/details?id=com.mopa.instasaver', nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TMainForm.DownloadBtnClick(Sender: TObject);
@@ -460,7 +467,7 @@ begin
       DeleteFile(VideoLinkDownloader1.FileName)
     end;
 
-    TotalBar.Progress := 0;
+    TotalBar.Position := 0;
 
     StateEdit.Caption := 'State: Extracting image links...';
     ProgressEdit.Text := '0/0';
@@ -504,13 +511,17 @@ begin
   AboutBtn.Enabled := True;
   OutputEdit.Enabled := True;
   FavBtn.Enabled := True;
-  TotalBar.Progress := 0;
+  TotalBar.Position := 0;
   CurrentLinkEdit.Caption := 'Link: ';
   StateEdit.Caption := 'State: ';
   Self.Caption := 'InstagramSaver';
   SetProgressValue(Handle, 0, MaxInt);
   SetProgressState(Handle, tbpsNone);
   sStatusBar1.Panels[2].Text := '00:00:00';
+  if FDownloadingFavs then
+  begin
+    UserNameEdit.Text := '';
+  end;
 end;
 
 procedure TMainForm.FavBtnClick(Sender: TObject);
@@ -1217,15 +1228,15 @@ begin
   if LStillRunning then
   begin
     // continue
-    TotalBar.Progress := (100 * LTotalProgress) div FLinksToDownload.Count;
+    TotalBar.Position := (100 * LTotalProgress) div FLinksToDownload.Count;
     ProgressEdit.Text := FloatToStr(LTotalProgress) + '/' + FloatToStr(FLinksToDownload.Count);
     if not FDownloadingFavs then
     begin
-      Self.Caption := FloatToStr(TotalBar.Progress) + '% [InstagramSaver]';
+      Self.Caption := FloatToStr(TotalBar.Position) + '% [InstagramSaver]';
     end
     else
     begin
-      Self.Caption := FloatToStr(TotalBar.Progress) + '% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
+      Self.Caption := FloatToStr(TotalBar.Position) + '% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
     end;
     SetProgressValue(Handle, LTotalProgress, FLinksToDownload.Count);
 
@@ -1251,8 +1262,7 @@ begin
         // reset lists
         FLinksToDownload.Clear;
         FPageURLs.Clear;
-        TotalBar.Progress := 0;
-        TotalBar.Progress := 0;
+        TotalBar.Position := 0;
         SetProgressValue(Handle, 0, MaxInt);
 
         // delete temp files
@@ -1323,7 +1333,7 @@ begin
       end;
 
       Sleep(100);
-      TotalBar.Progress := 0;
+      TotalBar.Position := 0;
       ProgressEdit.Text := FloatToStr(FLinksToDownload.Count) + '/' + FloatToStr(FLinksToDownload.Count);
       if not SettingsForm.DontCheckBtn.Checked then
       begin
@@ -1600,7 +1610,7 @@ end;
 
 procedure TMainForm.VideoLinkDownloader1Progress(Sender: TObject; Position, TotalSize: Int64; Url: string; var Continue: Boolean);
 begin
-  TotalBar.Progress := (100 * FVideoPageIndex) div FPageURLs.Count;
+  TotalBar.Position := (100 * FVideoPageIndex) div FPageURLs.Count;
 end;
 
 procedure TMainForm.VideoLinkDownloader2DoneFile(Sender: TObject;
@@ -1677,7 +1687,7 @@ end;
 
 procedure TMainForm.VideoLinkDownloader2Progress(Sender: TObject; Position, TotalSize: Int64; Url: string; var Continue: Boolean);
 begin
-  TotalBar.Progress := (100 * FVideoPageIndex) div FPageURLs.Count;
+  TotalBar.Position := (100 * FVideoPageIndex) div FPageURLs.Count;
 end;
 
 end.

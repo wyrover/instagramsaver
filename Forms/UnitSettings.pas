@@ -84,7 +84,14 @@ begin
       DontDoubleDownloadBtn.Checked := ReadBool('general', 'nodouble', True);
       DownloadVideoBtn.Checked := ReadBool('general', 'video', False);
       SkinList.ItemIndex := ReadInteger('general', 'skin', 0);
-      ThreadList.ItemIndex := ReadInteger('general', 'thread', CPUCount-1);
+      if CPUCount > 16 then
+      begin
+        ThreadList.ItemIndex := ReadInteger('general', 'thread', 15);
+      end
+      else
+      begin
+        ThreadList.ItemIndex := ReadInteger('general', 'thread', CPUCount-1);
+      end;
       DontCheckBtn.Checked := ReadBool('general', 'check', False);
     end;
   finally

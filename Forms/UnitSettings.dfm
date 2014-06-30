@@ -57,7 +57,6 @@ object SettingsForm: TSettingsForm
     TabOrder = 2
     OnClick = sButton1Click
     SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 141
   end
   object DontDoubleDownloadBtn: TsCheckBox
     Left = 8
@@ -121,7 +120,6 @@ object SettingsForm: TSettingsForm
       'Dark'
       'Light'
       'None')
-    ExplicitTop = 156
   end
   object ThreadList: TsComboBox
     Left = 134
@@ -171,7 +169,6 @@ object SettingsForm: TSettingsForm
       '14'
       '15'
       '16')
-    ExplicitTop = 156
   end
   object DontCheckBtn: TsCheckBox
     Left = 8
