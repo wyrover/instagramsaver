@@ -3,7 +3,7 @@ object SettingsForm: TSettingsForm
   Top = 0
   BorderStyle = bsToolWindow
   Caption = 'Settings'
-  ClientHeight = 194
+  ClientHeight = 191
   ClientWidth = 312
   Color = 5066061
   DoubleBuffered = True
@@ -18,7 +18,7 @@ object SettingsForm: TSettingsForm
   OnCreate = FormCreate
   DesignSize = (
     312
-    194)
+    191)
   PixelsPerInch = 96
   TextHeight = 13
   object CheckUpdateBtn: TsCheckBox
@@ -49,7 +49,7 @@ object SettingsForm: TSettingsForm
   end
   object sButton1: TsButton
     Left = 223
-    Top = 161
+    Top = 158
     Width = 81
     Height = 25
     Anchors = [akRight, akBottom]
@@ -57,6 +57,7 @@ object SettingsForm: TSettingsForm
     TabOrder = 2
     OnClick = sButton1Click
     SkinData.SkinSection = 'BUTTON'
+    ExplicitTop = 161
   end
   object DontDoubleDownloadBtn: TsCheckBox
     Left = 8
@@ -86,7 +87,7 @@ object SettingsForm: TSettingsForm
   end
   object SkinList: TsComboBox
     Left = 223
-    Top = 134
+    Top = 131
     Width = 81
     Height = 21
     Anchors = [akRight, akBottom]
@@ -120,10 +121,11 @@ object SettingsForm: TSettingsForm
       'Dark'
       'Light'
       'None')
+    ExplicitTop = 134
   end
   object ThreadList: TsComboBox
     Left = 134
-    Top = 134
+    Top = 131
     Width = 51
     Height = 21
     Anchors = [akRight, akBottom]
@@ -169,6 +171,7 @@ object SettingsForm: TSettingsForm
       '14'
       '15'
       '16')
+    ExplicitTop = 134
   end
   object DontCheckBtn: TsCheckBox
     Left = 8

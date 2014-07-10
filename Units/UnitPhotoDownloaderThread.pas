@@ -42,6 +42,8 @@ type
     FID: Integer;
     FDontDoubleDownload: Boolean;
     FDownloading: Boolean;
+    FDownloadedImgCount: Cardinal;
+    FIgnoredImgCount: Cardinal;
 
     // downloader events
     procedure PageDownloaderError1(Sender: TObject; ErrorMsg: string);
@@ -61,6 +63,8 @@ type
     property CurrentURL: string read FURL;
     property ID: Integer read FID write FID;
     property DontDoubleDownload: Boolean read FDontDoubleDownload write FDontDoubleDownload;
+    property DownloadedImgCount: Cardinal read FDownloadedImgCount;
+    property IgnoredImgCount: Cardinal read FIgnoredImgCount;
 
     constructor Create(const URLs: TStringList; const OutputFiles: TStringList);
     destructor Destroy; override;
@@ -129,12 +133,15 @@ end;
 
 procedure TPhotoDownloadThread.Execute;
 begin
+  FDownloadedImgCount := 0;
+  FIgnoredImgCount := 0;
   FURLIndex := 0;
   FDownloading := True;
   if DontDoubleDownload then
   begin
     while FileExists(FOutputFiles[FURLIndex]) do
     begin
+      Inc(FIgnoredImgCount);
       Inc(FURLIndex);
       if FURLIndex >= FURLs.Count then
       begin
@@ -142,6 +149,7 @@ begin
         Exit;
       end;
     end;
+    Inc(FDownloadedImgCount);
     FPicDownloader1.Url := FURLs[FURLIndex];
     FURL := FURLs[FURLIndex];
     CreateOutputFolder(FOutputFiles[FURLIndex]);
@@ -177,6 +185,7 @@ begin
       // try next url if file exists
       while FileExists(FOutputFiles[FURLIndex]) do
       begin
+        Inc(FIgnoredImgCount);
         Inc(FURLIndex);
         if FURLIndex >= FURLs.Count then
         begin
@@ -186,6 +195,7 @@ begin
       // check if reached the end of the list
       if (FURLIndex < FURLs.Count) then
       begin
+        Inc(FDownloadedImgCount);
         FPicDownloader2.Url := FURLs[FURLIndex];
         FURL := FURLs[FURLIndex];
         CreateOutputFolder(FOutputFiles[FURLIndex]);
@@ -233,11 +243,17 @@ begin
       // try next url if file exists
       while FileExists(FOutputFiles[FURLIndex]) do
       begin
+        Inc(FIgnoredImgCount);
         Inc(FURLIndex);
+        if FURLIndex >= FURLs.Count then
+        begin
+          Break;
+        end;
       end;
       // check if reached the end of the list
       if (FURLIndex < FURLs.Count) then
       begin
+        Inc(FDownloadedImgCount);
         FPicDownloader1.Url := FURLs[FURLIndex];
         FURL := FURLs[FURLIndex];
         CreateOutputFolder(FOutputFiles[FURLIndex]);

@@ -1,7 +1,7 @@
 object LogForm: TLogForm
   Left = 0
   Top = 0
-  Caption = 'Logs'
+  Caption = 'Logs (ESC to close)'
   ClientHeight = 300
   ClientWidth = 635
   Color = 5066061
@@ -11,15 +11,17 @@ object LogForm: TLogForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
   object sPageControl1: TsPageControl
     Left = 0
     Top = 0
     Width = 635
-    Height = 300
+    Height = 259
     ActivePage = sTabSheet1
     Align = alClient
     TabOrder = 0
@@ -32,7 +34,7 @@ object LogForm: TLogForm
         Left = 0
         Top = 0
         Width = 627
-        Height = 272
+        Height = 231
         Align = alClient
         Color = 15917239
         Font.Charset = DEFAULT_CHARSET
@@ -64,7 +66,7 @@ object LogForm: TLogForm
         Left = 0
         Top = 0
         Width = 627
-        Height = 272
+        Height = 231
         Align = alClient
         Color = 15917239
         Font.Charset = DEFAULT_CHARSET
@@ -89,6 +91,51 @@ object LogForm: TLogForm
       end
     end
   end
+  object sPanel1: TsPanel
+    Left = 0
+    Top = 259
+    Width = 635
+    Height = 41
+    Align = alBottom
+    TabOrder = 1
+    SkinData.SkinSection = 'PANEL'
+    DesignSize = (
+      635
+      41)
+    object sButton1: TsButton
+      Left = 556
+      Top = 6
+      Width = 75
+      Height = 25
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      Caption = 'Close'
+      TabOrder = 0
+      OnClick = sButton1Click
+      SkinData.SkinSection = 'BUTTON'
+    end
+    object sButton2: TsButton
+      Left = 4
+      Top = 6
+      Width = 75
+      Height = 25
+      Anchors = [akLeft, akBottom]
+      Caption = 'Clear'
+      TabOrder = 1
+      OnClick = sButton2Click
+      SkinData.SkinSection = 'BUTTON'
+    end
+    object sButton3: TsButton
+      Left = 85
+      Top = 6
+      Width = 75
+      Height = 25
+      Anchors = [akLeft, akBottom]
+      Caption = 'Save'
+      TabOrder = 2
+      OnClick = sButton3Click
+      SkinData.SkinSection = 'BUTTON'
+    end
+  end
   object sSkinProvider1: TsSkinProvider
     AddedTitle.Font.Charset = DEFAULT_CHARSET
     AddedTitle.Font.Color = clNone
@@ -99,5 +146,11 @@ object LogForm: TLogForm
     TitleButtons = <>
     Left = 312
     Top = 152
+  end
+  object sSaveDialog1: TsSaveDialog
+    Filter = 'Text Files|*.txt'
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
+    Left = 432
+    Top = 144
   end
 end

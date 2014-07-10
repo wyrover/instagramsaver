@@ -1,47 +1,37 @@
---1.3
+--1.4 (10.07.2014)
+-Added: An option to download a favourite
+-Added: Options to save or clear logs
+-Added: Up/Down buttons in favourites editor
+-Fixed: Information related to favourite downloads weren't logged properly
+-Fixed: Downloaded and skipped file counts weren't logged properly
 
--Added: Favourites to follow and update certain accounts
-
--Added: Android version
+--1.3 (01.07.2014)
+-Added: Favourites to follow and update accounts
+-Added: Android version (http://goo.gl/0SvIde)
+-Added: File check will now report more information when a problematic file is found
+-Added: Downloaded and skipped file count will be added to the log
+-Fixed: An "Access violation" error when skipping already downloaded files
 -Fixed: User could enter upper case account name
 -Fixed: A possible problem in systems with more than 16 CPU cores
 -Fixed: Disabling skin caused a few small problems
 
-
-
 --1.2 (28.06.2014)
-
 -Added: Better file validity check
-
 -Added: An option to disable skin
-
 -Added: An option to disable file checks after download is done
-
 -Added: An option to send emails to author
-
 -Added: Program will show a balloon tip when download is done
-
 -Added: A few UI changes
-
 -Fixed: "Stream read error" problem
-
-
 -Fixed: A few typos
 
 --1.1 (24.06.2014)
 -Added: Parallel downloads (up to 16)
-
 -Added: Program will check downloaded video files too
-
 -Fixed: A bug where program would crash if link extraction fails
-
 -Fixed: Extracted video links were added to log
 -Fixed: Interface wasn't reseted if link extraction failed
-
 -Fixed: A few minor UI problems
 
-
-
 --1.0 (17.06.2014)
-
 -First release

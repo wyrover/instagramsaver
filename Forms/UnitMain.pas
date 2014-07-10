@@ -66,7 +66,6 @@ type
     c1: TMenuItem;
     H1: TMenuItem;
     PosTimer: TTimer;
-    sStatusBar1: TsStatusBar;
     TimeTimer: TTimer;
     R1: TMenuItem;
     S1: TMenuItem;
@@ -76,7 +75,6 @@ type
     TotalBar: TsProgressBar;
     CurrentLinkEdit: TsLabel;
     StateEdit: TsLabel;
-    ProgressEdit: TsEdit;
     OpenOutputBtn: TsBitBtn;
     OutputEdit: TsDirectoryEdit;
     FavBtn: TsBitBtn;
@@ -84,6 +82,8 @@ type
     D1: TMenuItem;
     E1: TMenuItem;
     D2: TMenuItem;
+    ProgressEdit: TsLabel;
+    TimeLabel: TsLabel;
     procedure DownloadBtnClick(Sender: TObject);
     procedure ImagePageDownloader1DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
     procedure ImagePageDownloader2DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
@@ -112,7 +112,6 @@ type
     procedure c1Click(Sender: TObject);
     procedure H1Click(Sender: TObject);
     procedure PosTimerTimer(Sender: TObject);
-    procedure FormResize(Sender: TObject);
     procedure TimeTimerTimer(Sender: TObject);
     procedure R1Click(Sender: TObject);
     procedure S1Click(Sender: TObject);
@@ -136,6 +135,8 @@ type
     FFavs: TStringList;
     FFavIndex: Integer;
     FDownloadingFavs: Boolean;
+    FIgnoredImgCount: Cardinal;
+    FDownloadedImgCount: Cardinal;
 
     FDownloadThreads: array[0..15] of TPhotoDownloadThread;
     FURLs: array[0..15] of  TStringList;
@@ -153,6 +154,7 @@ type
     procedure DisableUI;
     procedure EnableUI;
 
+    // converts url to file name
     function URLToFileName(const URL: TURL): string;
 
     // returns true when no problem occurs
@@ -170,9 +172,14 @@ type
     // clears temp folder
     procedure ClearTempFolder;
 
+    // adds msg to log
+    // todo: save logs to text file
     procedure AddToProgramLog(const Line: string);
 
+    // int to hh:mm:ss
     function IntegerToTime(const Time: Integer): string;
+
+    function ShorthenURL(const URL: string):string;
   public
     { Public declarations }
     FAppDataFolder: string;
@@ -184,8 +191,8 @@ var
   MainForm: TMainForm;
 
 const
-  BuildInt = 364;
-  Portable = False;
+  BuildInt = 447;
+  Portable = True;
 
 implementation
 
@@ -210,6 +217,7 @@ end;
 
 procedure TMainForm.AddToProgramLog(const Line: string);
 begin
+  // dont add date if msg is empty
   if Length(Line) > 0 then
   begin
     LogForm.LogList.Lines.Add('[' + DateTimeToStr(Now) + '] ' + Line)
@@ -230,6 +238,7 @@ var
   i: integer;
   LITE: TImageTypeEx;
 begin
+  // checks if downloaded files are valid
   Self.Caption := 'Checking downloaded files...';
   StateEdit.Caption := 'State: Checking files';
   Self.Enabled := False;
@@ -245,11 +254,17 @@ begin
         if FileExists(FFilesToCheck[i]) then
         begin
           // check file
-          LITE := TImageTypeEx.Create(FFilesToCheck[i]);
+          LITE := TImageTypeEx.Create(FFilesToCheck[i], True);
           try
+            // empty extension means something went wrong
             if Length(LITE.ImageType) < 1 then
             begin
-              AddToProgramLog('[ERROR] Invalid file: ' + FFilesToCheck[i]);
+              case LITE.ErrorCode of
+                1:
+                  AddToProgramLog('[ERROR] Unkown file type: ' + FFilesToCheck[i]);
+                2:
+                  AddToProgramLog('[ERROR] File is empty: ' + FFilesToCheck[i]);
+              end;
               Result := True;
             end;
           finally
@@ -258,7 +273,12 @@ begin
         end
         else
         begin
-          AddToProgramLog('[ERROR] Unable to find file: ' + FFilesToCheck[i]);
+          case LITE.ErrorCode of
+            1:
+              AddToProgramLog('[ERROR] Unkown file type: ' + FFilesToCheck[i]);
+            2:
+              AddToProgramLog('[ERROR] File is empty: ' + FFilesToCheck[i]);
+          end;
           Result := True;
         end;
       end;
@@ -275,6 +295,7 @@ procedure TMainForm.ClearTempFolder;
 var
   Search: TSearchRec;
 begin
+  // search and delete all the files in the temp folder
   if DirectoryExists(FTempFolder) then
   begin
     if (FindFirst(FTempFolder + '\*.*', faAnyFile, Search) = 0) then
@@ -300,9 +321,12 @@ var
   LSplit: TStringList;
   I: Integer;
 begin
+  // download favs
   LFavCount := 0;
   if FileExists(FFavFilePath) then
   begin
+    // read fav file
+    // stateint=0/1|accountname
     LFavFile := TStringList.Create;
     LSplit := TStringList.Create;
     FFavLinks.Clear;
@@ -321,6 +345,7 @@ begin
         begin
           LSplit.Clear;
           LSplit.DelimitedText := LFavFile[i];
+          // check if fav is checked to be downloaded
           if LSplit.Count = 2 then
           begin
             if LSplit[1] = '1' then
@@ -329,11 +354,13 @@ begin
             end;
           end;
         end;
+        // dont download if no favs are selected
         if FFavs.Count < 1 then
         begin
           Application.MessageBox('Please select one or more favourites.', 'Error', MB_ICONERROR);
           Exit;
         end;
+        // flag to show that we are downloading favs
         FDownloadingFavs := True;
         // create directory for favs
         for I := 0 to FFavs.Count-1 do
@@ -346,6 +373,9 @@ begin
         FFilesToCheck.Clear;
         FPageURLs.Clear;
         FTime := 0;
+        FDownloadedImgCount := 0;
+        FIgnoredImgCount := 0;
+        TotalBar.Position := 0;
 
         // delete temp files
         if FileExists(ImagePageDownloader1.FileName) then
@@ -365,13 +395,11 @@ begin
           DeleteFile(VideoLinkDownloader1.FileName)
         end;
 
-        TotalBar.Position := 0;
-
         StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Extracting image links...';
-        ProgressEdit.Text := '0/0';
+        ProgressEdit.Caption := 'Progress: 0/0';
         Self.Caption := '0% [InstagramSaver]';
         DisableUI;
-        CurrentLinkEdit.Caption := 'Link: ' + 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+        CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
         SetProgressState(Handle, tbpsNormal);
 
         if LogForm.LogList.Lines.Count > 0 then
@@ -379,9 +407,12 @@ begin
           AddToProgramLog('');
         end;
         AddToProgramLog('Starting to download favourites.');
+        AddToProgramLog('Settings:');
         AddToProgramLog('Don''t download already downloaded files: ' + BoolToStr(SettingsForm.DontDoubleDownloadBtn.Checked, True));
         AddToProgramLog('Download videos: ' + BoolToStr(SettingsForm.DownloadVideoBtn.Checked, True));
         AddToProgramLog('Check downloaded files: ' + BoolToStr(not SettingsForm.DontCheckBtn.Checked, True));
+        AddToProgramLog('');
+        AddToProgramLog('Starting to download user: ' + FFavs[FFavIndex]);
         AddToProgramLog('Extracting image links...');
         UserNameEdit.Text := FFavs[FFavIndex];
         ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
@@ -421,14 +452,8 @@ end;
 
 procedure TMainForm.DonateBtnClick(Sender: TObject);
 begin
-{<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="">
-<input type="image" src="https://www.paypalobjects.com/tr_TR/TR/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - Online ödeme yapmanýn daha güvenli ve kolay yolu!">
-<img alt="" border="0" src="https://www.paypalobjects.com/tr_TR/i/scr/pixel.gif" width="1" height="1">
-</form>
-}
-ShellExecute(0, 'open', 'https://play.google.com/store/apps/details?id=com.mopa.instasaver', nil, nil, SW_SHOWNORMAL);
+  // open google play link
+  ShellExecute(0, 'open', 'https://play.google.com/store/apps/details?id=com.mopa.instasaver', nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TMainForm.DownloadBtnClick(Sender: TObject);
@@ -443,11 +468,14 @@ begin
       Application.MessageBox('Cannot create output folder. Please enter a valid one.', 'Error', MB_ICONERROR);
       Exit;
     end;
-    // reset lists
+    // reset
     FLinksToDownload.Clear;
     FFilesToCheck.Clear;
     FPageURLs.Clear;
     FTime := 0;
+    TotalBar.Position := 0;
+    FDownloadedImgCount := 0;
+    FIgnoredImgCount := 0;
 
     // delete temp files
     if FileExists(ImagePageDownloader1.FileName) then
@@ -467,23 +495,23 @@ begin
       DeleteFile(VideoLinkDownloader1.FileName)
     end;
 
-    TotalBar.Position := 0;
-
     StateEdit.Caption := 'State: Extracting image links...';
-    ProgressEdit.Text := '0/0';
+    ProgressEdit.Caption := 'Progress: 0/0';
     Self.Caption := '0% [InstagramSaver]';
     DisableUI;
-    CurrentLinkEdit.Caption := 'Link: ' + 'http://web.stagram.com/n/' + UserNameEdit.Text + '/?vm=list';
+    CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + UserNameEdit.Text + '/?vm=list';
     SetProgressState(Handle, tbpsNormal);
     FDownloadingFavs := False;
     if LogForm.LogList.Lines.Count > 0 then
     begin
       AddToProgramLog('');
     end;
-    AddToProgramLog('Starting to download user: ' + UserNameEdit.Text);
+    AddToProgramLog('Settings:');
     AddToProgramLog('Don''t download already downloaded files: ' + BoolToStr(SettingsForm.DontDoubleDownloadBtn.Checked, True));
     AddToProgramLog('Download videos: ' + BoolToStr(SettingsForm.DownloadVideoBtn.Checked, True));
     AddToProgramLog('Check downloaded files: ' + BoolToStr(not SettingsForm.DontCheckBtn.Checked, True));
+    AddToProgramLog('');
+    AddToProgramLog('Starting to download user: ' + UserNameEdit.Text);
     AddToProgramLog('Extracting image links...');
     ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + UserNameEdit.Text + '/?vm=list';
     ImagePageDownloader1.Start;
@@ -517,7 +545,7 @@ begin
   Self.Caption := 'InstagramSaver';
   SetProgressValue(Handle, 0, MaxInt);
   SetProgressState(Handle, tbpsNone);
-  sStatusBar1.Panels[2].Text := '00:00:00';
+  TimeLabel.Caption := 'Time: 00:00:00';
   if FDownloadingFavs then
   begin
     UserNameEdit.Text := '';
@@ -553,6 +581,8 @@ begin
   begin
     DeleteFile(VideoLinkDownloader1.FileName)
   end;
+  ClearTempFolder;
+  // delete temp folder with portable version
   if Portable then
   begin
     if DirectoryExists(FTempFolder) then
@@ -576,7 +606,7 @@ begin
     FURLs[i] := TStringList.Create;
     FOutputFiles[i] := TStringList.Create;
   end;
-
+  // different path for portable
   if Portable then
   begin
     FAppDataFolder := ExtractFileDir(Application.ExeName) + '\'
@@ -599,7 +629,7 @@ begin
   ImagePageDownloader2.FileName := FTempFolder + '\' + GenerateGUID + '.txt';
   VideoLinkDownloader2.FileName := FTempFolder + '\' + GenerateGUID + '.txt';
   VideoLinkDownloader1.FileName := FTempFolder + '\' + GenerateGUID + '.txt';
-
+  // init mediainfo
   if not MediaInfoDLL_Load(ExtractFileDir(Application.ExeName) + '\MediaInfo.dll') then
   begin
     Application.MessageBox('Unable to init mediainfo.', 'Fatal Error', MB_ICONERROR);
@@ -614,6 +644,7 @@ begin
       Application.MessageBox('You seem to have Windows 7 but program can''t start taskbar progressbar!', 'Error', MB_ICONERROR);
     end;
   end;
+  // in any case
   ClearTempFolder;
 end;
 
@@ -631,11 +662,6 @@ begin
     FURLs[i].Free;
     FOutputFiles[i].Free;
   end;
-end;
-
-procedure TMainForm.FormResize(Sender: TObject);
-begin
-  sStatusBar1.Panels[1].Width := sStatusBar1.ClientWidth - (sStatusBar1.Panels[0].Width + sStatusBar1.Panels[2].Width)
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -706,7 +732,7 @@ begin
         end
         else
         begin
-          ProgressEdit.Text := '0/' + FloatToStr(FLinksToDownload.Count);
+          ProgressEdit.Caption := 'Progress: 0/' + FloatToStr(FLinksToDownload.Count);
         end;
       end;
     end;
@@ -723,7 +749,7 @@ begin
   end
   else
   begin
-    ProgressEdit.Text := '0/' + FloatToStr(FLinksToDownload.Count);
+    ProgressEdit.Caption := 'Progress: 0/' + FloatToStr(FLinksToDownload.Count);
 
     for I := 0 to FLinksToDownload.Count-1 do
     begin
@@ -753,10 +779,73 @@ begin
       end
       else
       begin
-        // todo: on no link error for favsi download next fav
-        Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        if not FDownloadingFavs then
+        begin
+          Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        end;
         AddToProgramLog('Failed to extract links for ' + UserNameEdit.Text + '.');
-        EnableUI;
+        if FDownloadingFavs then
+          begin
+          PosTimer.Enabled := False;
+          // downloading favourites
+          Inc(FFavIndex);
+          if FFavIndex < FFavs.Count then
+          begin
+            // start downloading next fav
+            // reset lists
+            FLinksToDownload.Clear;
+            FPageURLs.Clear;
+            TotalBar.Position := 0;
+            SetProgressValue(Handle, 0, MaxInt);
+
+            // delete temp files
+            if FileExists(ImagePageDownloader1.FileName) then
+            begin
+              DeleteFile(ImagePageDownloader1.FileName)
+            end;
+            if FileExists(ImagePageDownloader2.FileName) then
+            begin
+              DeleteFile(ImagePageDownloader2.FileName)
+            end;
+            if FileExists(VideoLinkDownloader2.FileName) then
+            begin
+              DeleteFile(VideoLinkDownloader2.FileName)
+            end;
+            if FileExists(VideoLinkDownloader1.FileName) then
+            begin
+              DeleteFile(VideoLinkDownloader1.FileName)
+            end;
+
+            StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Extracting image links...';
+            ProgressEdit.Caption := 'Progress: 0/0';
+            Self.Caption := '0% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
+            DisableUI;
+            CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            SetProgressState(Handle, tbpsNormal);
+            if ImagePageDownloader1.Status <> gsStopped then
+            begin
+              ImagePageDownloader1.Stop;
+            end;
+            if ImagePageDownloader2.Status <> gsStopped then
+            begin
+              ImagePageDownloader2.Stop;
+            end;
+            UserNameEdit.Text := FFavs[FFavIndex];
+            ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            ImagePageDownloader1.Start;
+            PosTimer.Enabled := True;
+          end
+          else
+          begin
+            // done
+            EnableUI;
+          end;
+        end
+        else
+        begin
+          // normal account download
+          EnableUI;
+        end;
       end;
     end
     else
@@ -783,9 +872,73 @@ begin
       end
       else
       begin
-        Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        if not FDownloadingFavs then
+        begin
+          Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        end;
         AddToProgramLog('Failed to extract links for ' + UserNameEdit.Text + '.');
-        EnableUI;
+        if FDownloadingFavs then
+          begin
+          PosTimer.Enabled := False;
+          // downloading favourites
+          Inc(FFavIndex);
+          if FFavIndex < FFavs.Count then
+          begin
+            // start downloading next fav
+            // reset lists
+            FLinksToDownload.Clear;
+            FPageURLs.Clear;
+            TotalBar.Position := 0;
+            SetProgressValue(Handle, 0, MaxInt);
+
+            // delete temp files
+            if FileExists(ImagePageDownloader1.FileName) then
+            begin
+              DeleteFile(ImagePageDownloader1.FileName)
+            end;
+            if FileExists(ImagePageDownloader2.FileName) then
+            begin
+              DeleteFile(ImagePageDownloader2.FileName)
+            end;
+            if FileExists(VideoLinkDownloader2.FileName) then
+            begin
+              DeleteFile(VideoLinkDownloader2.FileName)
+            end;
+            if FileExists(VideoLinkDownloader1.FileName) then
+            begin
+              DeleteFile(VideoLinkDownloader1.FileName)
+            end;
+
+            StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Extracting image links...';
+            ProgressEdit.Caption := 'Progress: 0/0';
+            Self.Caption := '0% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
+            DisableUI;
+            CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            SetProgressState(Handle, tbpsNormal);
+            if ImagePageDownloader1.Status <> gsStopped then
+            begin
+              ImagePageDownloader1.Stop;
+            end;
+            if ImagePageDownloader2.Status <> gsStopped then
+            begin
+              ImagePageDownloader2.Stop;
+            end;
+            UserNameEdit.Text := FFavs[FFavIndex];
+            ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            ImagePageDownloader1.Start;
+            PosTimer.Enabled := True;
+          end
+          else
+          begin
+            // done
+            EnableUI;
+          end;
+        end
+        else
+        begin
+          // normal account download
+          EnableUI;
+        end;
       end;
     end;
   end;
@@ -851,7 +1004,7 @@ begin
         end
         else
         begin
-          ProgressEdit.Text := '0/' + FloatToStr(FLinksToDownload.Count);
+          ProgressEdit.Caption := 'Progress: 0/' + FloatToStr(FLinksToDownload.Count);
         end;
       end;
     end;
@@ -868,7 +1021,7 @@ begin
   end
   else
   begin
-    ProgressEdit.Text := '0/' + FloatToStr(FLinksToDownload.Count);
+    ProgressEdit.Caption := 'Progress: 0/' + FloatToStr(FLinksToDownload.Count);
 
     for I := 0 to FLinksToDownload.Count-1 do
     begin
@@ -898,9 +1051,73 @@ begin
       end
       else
       begin
-        Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        if not FDownloadingFavs then
+        begin
+          Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        end;
         AddToProgramLog('Failed to extract links for ' + UserNameEdit.Text + '.');
-        EnableUI;
+        if FDownloadingFavs then
+          begin
+          PosTimer.Enabled := False;
+          // downloading favourites
+          Inc(FFavIndex);
+          if FFavIndex < FFavs.Count then
+          begin
+            // start downloading next fav
+            // reset lists
+            FLinksToDownload.Clear;
+            FPageURLs.Clear;
+            TotalBar.Position := 0;
+            SetProgressValue(Handle, 0, MaxInt);
+
+            // delete temp files
+            if FileExists(ImagePageDownloader1.FileName) then
+            begin
+              DeleteFile(ImagePageDownloader1.FileName)
+            end;
+            if FileExists(ImagePageDownloader2.FileName) then
+            begin
+              DeleteFile(ImagePageDownloader2.FileName)
+            end;
+            if FileExists(VideoLinkDownloader2.FileName) then
+            begin
+              DeleteFile(VideoLinkDownloader2.FileName)
+            end;
+            if FileExists(VideoLinkDownloader1.FileName) then
+            begin
+              DeleteFile(VideoLinkDownloader1.FileName)
+            end;
+
+            StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Extracting image links...';
+            ProgressEdit.Caption := 'Progress: 0/0';
+            Self.Caption := '0% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
+            DisableUI;
+            CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            SetProgressState(Handle, tbpsNormal);
+            if ImagePageDownloader1.Status <> gsStopped then
+            begin
+              ImagePageDownloader1.Stop;
+            end;
+            if ImagePageDownloader2.Status <> gsStopped then
+            begin
+              ImagePageDownloader2.Stop;
+            end;
+            UserNameEdit.Text := FFavs[FFavIndex];
+            ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            ImagePageDownloader1.Start;
+            PosTimer.Enabled := True;
+          end
+          else
+          begin
+            // done
+            EnableUI;
+          end;
+        end
+        else
+        begin
+          // normal account download
+          EnableUI;
+        end;
       end;
     end
     else
@@ -927,9 +1144,73 @@ begin
       end
       else
       begin
-        Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        if not FDownloadingFavs then
+        begin
+          Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        end;
         AddToProgramLog('Failed to extract links for ' + UserNameEdit.Text + '.');
-        EnableUI;
+        if FDownloadingFavs then
+          begin
+          PosTimer.Enabled := False;
+          // downloading favourites
+          Inc(FFavIndex);
+          if FFavIndex < FFavs.Count then
+          begin
+            // start downloading next fav
+            // reset lists
+            FLinksToDownload.Clear;
+            FPageURLs.Clear;
+            TotalBar.Position := 0;
+            SetProgressValue(Handle, 0, MaxInt);
+
+            // delete temp files
+            if FileExists(ImagePageDownloader1.FileName) then
+            begin
+              DeleteFile(ImagePageDownloader1.FileName)
+            end;
+            if FileExists(ImagePageDownloader2.FileName) then
+            begin
+              DeleteFile(ImagePageDownloader2.FileName)
+            end;
+            if FileExists(VideoLinkDownloader2.FileName) then
+            begin
+              DeleteFile(VideoLinkDownloader2.FileName)
+            end;
+            if FileExists(VideoLinkDownloader1.FileName) then
+            begin
+              DeleteFile(VideoLinkDownloader1.FileName)
+            end;
+
+            StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Extracting image links...';
+            ProgressEdit.Caption := 'Progress: 0/0';
+            Self.Caption := '0% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
+            DisableUI;
+            CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            SetProgressState(Handle, tbpsNormal);
+            if ImagePageDownloader1.Status <> gsStopped then
+            begin
+              ImagePageDownloader1.Stop;
+            end;
+            if ImagePageDownloader2.Status <> gsStopped then
+            begin
+              ImagePageDownloader2.Stop;
+            end;
+            UserNameEdit.Text := FFavs[FFavIndex];
+            ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            ImagePageDownloader1.Start;
+            PosTimer.Enabled := True;
+          end
+          else
+          begin
+            // done
+            EnableUI;
+          end;
+        end
+        else
+        begin
+          // normal account download
+          EnableUI;
+        end;
       end;
     end;
   end;
@@ -1023,6 +1304,7 @@ begin
     AddToProgramLog('Starting to download.');
   end;
   AddToProgramLog(Format('Using %d threads.', [ThreadCount]));
+  AddToProgramLog(Format('Found %d links.', [FLinksToDownload.Count]));
 
   // clear lists
   for I := Low(FURLs) to High(FURLs) do
@@ -1212,16 +1494,23 @@ var
   LTotalProgress: Integer;
   LCurURL: string;
   LDone: Boolean;
+  LDownloadedImgCount: Cardinal;
+  LIgnoredImgCount: Cardinal;
 begin
   LStillRunning := False;
   LTotalProgress := 0;
-
+  LDownloadedImgCount := 0;
+  LIgnoredImgCount := 0;
+  // progress
+  // gather info from all active threads
   for I := Low(FDownloadThreads) to High(FDownloadThreads) do
   begin
     if Assigned(FDownloadThreads[i]) then
     begin
       LStillRunning := LStillRunning or (FDownloadThreads[i].Status = downloading);
       Inc(LTotalProgress, FDownloadThreads[i].Progress);
+      Inc(LDownloadedImgCount, FDownloadThreads[i].DownloadedImgCount);
+      Inc(LIgnoredImgCount, FDownloadThreads[i].IgnoredImgCount);
     end;
   end;
 
@@ -1229,7 +1518,7 @@ begin
   begin
     // continue
     TotalBar.Position := (100 * LTotalProgress) div FLinksToDownload.Count;
-    ProgressEdit.Text := FloatToStr(LTotalProgress) + '/' + FloatToStr(FLinksToDownload.Count);
+    ProgressEdit.Caption := 'Progress: ' + FloatToStr(LTotalProgress) + '/' + FloatToStr(FLinksToDownload.Count);
     if not FDownloadingFavs then
     begin
       Self.Caption := FloatToStr(TotalBar.Position) + '% [InstagramSaver]';
@@ -1239,12 +1528,15 @@ begin
       Self.Caption := FloatToStr(TotalBar.Position) + '% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
     end;
     SetProgressValue(Handle, LTotalProgress, FLinksToDownload.Count);
-
+    // show random link
     Randomize;
     LCurURL := FDownloadThreads[Random(FThreadCount)].CurrentURL;
     if Length(LCurURL) > 0 then
     begin
-      CurrentLinkEdit.Caption := 'Link: ' + LCurURL;
+      if CurrentLinkEdit.Caption <> ('Link: ' + LCurURL) then
+      begin
+        CurrentLinkEdit.Caption := 'Link: ' + LCurURL;
+      end;
     end;
   end
   else
@@ -1282,12 +1574,21 @@ begin
         begin
           DeleteFile(VideoLinkDownloader1.FileName)
         end;
-
+        // update download/ignore values
+        FDownloadedImgCount := 0;
+        FIgnoredImgCount := 0;
+        Inc(FDownloadedImgCount, LDownloadedImgCount);
+        Inc(FIgnoredImgCount, LIgnoredImgCount);
+        AddToProgramLog(Format('Downloaded file count: %d', [FDownloadedImgCount]));
+        AddToProgramLog(Format('Skipped file count: %d', [FIgnoredImgCount]));
+        AddToProgramLog('');
+        AddToProgramLog('Starting to download user: ' + FFavs[FFavIndex]);
+        AddToProgramLog('Extracting image links...');
         StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Extracting image links...';
-        ProgressEdit.Text := '0/0';
+        ProgressEdit.Caption := 'Progress: 0/0';
         Self.Caption := '0% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
         DisableUI;
-        CurrentLinkEdit.Caption := 'Link: ' + 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+        CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
         SetProgressState(Handle, tbpsNormal);
         if ImagePageDownloader1.Status <> gsStopped then
         begin
@@ -1316,7 +1617,14 @@ begin
     begin
       // done
       PosTimer.Enabled := False;
+      // update download/ignore values
+      FDownloadedImgCount := 0;
+      FIgnoredImgCount := 0;
+      Inc(FDownloadedImgCount, LDownloadedImgCount);
+      Inc(FIgnoredImgCount, LIgnoredImgCount);
       AddToProgramLog(Format('Finished downloading in %s.', [IntegerToTime(FTime)]));
+      AddToProgramLog(Format('Downloaded file count: %d', [FDownloadedImgCount]));
+      AddToProgramLog(Format('Skipped file count: %d', [FIgnoredImgCount]));
       AddToProgramLog('');
       EnableUI;
       Self.BringToFront;
@@ -1334,7 +1642,7 @@ begin
 
       Sleep(100);
       TotalBar.Position := 0;
-      ProgressEdit.Text := FloatToStr(FLinksToDownload.Count) + '/' + FloatToStr(FLinksToDownload.Count);
+      ProgressEdit.Caption := 'Progress: ' + FloatToStr(FLinksToDownload.Count) + '/' + FloatToStr(FLinksToDownload.Count);
       if not SettingsForm.DontCheckBtn.Checked then
       begin
         if CheckFiles then
@@ -1409,6 +1717,16 @@ begin
   SettingsForm.Show;
 end;
 
+function TMainForm.ShorthenURL(const URL: string): string;
+var
+  LLabelWidth: integer;
+begin
+  Result := URL;
+  LLabelWidth := Self.Canvas.TextWidth(URL);
+  if True then
+
+end;
+
 procedure TMainForm.sSkinManager1Activate(Sender: TObject);
 begin
   MainForm.Repaint;
@@ -1449,14 +1767,14 @@ begin
     AddToProgramLog(Format('Download is stopped at %s.', [IntegerToTime(FTime)]));
     AddToProgramLog('');
     EnableUI;
-    ProgressEdit.Text := '0/0';
+    ProgressEdit.Caption := 'Progress: 0/0';
   end;
 end;
 
 procedure TMainForm.TimeTimerTimer(Sender: TObject);
 begin
   Inc(FTime);
-  sStatusBar1.Panels[2].Text := IntegerToTime(FTime);
+  TimeLabel.Caption := 'Time: ' + IntegerToTime(FTime);
 end;
 
 procedure TMainForm.TrayIconBalloonClick(Sender: TObject);
@@ -1491,8 +1809,20 @@ begin
               ShellExecute(Application.Handle, 'open', 'https://sourceforge.net/projects/instagramsaver/', nil, nil, SW_SHOWNORMAL);
             end;
           end;
-        end;
+        end
+        else
+        begin
+          AddToProgramLog('[UPDATE ERROR] Invalid update line.');
+        end
+      end
+      else
+      begin
+        AddToProgramLog('[UPDATE ERROR] Invalid update file.');
       end;
+    end
+    else
+    begin
+      AddToProgramLog('[UPDATE ERROR] Update file is empty.');
     end;
   finally
     FreeAndNil(VersionFile);
@@ -1558,7 +1888,7 @@ begin
           LURL.URL := LineToVideoURL(LLine);
           LURL.URLType := Video;
           FLinksToDownload.Add(LURL);
-          ProgressEdit.Text := '0/' + FloatToStr(FLinksToDownload.Count);
+          ProgressEdit.Caption := 'Progress: 0/' + FloatToStr(FLinksToDownload.Count);
         end;
       end;
     finally
@@ -1595,9 +1925,73 @@ begin
     end
     else
     begin
-      Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
-        AddToProgramLog('Failed to extract links for ' + UserNameEdit.Text + '.');
-      EnableUI;
+      if not FDownloadingFavs then
+      begin
+        Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+      end;
+      AddToProgramLog('Failed to extract links for ' + UserNameEdit.Text + '.');
+      if FDownloadingFavs then
+      begin
+        PosTimer.Enabled := False;
+        // downloading favourites
+        Inc(FFavIndex);
+        if FFavIndex < FFavs.Count then
+        begin
+          // start downloading next fav
+          // reset lists
+          FLinksToDownload.Clear;
+          FPageURLs.Clear;
+          TotalBar.Position := 0;
+          SetProgressValue(Handle, 0, MaxInt);
+
+          // delete temp files
+          if FileExists(ImagePageDownloader1.FileName) then
+          begin
+            DeleteFile(ImagePageDownloader1.FileName)
+          end;
+          if FileExists(ImagePageDownloader2.FileName) then
+          begin
+            DeleteFile(ImagePageDownloader2.FileName)
+          end;
+          if FileExists(VideoLinkDownloader2.FileName) then
+          begin
+            DeleteFile(VideoLinkDownloader2.FileName)
+          end;
+          if FileExists(VideoLinkDownloader1.FileName) then
+          begin
+            DeleteFile(VideoLinkDownloader1.FileName)
+          end;
+
+          StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Extracting image links...';
+          ProgressEdit.Caption := 'Progress: 0/0';
+          Self.Caption := '0% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
+          DisableUI;
+          CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+          SetProgressState(Handle, tbpsNormal);
+          if ImagePageDownloader1.Status <> gsStopped then
+          begin
+            ImagePageDownloader1.Stop;
+          end;
+          if ImagePageDownloader2.Status <> gsStopped then
+          begin
+            ImagePageDownloader2.Stop;
+          end;
+          UserNameEdit.Text := FFavs[FFavIndex];
+          ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+          ImagePageDownloader1.Start;
+            PosTimer.Enabled := True;
+        end
+        else
+        begin
+          // done
+          EnableUI;
+        end;
+      end
+      else
+      begin
+        // normal account download
+        EnableUI;
+      end;
     end;
   end;
 end;
@@ -1635,7 +2029,7 @@ begin
           LURL.URL := LineToVideoURL(LLine);
           LURL.URLType := Video;
           FLinksToDownload.Add(LURL);
-          ProgressEdit.Text := '0/' + FloatToStr(FLinksToDownload.Count);
+          ProgressEdit.Caption := 'Progress: 0/' + FloatToStr(FLinksToDownload.Count);
         end;
       end;
     finally
@@ -1672,9 +2066,73 @@ begin
     end
     else
     begin
-      Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
-        AddToProgramLog('Failed to extract links for ' + UserNameEdit.Text + '.');
-      EnableUI;
+        if not FDownloadingFavs then
+        begin
+          Application.MessageBox('No links were extracted.', 'Error', MB_ICONERROR);
+        end;
+      AddToProgramLog('Failed to extract links for ' + UserNameEdit.Text + '.');
+      if FDownloadingFavs then
+      begin
+        PosTimer.Enabled := False;
+        // downloading favourites
+        Inc(FFavIndex);
+        if FFavIndex < FFavs.Count then
+        begin
+          // start downloading next fav
+          // reset lists
+          FLinksToDownload.Clear;
+          FPageURLs.Clear;
+          TotalBar.Position := 0;
+          SetProgressValue(Handle, 0, MaxInt);
+
+          // delete temp files
+          if FileExists(ImagePageDownloader1.FileName) then
+          begin
+            DeleteFile(ImagePageDownloader1.FileName)
+          end;
+          if FileExists(ImagePageDownloader2.FileName) then
+          begin
+            DeleteFile(ImagePageDownloader2.FileName)
+          end;
+          if FileExists(VideoLinkDownloader2.FileName) then
+          begin
+            DeleteFile(VideoLinkDownloader2.FileName)
+          end;
+          if FileExists(VideoLinkDownloader1.FileName) then
+          begin
+            DeleteFile(VideoLinkDownloader1.FileName)
+          end;
+
+          StateEdit.Caption := 'State: [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] Extracting image links...';
+          ProgressEdit.Caption := 'Progress: 0/0';
+          Self.Caption := '0% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
+          DisableUI;
+          CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+          SetProgressState(Handle, tbpsNormal);
+          if ImagePageDownloader1.Status <> gsStopped then
+          begin
+            ImagePageDownloader1.Stop;
+          end;
+          if ImagePageDownloader2.Status <> gsStopped then
+          begin
+            ImagePageDownloader2.Stop;
+          end;
+          UserNameEdit.Text := FFavs[FFavIndex];
+          ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+          ImagePageDownloader1.Start;
+            PosTimer.Enabled := True;
+        end
+        else
+        begin
+          // done
+          EnableUI;
+        end;
+      end
+      else
+      begin
+        // normal account download
+        EnableUI;
+      end;
     end;
   end;
 end;

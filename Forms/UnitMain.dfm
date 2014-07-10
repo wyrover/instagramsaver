@@ -20,7 +20,6 @@ object MainForm: TMainForm
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -28,7 +27,7 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 754
-    Height = 58
+    Height = 60
     Align = alTop
     BevelOuter = bvNone
     Color = 16249576
@@ -39,7 +38,7 @@ object MainForm: TMainForm
       Left = 225
       Top = 0
       Width = 75
-      Height = 58
+      Height = 60
       Cursor = crHandPoint
       Hint = 'Start downloading images and videos'
       Align = alLeft
@@ -111,7 +110,7 @@ object MainForm: TMainForm
       Left = 300
       Top = 0
       Width = 75
-      Height = 58
+      Height = 60
       Cursor = crHandPoint
       Hint = 'Stop downloading process'
       Align = alLeft
@@ -180,7 +179,7 @@ object MainForm: TMainForm
       Left = 679
       Top = 0
       Width = 75
-      Height = 58
+      Height = 60
       Cursor = crHandPoint
       Hint = 'Help about this software'
       Align = alRight
@@ -270,7 +269,7 @@ object MainForm: TMainForm
       Left = 529
       Top = 0
       Width = 75
-      Height = 58
+      Height = 60
       Cursor = crHandPoint
       Hint = 'Program settings'
       Align = alRight
@@ -360,13 +359,13 @@ object MainForm: TMainForm
       Left = 0
       Top = 0
       Width = 225
-      Height = 58
+      Height = 60
       Align = alLeft
       TabOrder = 0
       SkinData.SkinSection = 'TOOLBAR'
       DesignSize = (
         225
-        58)
+        60)
       object UserNameEdit: TsEdit
         Left = 10
         Top = 18
@@ -403,7 +402,7 @@ object MainForm: TMainForm
       Left = 604
       Top = 0
       Width = 75
-      Height = 58
+      Height = 60
       Cursor = crHandPoint
       Hint = 'Android version of this tool'
       Align = alRight
@@ -493,7 +492,7 @@ object MainForm: TMainForm
       Left = 454
       Top = 0
       Width = 75
-      Height = 58
+      Height = 60
       Cursor = crHandPoint
       Hint = 'See program log. Useful in case of a problem'
       Align = alRight
@@ -583,7 +582,7 @@ object MainForm: TMainForm
       Left = 375
       Top = 0
       Width = 75
-      Height = 58
+      Height = 60
       Cursor = crHandPoint
       Hint = 'Update/download/edit your favourite accounts'
       Align = alLeft
@@ -670,113 +669,80 @@ object MainForm: TMainForm
       Reflected = True
     end
   end
-  object sStatusBar1: TsStatusBar
-    Left = 0
-    Top = 176
-    Width = 754
-    Height = 21
-    Panels = <
-      item
-        Text = 'InstagramSaver 1.2'
-        Width = 125
-      end
-      item
-        Width = 50
-      end
-      item
-        Text = '00:00:00'
-        Width = 100
-      end>
-    SkinData.SkinSection = 'STATUSBAR'
-  end
   object sPanel3: TsPanel
     Left = 0
-    Top = 58
+    Top = 60
     Width = 754
-    Height = 118
+    Height = 137
     Align = alClient
     BevelOuter = bvNone
-    TabOrder = 2
+    TabOrder = 1
     SkinData.SkinSection = 'CHECKBOX'
     DesignSize = (
       754
-      118)
+      137)
     object GroupBox1: TGroupBox
       Left = 0
-      Top = 29
+      Top = 33
       Width = 754
-      Height = 89
+      Height = 104
       Align = alBottom
       Caption = 'Progress'
       TabOrder = 0
-      ExplicitLeft = 1
-      ExplicitTop = 28
-      ExplicitWidth = 752
-      DesignSize = (
-        754
-        89)
       object CurrentLinkEdit: TsLabel
-        Left = 16
-        Top = 35
-        Width = 24
+        AlignWithMargins = True
+        Left = 5
+        Top = 33
+        Width = 744
         Height = 13
         Hint = 'Currently processed link'
-        Anchors = [akLeft, akTop, akRight]
+        Align = alBottom
         Caption = 'Link:'
+        Layout = tlCenter
         ExplicitWidth = 22
       end
       object StateEdit: TsLabel
-        Left = 16
-        Top = 16
-        Width = 32
+        AlignWithMargins = True
+        Left = 5
+        Top = 14
+        Width = 744
         Height = 13
         Hint = 'Current state of download process'
-        Anchors = [akLeft, akTop, akRight]
+        Align = alBottom
         Caption = 'State:'
+        Layout = tlCenter
         ExplicitWidth = 30
       end
-      object TotalBar: TsProgressBar
-        Left = 16
-        Top = 56
-        Width = 545
-        Height = 21
-        Hint = 'Total download progress'
-        Anchors = [akLeft, akRight, akBottom]
-        TabOrder = 1
-        SkinData.SkinSection = 'GAUGE'
-        ExplicitWidth = 543
+      object ProgressEdit: TsLabel
+        AlignWithMargins = True
+        Left = 5
+        Top = 52
+        Width = 744
+        Height = 13
+        Align = alBottom
+        Caption = 'Progress: 0/0'
+        Layout = tlCenter
+        ExplicitWidth = 65
       end
-      object ProgressEdit: TsEdit
-        Left = 617
-        Top = 56
-        Width = 121
-        Height = 21
-        Hint = 'Downloaded items/Total items'
-        Alignment = taCenter
-        Anchors = [akRight, akBottom]
-        Color = 15917239
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        ReadOnly = True
+      object TimeLabel: TsLabel
+        AlignWithMargins = True
+        Left = 5
+        Top = 71
+        Width = 744
+        Height = 13
+        Align = alBottom
+        Caption = 'Time: 00:00:00'
+        ExplicitWidth = 73
+      end
+      object TotalBar: TsProgressBar
+        Left = 2
+        Top = 87
+        Width = 750
+        Height = 15
+        Hint = 'Total download progress'
+        Align = alBottom
         TabOrder = 0
-        Text = '0/0'
-        SkinData.SkinSection = 'EDIT'
-        BoundLabel.Active = True
-        BoundLabel.Caption = 'Progress:'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
-        ExplicitLeft = 615
+        SkinData.SkinSection = 'GAUGE'
       end
     end
     object OpenOutputBtn: TsBitBtn
@@ -3875,7 +3841,7 @@ object MainForm: TMainForm
     Left = 552
     Top = 96
     object D1: TMenuItem
-      Caption = 'Download Favourites'
+      Caption = 'Download/Update Favourites'
       OnClick = D1Click
     end
     object E1: TMenuItem

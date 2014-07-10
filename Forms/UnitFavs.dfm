@@ -4,8 +4,8 @@ object FavForm: TFavForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Favourites'
-  ClientHeight = 240
-  ClientWidth = 429
+  ClientHeight = 197
+  ClientWidth = 646
   Color = 5066061
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -18,17 +18,18 @@ object FavForm: TFavForm
   Position = poMainFormCenter
   ShowHint = True
   OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
   OnShow = FormShow
   DesignSize = (
-    429
-    240)
+    646
+    197)
   PixelsPerInch = 96
   TextHeight = 13
   object FavList: TsCheckListBox
     Left = 8
     Top = 35
-    Width = 413
-    Height = 166
+    Width = 630
+    Height = 123
     Hint = 
       'List of your favourite Instagram accounts. Check ones will be do' +
       'wnloaded'
@@ -53,11 +54,14 @@ object FavForm: TFavForm
     BoundLabel.MaxWidth = 0
     BoundLabel.UseSkinColor = True
     SkinData.SkinSection = 'EDIT'
+    OnClickCheck = FavListClickCheck
+    ExplicitWidth = 492
+    ExplicitHeight = 131
   end
   object NewFavEdit: TsEdit
     Left = 128
     Top = 8
-    Width = 212
+    Width = 429
     Height = 21
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
@@ -83,9 +87,10 @@ object FavForm: TFavForm
     BoundLabel.Layout = sclLeft
     BoundLabel.MaxWidth = 0
     BoundLabel.UseSkinColor = True
+    ExplicitWidth = 291
   end
   object AddBtn: TsBitBtn
-    Left = 346
+    Left = 563
     Top = 8
     Width = 75
     Height = 21
@@ -95,10 +100,11 @@ object FavForm: TFavForm
     TabOrder = 2
     OnClick = AddBtnClick
     SkinData.SkinSection = 'BUTTON'
+    ExplicitLeft = 425
   end
   object SaveBtn: TsButton
-    Left = 346
-    Top = 207
+    Left = 563
+    Top = 164
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -106,11 +112,12 @@ object FavForm: TFavForm
     TabOrder = 3
     OnClick = SaveBtnClick
     SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 329
+    ExplicitLeft = 425
+    ExplicitTop = 172
   end
   object CancelBtn: TsButton
-    Left = 265
-    Top = 207
+    Left = 482
+    Top = 164
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -118,23 +125,25 @@ object FavForm: TFavForm
     TabOrder = 4
     OnClick = CancelBtnClick
     SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 329
+    ExplicitLeft = 344
+    ExplicitTop = 172
   end
   object ClearBtn: TsButton
     Left = 8
-    Top = 207
+    Top = 164
     Width = 75
     Height = 25
     Hint = 'Remove all favourites'
     Anchors = [akLeft, akBottom]
     Caption = 'Clear Favs'
     TabOrder = 5
+    OnClick = ClearBtnClick
     SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 333
+    ExplicitTop = 172
   end
   object RemoveBtn: TsButton
     Left = 89
-    Top = 207
+    Top = 164
     Width = 75
     Height = 25
     Hint = 'Remove selected favourites'
@@ -143,6 +152,44 @@ object FavForm: TFavForm
     TabOrder = 6
     OnClick = RemoveBtnClick
     SkinData.SkinSection = 'BUTTON'
+    ExplicitTop = 172
+  end
+  object UpBtn: TsButton
+    Left = 170
+    Top = 164
+    Width = 75
+    Height = 25
+    Anchors = [akLeft, akBottom]
+    Caption = 'Move Up'
+    TabOrder = 7
+    OnClick = UpBtnClick
+    SkinData.SkinSection = 'BUTTON'
+    ExplicitTop = 172
+  end
+  object DownBtn: TsButton
+    Left = 251
+    Top = 164
+    Width = 75
+    Height = 25
+    Anchors = [akLeft, akBottom]
+    Caption = 'Move Down'
+    TabOrder = 8
+    OnClick = DownBtnClick
+    SkinData.SkinSection = 'BUTTON'
+    ExplicitTop = 172
+  end
+  object DownloadBtn: TsButton
+    Left = 351
+    Top = 164
+    Width = 125
+    Height = 25
+    Anchors = [akRight, akBottom]
+    Caption = 'Download Selected'
+    TabOrder = 9
+    OnClick = DownloadBtnClick
+    SkinData.SkinSection = 'BUTTON'
+    ExplicitLeft = 422
+    ExplicitTop = 154
   end
   object sSkinProvider1: TsSkinProvider
     AddedTitle.Font.Charset = DEFAULT_CHARSET
@@ -152,7 +199,7 @@ object FavForm: TFavForm
     AddedTitle.Font.Style = []
     SkinData.SkinSection = 'FORM'
     TitleButtons = <>
-    Left = 184
-    Top = 96
+    Left = 240
+    Top = 64
   end
 end

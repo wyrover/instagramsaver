@@ -25,7 +25,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, sSkinProvider, Vcl.StdCtrls, sMemo,
-  Vcl.ComCtrls, sPageControl;
+  Vcl.ComCtrls, sPageControl, sButton, Vcl.ExtCtrls, sPanel, sDialogs;
 
 type
   TLogForm = class(TForm)
@@ -35,6 +35,15 @@ type
     LogList: TsMemo;
     sTabSheet2: TsTabSheet;
     ThreadsList: TsMemo;
+    sPanel1: TsPanel;
+    sButton1: TsButton;
+    sButton2: TsButton;
+    sButton3: TsButton;
+    sSaveDialog1: TsSaveDialog;
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure sButton1Click(Sender: TObject);
+    procedure sButton2Click(Sender: TObject);
+    procedure sButton3Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -47,5 +56,41 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TLogForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+  begin
+    Self.Close;
+  end;
+end;
+
+procedure TLogForm.sButton1Click(Sender: TObject);
+begin
+  Self.Close;
+end;
+
+procedure TLogForm.sButton2Click(Sender: TObject);
+begin
+  case sPageControl1.ActivePageIndex of
+    0:
+      LogList.Lines.Clear;
+    1:
+      ThreadsList.Lines.Clear;
+  end;
+end;
+
+procedure TLogForm.sButton3Click(Sender: TObject);
+begin
+  if sSaveDialog1.Execute then
+  begin
+    case sPageControl1.ActivePageIndex of
+      0:
+        LogList.Lines.SaveToFile(sSaveDialog1.FileName);
+      1:
+        ThreadsList.Lines.SaveToFile(sSaveDialog1.FileName);
+    end;
+  end;
+end;
 
 end.

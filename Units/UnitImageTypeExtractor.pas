@@ -28,24 +28,33 @@ type
   TImageTypeEx = class(TObject)
   private
     FType: string;
+    FErrorCode: integer;
 
-    function ReadType(const ImagePath: string): string;
+    function ReadType(const ImagePath: string; const DeepCheck: Boolean): string;
   public
     property ImageType: string read FType;
+    property ErrorCode: integer read FErrorCode;
 
-    constructor Create(const ImagePath: string);
+    constructor Create(const ImagePath: string; const DeepCheck: Boolean);
     destructor Destroy; override;
   end;
 
 implementation
 
+const
+  ERROR_OK = 0;
+  ERROR_UNKKOWN_TYPE = 1;
+  ERROR_EMPTY_FILE = 2;
+  ERROR_INVALID_FILE = 3;
+
 { TImageTypeEx }
 
-constructor TImageTypeEx.Create(const ImagePath: string);
+constructor TImageTypeEx.Create(const ImagePath: string; const DeepCheck: Boolean);
 begin
+  FErrorCode := 0;
   if FileExists(ImagePath) then
   begin
-    FType := ReadType(ImagePath);
+    FType := ReadType(ImagePath, DeepCheck);
   end
   else
   begin
@@ -58,10 +67,14 @@ begin
   inherited;
 end;
 
-function TImageTypeEx.ReadType(const ImagePath: string): string;
+function TImageTypeEx.ReadType(const ImagePath: string; const DeepCheck: Boolean): string;
 var
   MediaInfoHandle: Cardinal;
   LFormat: string;
+  LSize: string;
+  LSizeInt: integer;
+  LWidth: string;
+  LHeight: string;
 begin
   Result := '';
   if (FileExists(ImagePath)) then
@@ -81,6 +94,26 @@ begin
         else if LFormat = 'MPEG-4' then
         begin
           Result := '.mp4'
+        end
+        else
+        begin
+          FErrorCode := ERROR_UNKKOWN_TYPE;
+          //FileSize
+          LSize := MediaInfo_Get(MediaInfoHandle, Stream_General, 0, 'FileSize', Info_Text, Info_Name);
+          if Length(LSize) > 0 then
+          begin
+            if TryStrToInt(LSize, LSizeInt) then
+            begin
+              if LSizeInt = 0 then
+              begin
+                FErrorCode := ERROR_EMPTY_FILE;
+              end;
+            end
+            else
+            begin
+              FErrorCode := ERROR_EMPTY_FILE;
+            end;
+          end;
         end;
       finally
         MediaInfo_Close(MediaInfoHandle);

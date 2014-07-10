@@ -17,6 +17,9 @@ type
     CancelBtn: TsButton;
     ClearBtn: TsButton;
     RemoveBtn: TsButton;
+    UpBtn: TsButton;
+    DownBtn: TsButton;
+    DownloadBtn: TsButton;
     procedure CancelBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure AddBtnClick(Sender: TObject);
@@ -24,8 +27,15 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure NewFavEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure RemoveBtnClick(Sender: TObject);
+    procedure ClearBtnClick(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FavListClickCheck(Sender: TObject);
+    procedure UpBtnClick(Sender: TObject);
+    procedure DownBtnClick(Sender: TObject);
+    procedure DownloadBtnClick(Sender: TObject);
   private
     { Private declarations }
+    FEdited: Boolean;
   public
     { Public declarations }
   end;
@@ -49,6 +59,8 @@ begin
     FavList.Checked[FavList.Items.Count - 1] := True;
 
     NewFavEdit.Text := '';
+
+    FEdited := True;
   end
   else
   begin
@@ -61,10 +73,88 @@ begin
   Self.Close;
 end;
 
+procedure TFavForm.ClearBtnClick(Sender: TObject);
+begin
+  if ID_YES = Application.MessageBox('Clear the favourites? This cannot be reversed!', 'Clear', MB_ICONQUESTION or MB_YESNO) then
+  begin
+    FEdited := True;
+    // delete fav file
+    if FileExists(MainForm.FFavFilePath) then
+    begin
+      DeleteFile(MainForm.FFavFilePath);
+    end;
+    FavList.Items.Clear;
+  end;
+end;
+
+procedure TFavForm.DownBtnClick(Sender: TObject);
+var
+  I: Integer;
+begin
+  I := Favlist.Items.Count - 2;
+  while I >= 0 do
+  begin
+    if Favlist.Selected[I] then
+    begin
+      Favlist.Items.Exchange(I, I + 1);
+      Favlist.Selected[I + 1] := True;
+    end;
+    Dec(I);
+  end;
+end;
+
+procedure TFavForm.DownloadBtnClick(Sender: TObject);
+begin
+  if FavList.ItemIndex > -1 then
+  begin
+    Self.Close;
+    MainForm.UserNameEdit.Text := FavList.Items[FavList.ItemIndex];
+    MainForm.DownloadBtnClick(Self);
+  end;
+end;
+
+procedure TFavForm.FavListClickCheck(Sender: TObject);
+begin
+  FEdited := True;
+end;
+
 procedure TFavForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  FEdited := True;
   MainForm.Enabled := True;
   MainForm.BringToFront;
+end;
+
+procedure TFavForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+var
+  LAnswer: integer;
+begin
+  if FEdited then
+  begin
+    // ask user wheter they want to close the form
+    LAnswer := Application.MessageBox('Some values are changed. Do you want to save them before you close this window?', 'Save', MB_ICONQUESTION or MB_YESNOCANCEL);
+    if ID_YES = LAnswer then
+    begin
+      // save then close
+      SaveBtnClick(Self);
+      CanClose := True;
+    end
+    else if ID_CANCEL = LAnswer then
+    begin
+      // dont close wtf
+      CanClose := False;
+    end
+    else
+    begin
+      // close
+      CanClose := True;
+    end;
+  end
+  else
+  begin
+    // nothing's changed just close the form
+    CanClose := True;
+  end;
 end;
 
 procedure TFavForm.FormShow(Sender: TObject);
@@ -73,6 +163,7 @@ var
   I: Integer;
   LSplit: TStringList;
 begin
+  FEdited := False;
   FavList.Items.Clear;
   if FileExists(MainForm.FFavFilePath) then
   begin
@@ -117,6 +208,7 @@ end;
 procedure TFavForm.RemoveBtnClick(Sender: TObject);
 begin
   FavList.DeleteSelected;
+  FEdited := true;
 end;
 
 procedure TFavForm.SaveBtnClick(Sender: TObject);
@@ -148,7 +240,24 @@ begin
   begin
     DeleteFile(MainForm.FFavFilePath)
   end;
+  FEdited := False;
   Self.Close;
+end;
+
+procedure TFavForm.UpBtnClick(Sender: TObject);
+var
+  I: Integer;
+begin
+  I := 1;
+  while I < Favlist.Items.Count do
+  begin
+    if Favlist.Selected[I] then
+    begin
+      Favlist.Items.Exchange(I, I - 1);
+      Favlist.Selected[I - 1] := True;
+    end;
+    Inc(I);
+  end;
 end;
 
 end.
