@@ -28,9 +28,9 @@ uses
   Vcl.ExtCtrls, JvComponentBase, JvUrlListGrabber, JvUrlGrabbers, StrUtils,
   Vcl.Mask, sSkinProvider, sSkinManager, sMaskEdit,
   sCustomComboEdit, sToolEdit, Vcl.Buttons, sBitBtn, sEdit, Vcl.ComCtrls,
-  sStatusBar, sGauge, sBevel, sPanel, JvComputerInfoEx, IniFiles, sLabel, ShellAPI, windows7taskbar, UnitImageTypeExtractor,
+  sStatusBar, sGauge, sBevel, sPanel, JvComputerInfoEx, IniFiles, sLabel, ShellAPI, windows7taskbar,
   Generics.Collections, JvThread, Vcl.Menus, UnitPhotoDownloaderThread, System.Types,
-  JvTrayIcon, MediaInfoDll, acProgressBar;
+  JvTrayIcon, MediaInfoDll, acProgressBar, UnitFileChecker;
 
 type
   TURLType = (Img=0, Video=1);
@@ -84,6 +84,13 @@ type
     D2: TMenuItem;
     ProgressEdit: TsLabel;
     TimeLabel: TsLabel;
+    NormalPanel: TsPanel;
+    FileCheckPanel: TsPanel;
+    FileCheckProgressBar: TsProgressBar;
+    StopFileCheckBtn: TsBitBtn;
+    sLabel1: TsLabel;
+    CurrFileLabel: TsLabel;
+    FileCheckProgressLabel: TsLabel;
     procedure DownloadBtnClick(Sender: TObject);
     procedure ImagePageDownloader1DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
     procedure ImagePageDownloader2DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
@@ -122,6 +129,7 @@ type
     procedure FavBtnClick(Sender: TObject);
     procedure D1Click(Sender: TObject);
     procedure D2Click(Sender: TObject);
+    procedure StopFileCheckBtnClick(Sender: TObject);
   private
     { Private declarations }
     FImageIndex: integer;
@@ -131,12 +139,14 @@ type
     FLinksToDownload: TList<TURL>;
     FPageURLs: TStringList;
     FFilesToCheck: TStringList;
+    FFileChecker: TFileCheckerThread;
     FFavLinks: TList<TURL>;
     FFavs: TStringList;
     FFavIndex: Integer;
     FDownloadingFavs: Boolean;
     FIgnoredImgCount: Cardinal;
     FDownloadedImgCount: Cardinal;
+    FStopFileCheck: Boolean;
 
     FDownloadThreads: array[0..15] of TPhotoDownloadThread;
     FURLs: array[0..15] of  TStringList;
@@ -192,7 +202,7 @@ var
 
 const
   BuildInt = 447;
-  Portable = True;
+  Portable = False;
 
 implementation
 
@@ -236,58 +246,56 @@ end;
 function TMainForm.CheckFiles: Boolean;
 var
   i: integer;
-  LITE: TImageTypeEx;
 begin
   // checks if downloaded files are valid
-  Self.Caption := 'Checking downloaded files...';
-  StateEdit.Caption := 'State: Checking files';
+  Self.Caption := 'InstagramSaver';
+  StateEdit.Caption := 'State:';
+  CurrFileLabel.Caption := 'Current file:';
+  FileCheckProgressBar.Position := 0;
+  FileCheckProgressLabel.Caption := 'Progress: 0/0';
+  FileCheckPanel.Visible := True;
+  FileCheckPanel.BringToFront;
   Self.Enabled := False;
   Result := False;
+  FStopFileCheck := false;
   try
     if FFilesToCheck.Count > 0 then
     begin
-      for I := 0 to FFilesToCheck.Count-1 do
-      begin
-        Application.ProcessMessages;
-        Self.Caption := 'Checking downloaded files...(' + FloatToStr(i + 1) + '/' + FloatToStr(FFilesToCheck.Count) + ')';
-        TotalBar.Position := (100 * i) div FFilesToCheck.Count;
-        if FileExists(FFilesToCheck[i]) then
+      // check file
+      FFileChecker := TFileCheckerThread.Create(FFilesToCheck);
+      try
+        // empty extension means something went wrong
+        while not FFileChecker.Done do
         begin
-          // check file
-          LITE := TImageTypeEx.Create(FFilesToCheck[i], True);
-          try
-            // empty extension means something went wrong
-            if Length(LITE.ImageType) < 1 then
-            begin
-              case LITE.ErrorCode of
-                1:
-                  AddToProgramLog('[ERROR] Unkown file type: ' + FFilesToCheck[i]);
-                2:
-                  AddToProgramLog('[ERROR] File is empty: ' + FFilesToCheck[i]);
-              end;
-              Result := True;
-            end;
-          finally
-            LITE.Free;
+          Application.ProcessMessages;
+          if FStopFileCheck then
+          begin
+            Break;
           end;
-        end
-        else
-        begin
-          case LITE.ErrorCode of
-            1:
-              AddToProgramLog('[ERROR] Unkown file type: ' + FFilesToCheck[i]);
-            2:
-              AddToProgramLog('[ERROR] File is empty: ' + FFilesToCheck[i]);
-          end;
-          Result := True;
+          sleep(20);
         end;
+        if not FStopFileCheck then
+        begin
+          if FFileChecker.Results.Count > 0 then
+          begin
+            for I := 0 to FFileChecker.Results.Count-1 do
+            begin
+              AddToProgramLog(FFileChecker.Results[i]);
+            end;
+          end;
+          Result := FFileChecker.Result;
+        end;
+      finally
+        FFileChecker.Free;
       end;
     end;
   finally
     StateEdit.Caption := 'State:';
+    ProgressEdit.Caption := 'Progress: 0/0';
     TotalBar.Position := 0;
     Self.Caption := 'InstagramSaver';
     Self.Enabled := True;
+    FileCheckPanel.Visible := False;
   end;
 end;
 
@@ -1769,6 +1777,11 @@ begin
     EnableUI;
     ProgressEdit.Caption := 'Progress: 0/0';
   end;
+end;
+
+procedure TMainForm.StopFileCheckBtnClick(Sender: TObject);
+begin
+  FStopFileCheck := True;
 end;
 
 procedure TMainForm.TimeTimerTimer(Sender: TObject);
