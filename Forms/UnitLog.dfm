@@ -36,6 +36,7 @@ object LogForm: TLogForm
         Width = 627
         Height = 231
         Align = alClient
+        BorderStyle = bsNone
         Color = 15917239
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
@@ -68,6 +69,7 @@ object LogForm: TLogForm
         Width = 627
         Height = 231
         Align = alClient
+        BorderStyle = bsNone
         Color = 15917239
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack

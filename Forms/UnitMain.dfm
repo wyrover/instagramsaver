@@ -23,61 +23,6 @@ object MainForm: TMainForm
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object FileCheckPanel: TsPanel
-    Left = 0
-    Top = 0
-    Width = 754
-    Height = 197
-    Align = alClient
-    BevelOuter = bvNone
-    TabOrder = 1
-    Visible = False
-    SkinData.SkinSection = 'CHECKBOX'
-    DesignSize = (
-      754
-      197)
-    object sLabel1: TsLabel
-      Left = 5
-      Top = 8
-      Width = 138
-      Height = 13
-      Caption = 'Checking downloaded files...'
-    end
-    object CurrFileLabel: TsLabel
-      Left = 5
-      Top = 27
-      Width = 58
-      Height = 13
-      Caption = 'Current file:'
-    end
-    object FileCheckProgressLabel: TsLabel
-      Left = 5
-      Top = 46
-      Width = 59
-      Height = 13
-      Caption = 'Progress: 0/'
-    end
-    object FileCheckProgressBar: TsProgressBar
-      Left = 10
-      Top = 157
-      Width = 605
-      Height = 30
-      Anchors = [akLeft, akRight, akBottom]
-      TabOrder = 0
-      SkinData.SkinSection = 'GAUGE'
-    end
-    object StopFileCheckBtn: TsBitBtn
-      Left = 621
-      Top = 157
-      Width = 125
-      Height = 30
-      Anchors = [akRight, akBottom]
-      Caption = 'Stop'
-      TabOrder = 1
-      OnClick = StopFileCheckBtnClick
-      SkinData.SkinSection = 'BUTTON'
-    end
-  end
   object NormalPanel: TsPanel
     Left = 0
     Top = 0
@@ -857,6 +802,62 @@ object MainForm: TMainForm
       end
     end
   end
+  object FileCheckPanel: TsPanel
+    Left = 0
+    Top = 0
+    Width = 754
+    Height = 197
+    Align = alClient
+    BevelOuter = bvNone
+    TabOrder = 1
+    Visible = False
+    SkinData.SkinSection = 'CHECKBOX'
+    ExplicitLeft = -120
+    DesignSize = (
+      754
+      197)
+    object sLabel1: TsLabel
+      Left = 5
+      Top = 8
+      Width = 138
+      Height = 13
+      Caption = 'Checking downloaded files...'
+    end
+    object CurrFileLabel: TsLabel
+      Left = 5
+      Top = 27
+      Width = 58
+      Height = 13
+      Caption = 'Current file:'
+    end
+    object FileCheckProgressLabel: TsLabel
+      Left = 5
+      Top = 46
+      Width = 59
+      Height = 13
+      Caption = 'Progress: 0/'
+    end
+    object FileCheckProgressBar: TsProgressBar
+      Left = 0
+      Top = 182
+      Width = 754
+      Height = 15
+      Align = alBottom
+      TabOrder = 0
+      SkinData.SkinSection = 'GAUGE'
+    end
+    object StopFileCheckBtn: TsBitBtn
+      Left = 624
+      Top = 146
+      Width = 125
+      Height = 30
+      Anchors = [akRight, akBottom]
+      Caption = 'Stop'
+      TabOrder = 1
+      OnClick = StopFileCheckBtnClick
+      SkinData.SkinSection = 'BUTTON'
+    end
+  end
   object ImagePageDownloader1: TJvHttpUrlGrabber
     FileName = 'C:\insta.txt'
     Agent = 
@@ -867,8 +868,8 @@ object MainForm: TMainForm
     ProxyIgnoreList = '<local>'
     OnDoneFile = ImagePageDownloader1DoneFile
     OnError = ImagePageDownloader1Error
-    Left = 336
-    Top = 98
+    Left = 176
+    Top = 106
   end
   object ImagePageDownloader2: TJvHttpUrlGrabber
     FileName = 'C:\insta2.txt'
@@ -880,8 +881,8 @@ object MainForm: TMainForm
     ProxyIgnoreList = '<local>'
     OnDoneFile = ImagePageDownloader2DoneFile
     OnError = ImagePageDownloader2Error
-    Left = 184
-    Top = 98
+    Left = 48
+    Top = 114
   end
   object sSkinManager1: TsSkinManager
     ExtendedBorders = True
@@ -3855,8 +3856,8 @@ object MainForm: TMainForm
     Top = 16
   end
   object AboutMenu: TPopupMenu
-    Left = 488
-    Top = 96
+    Left = 352
+    Top = 104
     object A1: TMenuItem
       Caption = 'About'
       OnClick = A1Click
@@ -3899,12 +3900,12 @@ object MainForm: TMainForm
     IconIndex = 0
     OnBalloonHide = TrayIconBalloonHide
     OnBalloonClick = TrayIconBalloonClick
-    Left = 424
+    Left = 288
     Top = 104
   end
   object FavMenu: TPopupMenu
-    Left = 552
-    Top = 96
+    Left = 408
+    Top = 104
     object D1: TMenuItem
       Caption = 'Download/Update Favourites'
       OnClick = D1Click
@@ -3913,5 +3914,12 @@ object MainForm: TMainForm
       Caption = 'Edit Favourites'
       OnClick = E1Click
     end
+  end
+  object FileCheckTimer: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = FileCheckTimerTimer
+    Left = 560
+    Top = 96
   end
 end

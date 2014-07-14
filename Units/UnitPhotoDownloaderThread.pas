@@ -22,8 +22,7 @@ unit UnitPhotoDownloaderThread;
 
 interface
 
-uses Classes, Windows, SysUtils, Messages, StrUtils, Vcl.ComCtrls, Generics.Collections, JvComponentBase, JvUrlListGrabber, JvUrlGrabbers,
-  JvTypes;
+uses Classes, Windows, SysUtils, Messages, StrUtils, Vcl.ComCtrls, Generics.Collections, IdHTTP, IdComponent;
 
 type
   TDownloadStatus = (idle = 0, downloading = 1, done = 2, error = 3, gettinginfo = 4);
@@ -32,12 +31,11 @@ type
   TPhotoDownloadThread = class(TThread)
   private
     { Private declarations }
-    FPicDownloader1, FPicDownloader2: TJvHttpUrlGrabber;
     FStatus: TDownloadStatus;
     FErrorMsg: string;
     FURLs: TStringList;
     FOutputFiles: TStringList;
-    FURLIndex: Integer;
+    FProgress: Integer;
     FURL: string;
     FID: Integer;
     FDontDoubleDownload: Boolean;
@@ -45,20 +43,17 @@ type
     FDownloadedImgCount: Cardinal;
     FIgnoredImgCount: Cardinal;
 
-    // downloader events
-    procedure PageDownloaderError1(Sender: TObject; ErrorMsg: string);
-    procedure PageDownloaderDoneFile1(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
-    procedure PageDownloaderError2(Sender: TObject; ErrorMsg: string);
-    procedure PageDownloaderDoneFile2(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
     // sync
     procedure ReportError;
     // force directory creation everytime a file is downloaded
     procedure CreateOutputFolder(const FileName: string);
+
+    procedure DownloadFile(const URL: string; const FileName: string);
   protected
     procedure Execute; override;
   public
     property Status: TDownloadStatus read FStatus;
-    property Progress: Integer read FURLIndex;
+    property Progress: Integer read FProgress;
     property ErrorMsg: string read FErrorMsg;
     property CurrentURL: string read FURL;
     property ID: Integer read FID write FID;
@@ -69,9 +64,7 @@ type
     constructor Create(const URLs: TStringList; const OutputFiles: TStringList);
     destructor Destroy; override;
 
-    procedure Start();
     procedure Stop();
-    procedure Reset();
   end;
 
 implementation
@@ -80,29 +73,9 @@ implementation
 uses UnitLog;
 
 constructor TPhotoDownloadThread.Create(const URLs: TStringList; const OutputFiles: TStringList);
-var
-  Def: TJvCustomUrlGrabberDefaultProperties;
 begin
   inherited Create(False);
-
-  // image downloader
-  Def := TJvCustomUrlGrabberDefaultProperties.Create(nil);
-  FPicDownloader1 := TJvHttpUrlGrabber.Create(nil, '', Def);
-  with FPicDownloader1 do
-  begin
-    OnDoneFile := PageDownloaderDoneFile1;
-    OnError := PageDownloaderError1;
-    OutputMode := omFile;
-    Agent := 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36';
-  end;
-  FPicDownloader2 := TJvHttpUrlGrabber.Create(nil, '', Def);
-  with FPicDownloader2 do
-  begin
-    OnDoneFile := PageDownloaderDoneFile2;
-    OnError := PageDownloaderError2;
-    OutputMode := omFile;
-    Agent := 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36';
-  end;
+  FreeOnTerminate := False;
 
   // defaults
   FStatus := idle;
@@ -110,7 +83,7 @@ begin
   FURLs := TStringList.Create;
   FURLs.AddStrings(URLs);
   FOutputFiles.AddStrings(OutputFiles);
-  FURLIndex := 0;
+  FProgress := 0;
 end;
 
 procedure TPhotoDownloadThread.CreateOutputFolder(const FileName: string);
@@ -125,194 +98,83 @@ destructor TPhotoDownloadThread.Destroy;
 begin
   inherited Destroy;
 
-  FPicDownloader1.Free;
-  FPicDownloader2.Free;
   FURLs.Free;
   FOutputFiles.Free;
 end;
 
+procedure TPhotoDownloadThread.DownloadFile(const URL, FileName: string);
+var
+  LMS: TMemoryStream;
+  LIdHTTP: TIdHTTP;
+begin
+  LIdHTTP := TIdHTTP.Create(nil);
+  try
+    LMS := TMemoryStream.Create;
+    try
+      try
+        LIdHTTP.Request.UserAgent := 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36';
+        LIdHTTP.Get(URL, LMS);
+        LMS.SaveToFile(FileName);
+      except on E: EIdHTTPProtocolException do
+        begin
+          FErrorMsg := LIdHTTP.ResponseText + ' [' + FloatToStr(LIdHTTP.ResponseCode) + '] Error msg: ' + E.ErrorMessage;
+          Synchronize(ReportError);
+        end;
+      end;
+    finally
+      LMS.Free;
+    end;
+  finally
+    LIdHTTP.Free;
+  end;
+end;
+
 procedure TPhotoDownloadThread.Execute;
+var
+  I: Integer;
 begin
   FDownloadedImgCount := 0;
   FIgnoredImgCount := 0;
-  FURLIndex := 0;
   FDownloading := True;
-  if DontDoubleDownload then
-  begin
-    while FileExists(FOutputFiles[FURLIndex]) do
+  FStatus := downloading;
+  try
+    for I := 0 to FURLs.Count-1 do
     begin
-      Inc(FIgnoredImgCount);
-      Inc(FURLIndex);
-      if FURLIndex >= FURLs.Count then
+      FProgress := i;
+      FURL := FURLs[i];
+      CreateOutputFolder(FOutputFiles[i]);
+      Inc(FDownloadedImgCount);
+      if FDownloading then
       begin
-        Self.Stop;
-        Exit;
-      end;
-    end;
-    Inc(FDownloadedImgCount);
-    FPicDownloader1.Url := FURLs[FURLIndex];
-    FURL := FURLs[FURLIndex];
-    CreateOutputFolder(FOutputFiles[FURLIndex]);
-    FPicDownloader1.FileName := FOutputFiles[FURLIndex];
-    FPicDownloader1.Start;
-    FStatus := downloading;
-  end
-  else
-  begin
-    FPicDownloader1.Url := FURLs[FURLIndex];
-    FURL := FURLs[FURLIndex];
-    CreateOutputFolder(FOutputFiles[FURLIndex]);
-    FPicDownloader1.FileName := FOutputFiles[FURLIndex];
-    FPicDownloader1.Start;
-    FStatus := downloading;
-  end;
-end;
-
-procedure TPhotoDownloadThread.PageDownloaderDoneFile1(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
-begin
-  if not FDownloading then
-  begin
-    FStatus := done;
-    FURL := '';
-    Self.Terminate;
-    exit;
-  end;
-  Inc(FURLIndex);
-  if (FURLIndex < FURLs.Count) then
-  begin
-    if DontDoubleDownload then
-    begin
-      // try next url if file exists
-      while FileExists(FOutputFiles[FURLIndex]) do
-      begin
-        Inc(FIgnoredImgCount);
-        Inc(FURLIndex);
-        if FURLIndex >= FURLs.Count then
+        // do not download twice
+        if FDontDoubleDownload then
         begin
-          Break;
+          // download only if file doesn't exist
+          if not FileExists(FOutputFiles[i]) then
+          begin
+            DownloadFile(FURLs[i], FOutputFiles[i]);
+          end
+          else
+          begin
+            Inc(FIgnoredImgCount);
+          end;
+        end
+        else
+        begin
+          // download all the same
+          DownloadFile(FURLs[i], FOutputFiles[i]);
         end;
       end;
-      // check if reached the end of the list
-      if (FURLIndex < FURLs.Count) then
-      begin
-        Inc(FDownloadedImgCount);
-        FPicDownloader2.Url := FURLs[FURLIndex];
-        FURL := FURLs[FURLIndex];
-        CreateOutputFolder(FOutputFiles[FURLIndex]);
-        FPicDownloader2.FileName := FOutputFiles[FURLIndex];
-        FPicDownloader2.Start;
-        FStatus := downloading;
-      end
-      else
-      begin
-        FStatus := done;
-        FURL := '';
-      end;
-    end
-    else
-    begin
-      FPicDownloader2.Url := FURLs[FURLIndex];
-      FURL := FURLs[FURLIndex];
-      CreateOutputFolder(FOutputFiles[FURLIndex]);
-      FPicDownloader2.FileName := FOutputFiles[FURLIndex];
-      FPicDownloader2.Start;
-      FStatus := downloading;
     end;
-  end
-  else
-  begin
+  finally
     FStatus := done;
-    FURL := '';
   end;
-end;
-
-procedure TPhotoDownloadThread.PageDownloaderDoneFile2(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
-begin
-  if not FDownloading then
-  begin
-    FStatus := done;
-    FURL := '';
-    Self.Terminate;
-    exit;
-  end;
-  Inc(FURLIndex);
-  if (FURLIndex < FURLs.Count) then
-  begin
-    if DontDoubleDownload then
-    begin
-      // try next url if file exists
-      while FileExists(FOutputFiles[FURLIndex]) do
-      begin
-        Inc(FIgnoredImgCount);
-        Inc(FURLIndex);
-        if FURLIndex >= FURLs.Count then
-        begin
-          Break;
-        end;
-      end;
-      // check if reached the end of the list
-      if (FURLIndex < FURLs.Count) then
-      begin
-        Inc(FDownloadedImgCount);
-        FPicDownloader1.Url := FURLs[FURLIndex];
-        FURL := FURLs[FURLIndex];
-        CreateOutputFolder(FOutputFiles[FURLIndex]);
-        FPicDownloader1.FileName := FOutputFiles[FURLIndex];
-        FPicDownloader1.Start;
-        FStatus := downloading;
-      end
-      else
-      begin
-        FStatus := done;
-        FURL := '';
-      end;
-    end
-    else
-    begin
-      FPicDownloader1.Url := FURLs[FURLIndex];
-      FURL := FURLs[FURLIndex];
-      CreateOutputFolder(FOutputFiles[FURLIndex]);
-      FPicDownloader1.FileName := FOutputFiles[FURLIndex];
-      FPicDownloader1.Start;
-      FStatus := downloading;
-    end;
-  end
-  else
-  begin
-    FStatus := done;
-    FURL := '';
-  end;
-end;
-
-procedure TPhotoDownloadThread.PageDownloaderError1(Sender: TObject; ErrorMsg: string);
-begin
-  FErrorMsg := ErrorMsg;
-  Self.Synchronize(ReportError);
-end;
-
-procedure TPhotoDownloadThread.PageDownloaderError2(Sender: TObject; ErrorMsg: string);
-begin
-  FErrorMsg := ErrorMsg;
-  Self.Synchronize(ReportError);
 end;
 
 procedure TPhotoDownloadThread.ReportError;
 begin
-  LogForm.ThreadsList.Lines.Add('[' + FloatToStr(FID) + '] ' + FErrorMsg);
+  LogForm.ThreadsList.Lines.Add('[PhotoDownloaderThread_' + FloatToStr(FID) + '] ' + FErrorMsg + ' Link: ' + FURLs[FProgress]);
   FErrorMsg := '';
-end;
-
-procedure TPhotoDownloadThread.Reset;
-begin
-  FURLs.Clear;
-  FOutputFiles.Create;
-  FURLIndex := 0;
-  FErrorMsg := '';
-end;
-
-procedure TPhotoDownloadThread.Start;
-begin
-
 end;
 
 procedure TPhotoDownloadThread.Stop;
@@ -320,14 +182,6 @@ begin
   FDownloading := False;
   FStatus := done;
   FURL := '';
-  if FPicDownloader1.Status <> gsStopped then
-  begin
-    FPicDownloader1.Stop;
-  end;
-  if FPicDownloader2.Status <> gsStopped then
-  begin
-    FPicDownloader2.Stop;
-  end;
   Self.Terminate;
 end;
 

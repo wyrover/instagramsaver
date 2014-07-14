@@ -73,8 +73,6 @@ var
   LFormat: string;
   LSize: string;
   LSizeInt: integer;
-  LWidth: string;
-  LHeight: string;
 begin
   Result := '';
   if (FileExists(ImagePath)) then

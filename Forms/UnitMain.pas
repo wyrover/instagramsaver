@@ -91,6 +91,7 @@ type
     sLabel1: TsLabel;
     CurrFileLabel: TsLabel;
     FileCheckProgressLabel: TsLabel;
+    FileCheckTimer: TTimer;
     procedure DownloadBtnClick(Sender: TObject);
     procedure ImagePageDownloader1DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
     procedure ImagePageDownloader2DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
@@ -130,6 +131,7 @@ type
     procedure D1Click(Sender: TObject);
     procedure D2Click(Sender: TObject);
     procedure StopFileCheckBtnClick(Sender: TObject);
+    procedure FileCheckTimerTimer(Sender: TObject);
   private
     { Private declarations }
     FImageIndex: integer;
@@ -188,8 +190,6 @@ type
 
     // int to hh:mm:ss
     function IntegerToTime(const Time: Integer): string;
-
-    function ShorthenURL(const URL: string):string;
   public
     { Public declarations }
     FAppDataFolder: string;
@@ -244,8 +244,6 @@ begin
 end;
 
 function TMainForm.CheckFiles: Boolean;
-var
-  i: integer;
 begin
   // checks if downloaded files are valid
   Self.Caption := 'InstagramSaver';
@@ -258,45 +256,9 @@ begin
   Self.Enabled := False;
   Result := False;
   FStopFileCheck := false;
-  try
-    if FFilesToCheck.Count > 0 then
-    begin
-      // check file
-      FFileChecker := TFileCheckerThread.Create(FFilesToCheck);
-      try
-        // empty extension means something went wrong
-        while not FFileChecker.Done do
-        begin
-          Application.ProcessMessages;
-          if FStopFileCheck then
-          begin
-            Break;
-          end;
-          sleep(20);
-        end;
-        if not FStopFileCheck then
-        begin
-          if FFileChecker.Results.Count > 0 then
-          begin
-            for I := 0 to FFileChecker.Results.Count-1 do
-            begin
-              AddToProgramLog(FFileChecker.Results[i]);
-            end;
-          end;
-          Result := FFileChecker.Result;
-        end;
-      finally
-        FFileChecker.Free;
-      end;
-    end;
-  finally
-    StateEdit.Caption := 'State:';
-    ProgressEdit.Caption := 'Progress: 0/0';
-    TotalBar.Position := 0;
-    Self.Caption := 'InstagramSaver';
-    Self.Enabled := True;
-    FileCheckPanel.Visible := False;
-  end;
+  // check file
+  FFileChecker := TFileCheckerThread.Create(FFilesToCheck);
+  FileCheckTimer.Enabled := True;
 end;
 
 procedure TMainForm.ClearTempFolder;
@@ -567,6 +529,48 @@ begin
   P := FavBtn.ClientToScreen(Point(0, 0));
 
   FavMenu.Popup(P.X, P.Y + FavBtn.Height)
+end;
+
+procedure TMainForm.FileCheckTimerTimer(Sender: TObject);
+var
+  i: integer;
+begin
+  if Assigned(FFileChecker) then
+  begin
+    if FFileChecker.Done then
+    begin
+      FileCheckTimer.Enabled := False;
+      if not FStopFileCheck then
+      begin
+        if FFileChecker.Results.Count > 0 then
+        begin
+          for I := 0 to FFileChecker.Results.Count-1 do
+          begin
+            AddToProgramLog(FFileChecker.Results[i]);
+          end;
+        end
+        else
+        begin
+          AddToProgramLog('File check reported no problematic file.')
+        end;
+      end
+      else
+      begin
+        AddToProgramLog('File check is stopped.');
+      end;
+    end;
+    FFileChecker.Free;
+    StateEdit.Caption := 'State:';
+    ProgressEdit.Caption := 'Progress: 0/0';
+    TotalBar.Position := 0;
+    Self.Caption := 'InstagramSaver';
+    Self.Enabled := True;
+    FileCheckPanel.Visible := False;
+  end
+  else
+  begin
+    AddToProgramLog('Check thread is not available.');
+  end;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1725,16 +1729,6 @@ begin
   SettingsForm.Show;
 end;
 
-function TMainForm.ShorthenURL(const URL: string): string;
-var
-  LLabelWidth: integer;
-begin
-  Result := URL;
-  LLabelWidth := Self.Canvas.TextWidth(URL);
-  if True then
-
-end;
-
 procedure TMainForm.sSkinManager1Activate(Sender: TObject);
 begin
   MainForm.Repaint;
@@ -2162,3 +2156,4 @@ begin
 end;
 
 end.
+

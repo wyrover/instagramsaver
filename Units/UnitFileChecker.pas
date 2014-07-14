@@ -95,7 +95,7 @@ begin
           Break;
         end;
         // update main form
-        FCurrentFile := ExtractFileName(FFilePaths[i]);
+        FCurrentFile := 'Current file: ' + ExtractFileName(FFilePaths[i]);
         FProgress := 'Progress: ' + FloatToStr(i + 1) + '/' + FloatToStr(FFilePaths.Count);
         FPercentage := (100 * i) div FFilePaths.Count;
         Synchronize(UpdateUI);
