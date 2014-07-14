@@ -55,8 +55,6 @@ object FavForm: TFavForm
     BoundLabel.UseSkinColor = True
     SkinData.SkinSection = 'EDIT'
     OnClickCheck = FavListClickCheck
-    ExplicitWidth = 492
-    ExplicitHeight = 131
   end
   object NewFavEdit: TsEdit
     Left = 128
@@ -87,7 +85,6 @@ object FavForm: TFavForm
     BoundLabel.Layout = sclLeft
     BoundLabel.MaxWidth = 0
     BoundLabel.UseSkinColor = True
-    ExplicitWidth = 291
   end
   object AddBtn: TsBitBtn
     Left = 563
@@ -100,7 +97,6 @@ object FavForm: TFavForm
     TabOrder = 2
     OnClick = AddBtnClick
     SkinData.SkinSection = 'BUTTON'
-    ExplicitLeft = 425
   end
   object SaveBtn: TsButton
     Left = 563
@@ -112,8 +108,6 @@ object FavForm: TFavForm
     TabOrder = 3
     OnClick = SaveBtnClick
     SkinData.SkinSection = 'BUTTON'
-    ExplicitLeft = 425
-    ExplicitTop = 172
   end
   object CancelBtn: TsButton
     Left = 482
@@ -125,8 +119,6 @@ object FavForm: TFavForm
     TabOrder = 4
     OnClick = CancelBtnClick
     SkinData.SkinSection = 'BUTTON'
-    ExplicitLeft = 344
-    ExplicitTop = 172
   end
   object ClearBtn: TsButton
     Left = 8
@@ -139,7 +131,6 @@ object FavForm: TFavForm
     TabOrder = 5
     OnClick = ClearBtnClick
     SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 172
   end
   object RemoveBtn: TsButton
     Left = 89
@@ -152,7 +143,6 @@ object FavForm: TFavForm
     TabOrder = 6
     OnClick = RemoveBtnClick
     SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 172
   end
   object UpBtn: TsButton
     Left = 170
@@ -164,7 +154,6 @@ object FavForm: TFavForm
     TabOrder = 7
     OnClick = UpBtnClick
     SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 172
   end
   object DownBtn: TsButton
     Left = 251
@@ -176,7 +165,6 @@ object FavForm: TFavForm
     TabOrder = 8
     OnClick = DownBtnClick
     SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 172
   end
   object DownloadBtn: TsButton
     Left = 351
@@ -188,8 +176,6 @@ object FavForm: TFavForm
     TabOrder = 9
     OnClick = DownloadBtnClick
     SkinData.SkinSection = 'BUTTON'
-    ExplicitLeft = 422
-    ExplicitTop = 154
   end
   object sSkinProvider1: TsSkinProvider
     AddedTitle.Font.Charset = DEFAULT_CHARSET

@@ -16,7 +16,7 @@ uses
   UnitPhotoDownloaderThread in 'Units\UnitPhotoDownloaderThread.pas',
   MediaInfoDLL in 'Units\MediaInfoDLL.pas',
   UnitFavs in 'Forms\UnitFavs.pas' {FavForm},
-  UnitFileChecker in 'Units\UnitFileChecker.pas';
+  UnitEncoder in 'Units\UnitEncoder.pas';
 
 {$R *.res}
 

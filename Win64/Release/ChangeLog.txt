@@ -1,3 +1,7 @@
+--1.5
+-Improved: File downloading performance
+-Improved: File checking performance
+
 --1.4 (10.07.2014)
 -Added: An option to download a favourite
 -Added: Options to save or clear logs

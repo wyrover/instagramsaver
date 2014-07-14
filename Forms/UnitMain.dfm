@@ -812,7 +812,6 @@ object MainForm: TMainForm
     TabOrder = 1
     Visible = False
     SkinData.SkinSection = 'CHECKBOX'
-    ExplicitLeft = -120
     DesignSize = (
       754
       197)

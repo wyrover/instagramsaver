@@ -30,7 +30,7 @@ uses
   sCustomComboEdit, sToolEdit, Vcl.Buttons, sBitBtn, sEdit, Vcl.ComCtrls,
   sStatusBar, sGauge, sBevel, sPanel, JvComputerInfoEx, IniFiles, sLabel, ShellAPI, windows7taskbar,
   Generics.Collections, JvThread, Vcl.Menus, UnitPhotoDownloaderThread, System.Types,
-  JvTrayIcon, MediaInfoDll, acProgressBar, UnitFileChecker;
+  JvTrayIcon, MediaInfoDll, acProgressBar, UnitEncoder, JclShell;
 
 type
   TURLType = (Img=0, Video=1);
@@ -141,7 +141,7 @@ type
     FLinksToDownload: TList<TURL>;
     FPageURLs: TStringList;
     FFilesToCheck: TStringList;
-    FFileChecker: TFileCheckerThread;
+    FFileChecker: TEncoder;
     FFavLinks: TList<TURL>;
     FFavs: TStringList;
     FFavIndex: Integer;
@@ -154,6 +154,8 @@ type
     FURLs: array[0..15] of  TStringList;
     FOutputFiles: array[0..15] of TStringList;
     FThreadCount: Integer;
+
+    FFileCheckerPath: string;
 
     function LineToImageLink(const Line: string):string;
     function LinetoNextPageLink(const Line: string):string;
@@ -170,7 +172,7 @@ type
     function URLToFileName(const URL: TURL): string;
 
     // returns true when no problem occurs
-    function CheckFiles: Boolean;
+    procedure CheckFiles;
 
     // generates guid
     function GenerateGUID: string;
@@ -243,7 +245,7 @@ begin
   ShellExecute(Handle, 'open', pwidechar(ExtractFileDir(Application.ExeName) + '\changelog.txt'), nil, nil, SW_SHOWNORMAL);
 end;
 
-function TMainForm.CheckFiles: Boolean;
+procedure TMainForm.CheckFiles;
 begin
   // checks if downloaded files are valid
   Self.Caption := 'InstagramSaver';
@@ -253,11 +255,24 @@ begin
   FileCheckProgressLabel.Caption := 'Progress: 0/0';
   FileCheckPanel.Visible := True;
   FileCheckPanel.BringToFront;
-  Self.Enabled := False;
-  Result := False;
   FStopFileCheck := false;
-  // check file
-  FFileChecker := TFileCheckerThread.Create(FFilesToCheck);
+  // delete file list file from last run
+  if FileExists(FAppDataFolder + '\filelist.txt') then
+  begin
+    DeleteFile(FAppDataFolder + '\filelist.txt')
+  end;
+  // delete result file from last run
+  if FileExists(FAppDataFolder + '\fileresult.txt') then
+  begin
+    DeleteFile(FAppDataFolder + '\fileresult.txt')
+  end;
+  // save the list of files to be checked
+  FFilesToCheck.SaveToFile(FAppDataFolder + '\filelist.txt', TEncoding.UTF8);
+  // start file check process
+  FFileChecker.ResetValues;
+  FFileChecker.Paths.Add(FFileCheckerPath);
+  FFileChecker.CommandLines.Add('');
+  FFileChecker.Start;
   FileCheckTimer.Enabled := True;
 end;
 
@@ -534,38 +549,58 @@ end;
 procedure TMainForm.FileCheckTimerTimer(Sender: TObject);
 var
   i: integer;
+  LResults: TStringList;
+  LSplitList: TStringList;
 begin
   if Assigned(FFileChecker) then
   begin
-    if FFileChecker.Done then
+    if FFileChecker.ProcessID = 0 then
     begin
       FileCheckTimer.Enabled := False;
-      if not FStopFileCheck then
-      begin
-        if FFileChecker.Results.Count > 0 then
+      StateEdit.Caption := 'State:';
+      ProgressEdit.Caption := 'Progress: 0/0';
+      TotalBar.Position := 0;
+      Self.Caption := 'InstagramSaver';
+      Self.Enabled := True;
+      FileCheckPanel.Visible := False;
+      LResults := TStringList.Create;
+      try
+        for i := 0 to LResults.Count-1 do
         begin
-          for I := 0 to FFileChecker.Results.Count-1 do
-          begin
-            AddToProgramLog(FFileChecker.Results[i]);
-          end;
+          AddToProgramLog(LResults[i]);
+        end;
+        if LResults.Count > 0 then
+        begin
+          LogForm.Show;
+          TrayIcon.Active := True;
+          TrayIcon.BalloonHint('InstagramSaver', 'InstagramSaver finished downloading. Some problems occured. Please see logs.', btError, 5000, True);
         end
         else
         begin
-          AddToProgramLog('File check reported no problematic file.')
+          AddToProgramLog('File check did not report any problematic files.');
+          TrayIcon.Active := True;
+          TrayIcon.BalloonHint('InstagramSaver', 'InstagramSaver finished downloading succesfully.', btInfo, 5000, True);
         end;
-      end
-      else
-      begin
-        AddToProgramLog('File check is stopped.');
+      finally
+        LResults.Free;
+      end;
+    end
+    else
+    begin
+      LSplitList := TStringList.Create;
+      try
+        LSplitList.StrictDelimiter := True;
+        LSplitList.Delimiter := '|';
+        LSplitList.DelimitedText := FFileChecker.ConsoleOutput;
+        if LSplitList.Count = 2 then
+        begin
+          CurrFileLabel.Caption := 'Cuurrent file: ' + LSplitList[1];
+          FileCheckProgressLabel.Caption := 'Progress: ' + LSplitList[0];
+        end;
+      finally
+        LSplitList.Free;
       end;
     end;
-    FFileChecker.Free;
-    StateEdit.Caption := 'State:';
-    ProgressEdit.Caption := 'Progress: 0/0';
-    TotalBar.Position := 0;
-    Self.Caption := 'InstagramSaver';
-    Self.Enabled := True;
-    FileCheckPanel.Visible := False;
   end
   else
   begin
@@ -613,6 +648,7 @@ begin
   FPageURLs := TStringList.Create;
   FFilesToCheck := TStringList.Create;
   FFavs := TStringList.Create;
+  FFileChecker := TEncoder.Create;
   for I := Low(FURLs) to High(FURLs) do
   begin
     FURLs[i] := TStringList.Create;
@@ -629,6 +665,7 @@ begin
   end;
   FTempFolder := Info.Folders.Temp + '\InstagramSaver\';
   FFavFilePath := FAppDataFolder + '\favs.dat';
+  FFileCheckerPath := ExtractFileDir(Application.ExeName) + '\filechecker.exe';
   if not DirectoryExists(FAppDataFolder) then
   begin
     CreateDir(FAppDataFolder);
@@ -669,6 +706,7 @@ begin
   FFilesToCheck.Free;
   FFavLinks.Free;
   FFavs.Free;
+  FFileChecker.Free;
   for I := Low(FURLs) to High(FURLs) do
   begin
     FURLs[i].Free;
@@ -1657,19 +1695,8 @@ begin
       ProgressEdit.Caption := 'Progress: ' + FloatToStr(FLinksToDownload.Count) + '/' + FloatToStr(FLinksToDownload.Count);
       if not SettingsForm.DontCheckBtn.Checked then
       begin
-        if CheckFiles then
-        begin
-          LogForm.Show;
-          TrayIcon.Active := True;
-          TrayIcon.BalloonHint('InstagramSaver', 'InstagramSaver finished downloading. Some problems occured. Please see logs.', btError, 5000, True);
-        end
-        else
-        begin
-          AddToProgramLog('File check did not report any problematic files.');
-          TrayIcon.Active := True;
-          TrayIcon.BalloonHint('InstagramSaver', 'InstagramSaver finished downloading succesfully.', btInfo, 5000, True);
-        end;
-        end
+        CheckFiles;
+      end
       else
       begin
         AddToProgramLog('File check is disabled.');

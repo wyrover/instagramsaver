@@ -132,7 +132,7 @@ begin
   if FEdited then
   begin
     // ask user wheter they want to close the form
-    LAnswer := Application.MessageBox('Some values are changed. Do you want to save them before you close this window?', 'Save', MB_ICONQUESTION or MB_YESNOCANCEL);
+    LAnswer := Application.MessageBox('Some values are changed. Do you want to save them before you close this window?', 'Save', MB_ICONQUESTION or MB_YESNO);
     if ID_YES = LAnswer then
     begin
       // save then close
