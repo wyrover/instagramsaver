@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{7F78103D-3323-407C-9990-1E8461898457}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="InstagramSaver.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FileChecker.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="InstagramSaver">
+        <MSBuild Projects="InstagramSaver.dproj"/>
+    </Target>
+    <Target Name="InstagramSaver:Clean">
+        <MSBuild Projects="InstagramSaver.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="InstagramSaver:Make">
+        <MSBuild Projects="InstagramSaver.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FileChecker">
+        <MSBuild Projects="FileChecker.dproj"/>
+    </Target>
+    <Target Name="FileChecker:Clean">
+        <MSBuild Projects="FileChecker.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FileChecker:Make">
+        <MSBuild Projects="FileChecker.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="InstagramSaver;FileChecker"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="InstagramSaver:Clean;FileChecker:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="InstagramSaver:Make;FileChecker:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

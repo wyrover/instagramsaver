@@ -30,7 +30,7 @@ uses
   sCustomComboEdit, sToolEdit, Vcl.Buttons, sBitBtn, sEdit, Vcl.ComCtrls,
   sStatusBar, sGauge, sBevel, sPanel, JvComputerInfoEx, IniFiles, sLabel, ShellAPI, windows7taskbar,
   Generics.Collections, JvThread, Vcl.Menus, UnitPhotoDownloaderThread, System.Types,
-  JvTrayIcon, MediaInfoDll, acProgressBar, UnitEncoder, JclShell;
+  JvTrayIcon, MediaInfoDll, acProgressBar, UnitEncoder;
 
 type
   TURLType = (Img=0, Video=1);
@@ -43,8 +43,6 @@ type
 
 type
   TMainForm = class(TForm)
-    ImagePageDownloader1: TJvHttpUrlGrabber;
-    ImagePageDownloader2: TJvHttpUrlGrabber;
     sSkinManager1: TsSkinManager;
     sSkinProvider1: TsSkinProvider;
     sPanel1: TsPanel;
@@ -92,9 +90,9 @@ type
     CurrFileLabel: TsLabel;
     FileCheckProgressLabel: TsLabel;
     FileCheckTimer: TTimer;
+    ImagePageDownloader1: TJvHttpUrlGrabber;
+    ImagePageDownloader2: TJvHttpUrlGrabber;
     procedure DownloadBtnClick(Sender: TObject);
-    procedure ImagePageDownloader1DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
-    procedure ImagePageDownloader2DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -132,6 +130,8 @@ type
     procedure D2Click(Sender: TObject);
     procedure StopFileCheckBtnClick(Sender: TObject);
     procedure FileCheckTimerTimer(Sender: TObject);
+    procedure ImagePageDownloader1DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
+    procedure ImagePageDownloader2DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
   private
     { Private declarations }
     FImageIndex: integer;
@@ -498,8 +498,8 @@ begin
     AddToProgramLog('');
     AddToProgramLog('Starting to download user: ' + UserNameEdit.Text);
     AddToProgramLog('Extracting image links...');
-    ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + UserNameEdit.Text + '/?vm=list';
-    ImagePageDownloader1.Start;
+      ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + UserNameEdit.Text + '/?vm=list';
+      ImagePageDownloader1.Start;
     TimeTimer.Enabled := True;
   end
   else
@@ -674,10 +674,13 @@ begin
   begin
     CreateDir(FTempFolder);
   end;
+
+  // temp pages
   ImagePageDownloader1.FileName := FTempFolder + '\' + GenerateGUID + '.txt';
   ImagePageDownloader2.FileName := FTempFolder + '\' + GenerateGUID + '.txt';
   VideoLinkDownloader2.FileName := FTempFolder + '\' + GenerateGUID + '.txt';
   VideoLinkDownloader1.FileName := FTempFolder + '\' + GenerateGUID + '.txt';
+
   // init mediainfo
   if not MediaInfoDLL_Load(ExtractFileDir(Application.ExeName) + '\MediaInfo.dll') then
   begin
@@ -732,7 +735,88 @@ begin
   ShellExecute(Handle, 'open', 'https://sourceforge.net/projects/instagramsaver/', nil, nil, SW_SHOWNORMAL);
 end;
 
-procedure TMainForm.ImagePageDownloader1DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
+procedure TMainForm.ImagePageDownloader1Error(Sender: TObject;
+  ErrorMsg: string);
+begin
+  LogForm.LogList.Lines.Add('IPD1: ' + ErrorMsg);
+end;
+
+procedure TMainForm.ImagePageDownloader2Error(Sender: TObject;
+  ErrorMsg: string);
+begin
+  LogForm.LogList.Lines.Add('IPD2: ' + ErrorMsg);
+end;
+
+function TMainForm.IntegerToTime(const Time: Integer): string;
+var
+  LHourStr, LMinStr, LSecStr: string;
+  LHour, LMin, LSec: Integer;
+begin
+  Result := '00:00:00';
+  if Time > 0 then
+  begin
+    LHour := Time div 3600;
+    LMin := (Time div 60) - (LHour * 60);
+    LSec := (Time mod 60);
+    if LSec < 10 then
+    begin
+      LSecStr := '0' + FloatToStr(LSec)
+    end
+    else
+    begin
+      LSecStr := FloatToStr(LSec)
+    end;
+    if LMin < 10 then
+    begin
+      LMinStr := '0' + FloatToStr(LMin)
+    end
+    else
+    begin
+      LMinStr := FloatToStr(LMin)
+    end;
+    if LHour < 10 then
+    begin
+      LHourStr := '0' + FloatToStr(LHour)
+    end
+    else
+    begin
+      LHourStr := FloatToStr(LHour)
+    end;
+    Result := LHourStr + ':' + LMinStr + ':' + LSecStr;
+  end;
+end;
+
+function TMainForm.IsStringNumeric(Str: string): Boolean;
+var
+  P: PChar;
+begin
+
+  if Length(Str) < 1 then
+  begin
+    Result := False;
+    Exit;
+  end;
+
+  P := PChar(Str);
+  Result := False;
+
+  while P^ <> #0 do
+  begin
+    Application.ProcessMessages;
+
+    if (Not CharInSet(P^, ['0' .. '9'])) then
+    begin
+      Exit;
+    end;
+
+    Inc(P);
+  end;
+
+  Result := True;
+end;
+
+procedure TMainForm.ImagePageDownloader1DoneFile(Sender: TObject;
+  FileName: string; FileSize: Integer; Url: string);
 const
   ImageLink = '.jpg';
   ImageLink2 = '<a href="/p/';
@@ -749,8 +833,6 @@ var
   i:integer;
   LURL: TURL;
 begin
-  // if StreamSize > 0 then
-  // begin
   LStreamReader := TStreamReader.Create(FileName, True);
   LNextPageLink := '';
   try
@@ -793,8 +875,8 @@ begin
 
   if (Length(LNextPageLink) > 0) then
   begin
-    ImagePageDownloader2.Url := LNextPageLink;
     CurrentLinkEdit.Caption := 'Link: ' + LNextPageLink;
+    ImagePageDownloader2.Url := LNextPageLink;
     ImagePageDownloader2.Start;
   end
   else
@@ -881,8 +963,8 @@ begin
               ImagePageDownloader2.Stop;
             end;
             UserNameEdit.Text := FFavs[FFavIndex];
-            ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
-            ImagePageDownloader1.Start;
+              ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+              ImagePageDownloader1.Start;
             PosTimer.Enabled := True;
           end
           else
@@ -992,17 +1074,9 @@ begin
       end;
     end;
   end;
-
 end;
 
-procedure TMainForm.ImagePageDownloader1Error(Sender: TObject;
-  ErrorMsg: string);
-begin
-  LogForm.LogList.Lines.Add('IPD1: ' + ErrorMsg);
-end;
-
-procedure TMainForm.ImagePageDownloader2DoneFile(Sender: TObject; FileName: string;
-  FileSize: Integer; Url: string);
+procedure TMainForm.ImagePageDownloader2DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
 const
   ImageLink = '.jpg';
   ImageLink2 = '<a href="/p/';
@@ -1021,8 +1095,6 @@ var
   i:integer;
   LURL: TURL;
 begin
-  // if StreamSize > 0 then
-  // begin
   LStreamReader := TStreamReader.Create(FileName, True);
   LNextPageLink := '';
   try
@@ -1065,9 +1137,9 @@ begin
 
   if (Length(LNextPageLink) > 0) then
   begin
-    ImagePageDownloader1.Url := LNextPageLink;
     CurrentLinkEdit.Caption := 'Link: ' + LNextPageLink;
-    ImagePageDownloader1.Start;
+      ImagePageDownloader1.Url := LNextPageLink;
+      ImagePageDownloader1.Start;
   end
   else
   begin
@@ -1153,8 +1225,8 @@ begin
               ImagePageDownloader2.Stop;
             end;
             UserNameEdit.Text := FFavs[FFavIndex];
-            ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
-            ImagePageDownloader1.Start;
+              ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+              ImagePageDownloader1.Start;
             PosTimer.Enabled := True;
           end
           else
@@ -1246,8 +1318,8 @@ begin
               ImagePageDownloader2.Stop;
             end;
             UserNameEdit.Text := FFavs[FFavIndex];
-            ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
-            ImagePageDownloader1.Start;
+              ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+              ImagePageDownloader1.Start;
             PosTimer.Enabled := True;
           end
           else
@@ -1264,81 +1336,6 @@ begin
       end;
     end;
   end;
-
-end;
-
-procedure TMainForm.ImagePageDownloader2Error(Sender: TObject;
-  ErrorMsg: string);
-begin
-  LogForm.LogList.Lines.Add('IPD2: ' + ErrorMsg);
-end;
-
-function TMainForm.IntegerToTime(const Time: Integer): string;
-var
-  LHourStr, LMinStr, LSecStr: string;
-  LHour, LMin, LSec: Integer;
-begin
-  Result := '00:00:00';
-  if Time > 0 then
-  begin
-    LHour := Time div 3600;
-    LMin := (Time div 60) - (LHour * 60);
-    LSec := (Time mod 60);
-    if LSec < 10 then
-    begin
-      LSecStr := '0' + FloatToStr(LSec)
-    end
-    else
-    begin
-      LSecStr := FloatToStr(LSec)
-    end;
-    if LMin < 10 then
-    begin
-      LMinStr := '0' + FloatToStr(LMin)
-    end
-    else
-    begin
-      LMinStr := FloatToStr(LMin)
-    end;
-    if LHour < 10 then
-    begin
-      LHourStr := '0' + FloatToStr(LHour)
-    end
-    else
-    begin
-      LHourStr := FloatToStr(LHour)
-    end;
-    Result := LHourStr + ':' + LMinStr + ':' + LSecStr;
-  end;
-end;
-
-function TMainForm.IsStringNumeric(Str: string): Boolean;
-var
-  P: PChar;
-begin
-
-  if Length(Str) < 1 then
-  begin
-    Result := False;
-    Exit;
-  end;
-
-  P := PChar(Str);
-  Result := False;
-
-  while P^ <> #0 do
-  begin
-    Application.ProcessMessages;
-
-    if (Not CharInSet(P^, ['0' .. '9'])) then
-    begin
-      Exit;
-    end;
-
-    Inc(P);
-  end;
-
-  Result := True;
 end;
 
 procedure TMainForm.LaunchDownloadThreads(const ThreadCount: Integer);
@@ -1649,8 +1646,8 @@ begin
           ImagePageDownloader2.Stop;
         end;
         UserNameEdit.Text := FFavs[FFavIndex];
-        ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
-        ImagePageDownloader1.Start;
+          ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+          ImagePageDownloader1.Start;
       end
       else
       begin
@@ -2011,9 +2008,9 @@ begin
             ImagePageDownloader2.Stop;
           end;
           UserNameEdit.Text := FFavs[FFavIndex];
-          ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
-          ImagePageDownloader1.Start;
-            PosTimer.Enabled := True;
+            ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            ImagePageDownloader1.Start;
+          PosTimer.Enabled := True;
         end
         else
         begin
@@ -2152,9 +2149,9 @@ begin
             ImagePageDownloader2.Stop;
           end;
           UserNameEdit.Text := FFavs[FFavIndex];
-          ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
-          ImagePageDownloader1.Start;
-            PosTimer.Enabled := True;
+            ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            ImagePageDownloader1.Start;
+          PosTimer.Enabled := True;
         end
         else
         begin

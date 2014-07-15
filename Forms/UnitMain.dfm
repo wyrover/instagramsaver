@@ -23,6 +23,61 @@ object MainForm: TMainForm
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
+  object FileCheckPanel: TsPanel
+    Left = 0
+    Top = 0
+    Width = 754
+    Height = 197
+    Align = alClient
+    BevelOuter = bvNone
+    TabOrder = 1
+    Visible = False
+    SkinData.SkinSection = 'CHECKBOX'
+    DesignSize = (
+      754
+      197)
+    object sLabel1: TsLabel
+      Left = 5
+      Top = 8
+      Width = 138
+      Height = 13
+      Caption = 'Checking downloaded files...'
+    end
+    object CurrFileLabel: TsLabel
+      Left = 5
+      Top = 27
+      Width = 58
+      Height = 13
+      Caption = 'Current file:'
+    end
+    object FileCheckProgressLabel: TsLabel
+      Left = 5
+      Top = 46
+      Width = 59
+      Height = 13
+      Caption = 'Progress: 0/'
+    end
+    object FileCheckProgressBar: TsProgressBar
+      Left = 0
+      Top = 182
+      Width = 754
+      Height = 15
+      Align = alBottom
+      TabOrder = 0
+      SkinData.SkinSection = 'GAUGE'
+    end
+    object StopFileCheckBtn: TsBitBtn
+      Left = 624
+      Top = 146
+      Width = 125
+      Height = 30
+      Anchors = [akRight, akBottom]
+      Caption = 'Stop'
+      TabOrder = 1
+      OnClick = StopFileCheckBtnClick
+      SkinData.SkinSection = 'BUTTON'
+    end
+  end
   object NormalPanel: TsPanel
     Left = 0
     Top = 0
@@ -801,87 +856,6 @@ object MainForm: TMainForm
         Root = 'rfDesktop'
       end
     end
-  end
-  object FileCheckPanel: TsPanel
-    Left = 0
-    Top = 0
-    Width = 754
-    Height = 197
-    Align = alClient
-    BevelOuter = bvNone
-    TabOrder = 1
-    Visible = False
-    SkinData.SkinSection = 'CHECKBOX'
-    DesignSize = (
-      754
-      197)
-    object sLabel1: TsLabel
-      Left = 5
-      Top = 8
-      Width = 138
-      Height = 13
-      Caption = 'Checking downloaded files...'
-    end
-    object CurrFileLabel: TsLabel
-      Left = 5
-      Top = 27
-      Width = 58
-      Height = 13
-      Caption = 'Current file:'
-    end
-    object FileCheckProgressLabel: TsLabel
-      Left = 5
-      Top = 46
-      Width = 59
-      Height = 13
-      Caption = 'Progress: 0/'
-    end
-    object FileCheckProgressBar: TsProgressBar
-      Left = 0
-      Top = 182
-      Width = 754
-      Height = 15
-      Align = alBottom
-      TabOrder = 0
-      SkinData.SkinSection = 'GAUGE'
-    end
-    object StopFileCheckBtn: TsBitBtn
-      Left = 624
-      Top = 146
-      Width = 125
-      Height = 30
-      Anchors = [akRight, akBottom]
-      Caption = 'Stop'
-      TabOrder = 1
-      OnClick = StopFileCheckBtnClick
-      SkinData.SkinSection = 'BUTTON'
-    end
-  end
-  object ImagePageDownloader1: TJvHttpUrlGrabber
-    FileName = 'C:\insta.txt'
-    Agent = 
-      'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHT' +
-      'ML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
-    Port = 0
-    ProxyAddresses = 'proxyserver'
-    ProxyIgnoreList = '<local>'
-    OnDoneFile = ImagePageDownloader1DoneFile
-    OnError = ImagePageDownloader1Error
-    Left = 176
-    Top = 106
-  end
-  object ImagePageDownloader2: TJvHttpUrlGrabber
-    FileName = 'C:\insta2.txt'
-    Agent = 
-      'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHT' +
-      'ML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
-    Port = 0
-    ProxyAddresses = 'proxyserver'
-    ProxyIgnoreList = '<local>'
-    OnDoneFile = ImagePageDownloader2DoneFile
-    OnError = ImagePageDownloader2Error
-    Left = 48
-    Top = 114
   end
   object sSkinManager1: TsSkinManager
     ExtendedBorders = True
@@ -3818,7 +3792,7 @@ object MainForm: TMainForm
     OnError = VideoLinkDownloader2Error
     OnProgress = VideoLinkDownloader2Progress
     Left = 160
-    Top = 48
+    Top = 16
   end
   object VideoLinkDownloader1: TJvHttpUrlGrabber
     FileName = 'output.txt'
@@ -3831,8 +3805,8 @@ object MainForm: TMainForm
     OnDoneFile = VideoLinkDownloader1DoneFile
     OnError = VideoLinkDownloader1Error
     OnProgress = VideoLinkDownloader1Progress
-    Left = 48
-    Top = 48
+    Left = 40
+    Top = 24
   end
   object UpdateThread: TJvThread
     Exclusive = True
@@ -3920,5 +3894,31 @@ object MainForm: TMainForm
     OnTimer = FileCheckTimerTimer
     Left = 560
     Top = 96
+  end
+  object ImagePageDownloader1: TJvHttpUrlGrabber
+    FileName = 'output.txt'
+    Agent = 
+      'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHT' +
+      'ML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
+    Port = 0
+    ProxyAddresses = 'proxyserver'
+    ProxyIgnoreList = '<local>'
+    OnDoneFile = ImagePageDownloader1DoneFile
+    OnError = ImagePageDownloader1Error
+    Left = 48
+    Top = 128
+  end
+  object ImagePageDownloader2: TJvHttpUrlGrabber
+    FileName = 'output.txt'
+    Agent = 
+      'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHT' +
+      'ML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
+    Port = 0
+    ProxyAddresses = 'proxyserver'
+    ProxyIgnoreList = '<local>'
+    OnDoneFile = ImagePageDownloader2DoneFile
+    OnError = ImagePageDownloader2Error
+    Left = 176
+    Top = 120
   end
 end
