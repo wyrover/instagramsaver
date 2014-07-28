@@ -553,8 +553,8 @@ object AboutForm: TAboutForm
     Height = 13
     Align = alTop
     Alignment = taCenter
-    Caption = 'InstagramSaver 1.4'
-    ExplicitWidth = 96
+    Caption = 'InstagramSaver 1.5.1'
+    ExplicitWidth = 106
   end
   object sLabel2: TsLabel
     Left = 0

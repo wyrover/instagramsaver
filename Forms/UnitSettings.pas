@@ -25,7 +25,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, sSkinProvider, Vcl.StdCtrls, sButton,
-  sCheckBox, IniFiles, sComboBox;
+  sCheckBox, IniFiles, sComboBox, sEdit, sSpinEdit;
 
 type
   TSettingsForm = class(TForm)
@@ -38,6 +38,7 @@ type
     SkinList: TsComboBox;
     ThreadList: TsComboBox;
     DontCheckBtn: TsCheckBox;
+    WaitEdit: TsSpinEdit;
     procedure sButton1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -68,6 +69,8 @@ end;
 
 procedure TSettingsForm.FormCreate(Sender: TObject);
 begin
+  WaitEdit.MinValue := 0;
+  WaitEdit.MaxValue := MaxInt;
   LoadSettings;
 end;
 
@@ -93,11 +96,11 @@ begin
         ThreadList.ItemIndex := ReadInteger('general', 'thread', CPUCount-1);
       end;
       DontCheckBtn.Checked := ReadBool('general', 'check', False);
+      WaitEdit.Text := ReadString('general', 'wait', '0');
     end;
   finally
     LSetFile.Free;
   end;
-
 end;
 
 procedure TSettingsForm.SaveSettings;
@@ -115,6 +118,7 @@ begin
       WriteInteger('general', 'skin', SkinList.ItemIndex);
       WriteInteger('general', 'thread', ThreadList.ItemIndex);
       WriteBool('general', 'check', DontCheckBtn.Checked);
+      WriteString('general', 'wait', WaitEdit.Text);
     end;
   finally
     LSetFile.Free;

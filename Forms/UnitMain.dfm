@@ -3863,12 +3863,6 @@ object MainForm: TMainForm
     Left = 712
     Top = 64
   end
-  object TimeTimer: TTimer
-    Enabled = False
-    OnTimer = TimeTimerTimer
-    Left = 624
-    Top = 96
-  end
   object TrayIcon: TJvTrayIcon
     IconIndex = 0
     OnBalloonHide = TrayIconBalloonHide
@@ -3893,7 +3887,7 @@ object MainForm: TMainForm
     Interval = 100
     OnTimer = FileCheckTimerTimer
     Left = 560
-    Top = 96
+    Top = 112
   end
   object ImagePageDownloader1: TJvHttpUrlGrabber
     FileName = 'output.txt'
@@ -3920,5 +3914,10 @@ object MainForm: TMainForm
     OnError = ImagePageDownloader2Error
     Left = 176
     Top = 120
+  end
+  object TimeTimer: TJvThreadTimer
+    OnTimer = TimeTimerTimer
+    Left = 640
+    Top = 112
   end
 end

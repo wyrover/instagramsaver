@@ -42,6 +42,7 @@ type
     FDownloading: Boolean;
     FDownloadedImgCount: Cardinal;
     FIgnoredImgCount: Cardinal;
+    FWaitMS: integer;
 
     // sync
     procedure ReportError;
@@ -49,6 +50,7 @@ type
     procedure CreateOutputFolder(const FileName: string);
 
     procedure DownloadFile(const URL: string; const FileName: string);
+    procedure Wait;
   protected
     procedure Execute; override;
   public
@@ -61,7 +63,7 @@ type
     property DownloadedImgCount: Cardinal read FDownloadedImgCount;
     property IgnoredImgCount: Cardinal read FIgnoredImgCount;
 
-    constructor Create(const URLs: TStringList; const OutputFiles: TStringList);
+    constructor Create(const URLs: TStringList; const OutputFiles: TStringList; const WaitMS: integer);
     destructor Destroy; override;
 
     procedure Stop();
@@ -72,7 +74,7 @@ implementation
 { TPhotoDownloadThread }
 uses UnitLog;
 
-constructor TPhotoDownloadThread.Create(const URLs: TStringList; const OutputFiles: TStringList);
+constructor TPhotoDownloadThread.Create(const URLs: TStringList; const OutputFiles: TStringList; const WaitMS: integer);
 begin
   inherited Create(False);
   FreeOnTerminate := False;
@@ -84,6 +86,7 @@ begin
   FURLs.AddStrings(URLs);
   FOutputFiles.AddStrings(OutputFiles);
   FProgress := 0;
+  FWaitMS := WaitMS;
 end;
 
 procedure TPhotoDownloadThread.CreateOutputFolder(const FileName: string);
@@ -143,7 +146,6 @@ begin
       FProgress := i;
       FURL := FURLs[i];
       CreateOutputFolder(FOutputFiles[i]);
-      Inc(FDownloadedImgCount);
       if FDownloading then
       begin
         // do not download twice
@@ -153,6 +155,7 @@ begin
           if not FileExists(FOutputFiles[i]) then
           begin
             DownloadFile(FURLs[i], FOutputFiles[i]);
+            Inc(FDownloadedImgCount);
           end
           else
           begin
@@ -163,8 +166,10 @@ begin
         begin
           // download all the same
           DownloadFile(FURLs[i], FOutputFiles[i]);
+          Inc(FDownloadedImgCount);
         end;
       end;
+      Wait;
     end;
   finally
     FStatus := done;
@@ -183,6 +188,14 @@ begin
   FStatus := done;
   FURL := '';
   Self.Terminate;
+end;
+
+procedure TPhotoDownloadThread.Wait;
+begin
+  if FWaitMS > 0 then
+  begin
+    Sleep(FWaitMS);
+  end;
 end;
 
 end.

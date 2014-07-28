@@ -1,4 +1,8 @@
+--1.5.1
+-Fixed: Could not download photo or video
+
 --1.5
+-Added: An option to wait between downloads to prevent ban from server
 -Improved: File downloading performance
 -Improved: File checking performance
 

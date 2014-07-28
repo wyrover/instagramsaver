@@ -30,7 +30,7 @@ uses
   sCustomComboEdit, sToolEdit, Vcl.Buttons, sBitBtn, sEdit, Vcl.ComCtrls,
   sStatusBar, sGauge, sBevel, sPanel, JvComputerInfoEx, IniFiles, sLabel, ShellAPI, windows7taskbar,
   Generics.Collections, JvThread, Vcl.Menus, UnitPhotoDownloaderThread, System.Types,
-  JvTrayIcon, MediaInfoDll, acProgressBar, UnitEncoder;
+  JvTrayIcon, MediaInfoDll, acProgressBar, UnitEncoder, JvThreadTimer;
 
 type
   TURLType = (Img=0, Video=1);
@@ -64,7 +64,6 @@ type
     c1: TMenuItem;
     H1: TMenuItem;
     PosTimer: TTimer;
-    TimeTimer: TTimer;
     R1: TMenuItem;
     S1: TMenuItem;
     TrayIcon: TJvTrayIcon;
@@ -92,6 +91,7 @@ type
     FileCheckTimer: TTimer;
     ImagePageDownloader1: TJvHttpUrlGrabber;
     ImagePageDownloader2: TJvHttpUrlGrabber;
+    TimeTimer: TJvThreadTimer;
     procedure DownloadBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -192,6 +192,8 @@ type
 
     // int to hh:mm:ss
     function IntegerToTime(const Time: Integer): string;
+
+    procedure Wait;
   public
     { Public declarations }
     FAppDataFolder: string;
@@ -203,7 +205,7 @@ var
   MainForm: TMainForm;
 
 const
-  BuildInt = 447;
+  BuildInt = 575;
   Portable = False;
 
 implementation
@@ -384,7 +386,7 @@ begin
         ProgressEdit.Caption := 'Progress: 0/0';
         Self.Caption := '0% [InstagramSaver]';
         DisableUI;
-        CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+        CurrentLinkEdit.Caption := 'Link: http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
         SetProgressState(Handle, tbpsNormal);
 
         if LogForm.LogList.Lines.Count > 0 then
@@ -400,7 +402,7 @@ begin
         AddToProgramLog('Starting to download user: ' + FFavs[FFavIndex]);
         AddToProgramLog('Extracting image links...');
         UserNameEdit.Text := FFavs[FFavIndex];
-        ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+        ImagePageDownloader1.Url := 'http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
         ImagePageDownloader1.Start;
         TimeTimer.Enabled := True;
       end
@@ -484,7 +486,7 @@ begin
     ProgressEdit.Caption := 'Progress: 0/0';
     Self.Caption := '0% [InstagramSaver]';
     DisableUI;
-    CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + UserNameEdit.Text + '/?vm=list';
+    CurrentLinkEdit.Caption := 'Link: http://websta.me/n/' + UserNameEdit.Text + '/?vm=list';
     SetProgressState(Handle, tbpsNormal);
     FDownloadingFavs := False;
     if LogForm.LogList.Lines.Count > 0 then
@@ -498,8 +500,8 @@ begin
     AddToProgramLog('');
     AddToProgramLog('Starting to download user: ' + UserNameEdit.Text);
     AddToProgramLog('Extracting image links...');
-      ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + UserNameEdit.Text + '/?vm=list';
-      ImagePageDownloader1.Start;
+    ImagePageDownloader1.Url := 'http://websta.me/n/' + UserNameEdit.Text + '/?vm=list';
+    ImagePageDownloader1.Start;
     TimeTimer.Enabled := True;
   end
   else
@@ -877,6 +879,7 @@ begin
   begin
     CurrentLinkEdit.Caption := 'Link: ' + LNextPageLink;
     ImagePageDownloader2.Url := LNextPageLink;
+    Wait;
     ImagePageDownloader2.Start;
   end
   else
@@ -907,6 +910,7 @@ begin
         AddToProgramLog('Searching for video links...');
         CurrentLinkEdit.Caption := 'Link: ' + FPageURLs[FVideoPageIndex];
         VideoLinkDownloader1.Url := FPageURLs[FVideoPageIndex];
+        Wait;
         VideoLinkDownloader1.Start;
       end
       else
@@ -952,7 +956,7 @@ begin
             ProgressEdit.Caption := 'Progress: 0/0';
             Self.Caption := '0% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
             DisableUI;
-            CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            CurrentLinkEdit.Caption := 'Link: http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
             SetProgressState(Handle, tbpsNormal);
             if ImagePageDownloader1.Status <> gsStopped then
             begin
@@ -963,8 +967,9 @@ begin
               ImagePageDownloader2.Stop;
             end;
             UserNameEdit.Text := FFavs[FFavIndex];
-              ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
-              ImagePageDownloader1.Start;
+            ImagePageDownloader1.Url := 'http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
+            Wait;
+            ImagePageDownloader1.Start;
             PosTimer.Enabled := True;
           end
           else
@@ -1045,7 +1050,7 @@ begin
             ProgressEdit.Caption := 'Progress: 0/0';
             Self.Caption := '0% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
             DisableUI;
-            CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            CurrentLinkEdit.Caption := 'Link: http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
             SetProgressState(Handle, tbpsNormal);
             if ImagePageDownloader1.Status <> gsStopped then
             begin
@@ -1056,7 +1061,8 @@ begin
               ImagePageDownloader2.Stop;
             end;
             UserNameEdit.Text := FFavs[FFavIndex];
-            ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            ImagePageDownloader1.Url := 'http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
+            Wait;
             ImagePageDownloader1.Start;
             PosTimer.Enabled := True;
           end
@@ -1138,8 +1144,9 @@ begin
   if (Length(LNextPageLink) > 0) then
   begin
     CurrentLinkEdit.Caption := 'Link: ' + LNextPageLink;
-      ImagePageDownloader1.Url := LNextPageLink;
-      ImagePageDownloader1.Start;
+    ImagePageDownloader1.Url := LNextPageLink;
+    Wait;
+    ImagePageDownloader1.Start;
   end
   else
   begin
@@ -1169,6 +1176,7 @@ begin
         AddToProgramLog('Searching for video links...');
         CurrentLinkEdit.Caption := 'Link: ' + FPageURLs[FVideoPageIndex];
         VideoLinkDownloader1.Url := FPageURLs[FVideoPageIndex];
+        Wait;
         VideoLinkDownloader1.Start;
       end
       else
@@ -1214,7 +1222,7 @@ begin
             ProgressEdit.Caption := 'Progress: 0/0';
             Self.Caption := '0% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
             DisableUI;
-            CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            CurrentLinkEdit.Caption := 'Link: http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
             SetProgressState(Handle, tbpsNormal);
             if ImagePageDownloader1.Status <> gsStopped then
             begin
@@ -1225,7 +1233,8 @@ begin
               ImagePageDownloader2.Stop;
             end;
             UserNameEdit.Text := FFavs[FFavIndex];
-              ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+              ImagePageDownloader1.Url := 'http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
+            Wait;
               ImagePageDownloader1.Start;
             PosTimer.Enabled := True;
           end
@@ -1307,7 +1316,7 @@ begin
             ProgressEdit.Caption := 'Progress: 0/0';
             Self.Caption := '0% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
             DisableUI;
-            CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            CurrentLinkEdit.Caption := 'Link: http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
             SetProgressState(Handle, tbpsNormal);
             if ImagePageDownloader1.Status <> gsStopped then
             begin
@@ -1318,7 +1327,8 @@ begin
               ImagePageDownloader2.Stop;
             end;
             UserNameEdit.Text := FFavs[FFavIndex];
-              ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+              ImagePageDownloader1.Url := 'http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
+            Wait;
               ImagePageDownloader1.Start;
             PosTimer.Enabled := True;
           end
@@ -1369,7 +1379,7 @@ begin
   // create threads
   for I := 0 to ThreadCount-1 do
   begin
-    FDownloadThreads[i] := TPhotoDownloadThread.Create(FURLs[i], FOutputFiles[i]);
+    FDownloadThreads[i] := TPhotoDownloadThread.Create(FURLs[i], FOutputFiles[i], SettingsForm.WaitEdit.Value);
     FDownloadThreads[i].ID := i;
     FDownloadThreads[i].DontDoubleDownload := SettingsForm.DontDoubleDownloadBtn.Checked;
   end;
@@ -1439,7 +1449,7 @@ begin
   LLink := ReverseString(LLink);
   if Length(LLink) > 0 then
   begin
-    Result := 'http://web.stagram.com' + LLink;
+    Result := 'http://websta.me' + LLink;
   end;
 end;
 
@@ -1635,7 +1645,7 @@ begin
         ProgressEdit.Caption := 'Progress: 0/0';
         Self.Caption := '0% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
         DisableUI;
-        CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+        CurrentLinkEdit.Caption := 'Link: http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
         SetProgressState(Handle, tbpsNormal);
         if ImagePageDownloader1.Status <> gsStopped then
         begin
@@ -1646,7 +1656,8 @@ begin
           ImagePageDownloader2.Stop;
         end;
         UserNameEdit.Text := FFavs[FFavIndex];
-          ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+          ImagePageDownloader1.Url := 'http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
+            Wait;
           ImagePageDownloader1.Start;
       end
       else
@@ -1930,6 +1941,7 @@ begin
     // run next video page link
     CurrentLinkEdit.Caption := 'Link: ' + FPageURLs[FVideoPageIndex];
     VideoLinkDownloader2.Url := FPageURLs[FVideoPageIndex];
+    Wait;
     VideoLinkDownloader2.Start;
   end
   else
@@ -1997,7 +2009,7 @@ begin
           ProgressEdit.Caption := 'Progress: 0/0';
           Self.Caption := '0% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
           DisableUI;
-          CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+          CurrentLinkEdit.Caption := 'Link: http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
           SetProgressState(Handle, tbpsNormal);
           if ImagePageDownloader1.Status <> gsStopped then
           begin
@@ -2008,7 +2020,8 @@ begin
             ImagePageDownloader2.Stop;
           end;
           UserNameEdit.Text := FFavs[FFavIndex];
-            ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            ImagePageDownloader1.Url := 'http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
+            Wait;
             ImagePageDownloader1.Start;
           PosTimer.Enabled := True;
         end
@@ -2071,6 +2084,7 @@ begin
     // run next video page link
     CurrentLinkEdit.Caption := 'Link: ' + FPageURLs[FVideoPageIndex];
     VideoLinkDownloader1.Url := FPageURLs[FVideoPageIndex];
+    Wait;
     VideoLinkDownloader1.Start;
   end
   else
@@ -2138,7 +2152,7 @@ begin
           ProgressEdit.Caption := 'Progress: 0/0';
           Self.Caption := '0% [' + FloatToStr(FFavIndex+1) + '/' + FloatToStr(FFavs.Count) + '] [InstagramSaver]';
           DisableUI;
-          CurrentLinkEdit.Caption := 'Link: http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+          CurrentLinkEdit.Caption := 'Link: http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
           SetProgressState(Handle, tbpsNormal);
           if ImagePageDownloader1.Status <> gsStopped then
           begin
@@ -2149,7 +2163,8 @@ begin
             ImagePageDownloader2.Stop;
           end;
           UserNameEdit.Text := FFavs[FFavIndex];
-            ImagePageDownloader1.Url := 'http://web.stagram.com/n/' + FFavs[FFavIndex] + '/?vm=list';
+            ImagePageDownloader1.Url := 'http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
+            Wait;
             ImagePageDownloader1.Start;
           PosTimer.Enabled := True;
         end
@@ -2177,6 +2192,24 @@ end;
 procedure TMainForm.VideoLinkDownloader2Progress(Sender: TObject; Position, TotalSize: Int64; Url: string; var Continue: Boolean);
 begin
   TotalBar.Position := (100 * FVideoPageIndex) div FPageURLs.Count;
+end;
+
+procedure TMainForm.Wait;
+Var
+  LCaption: string;
+begin
+  LCaption := StateEdit.Caption;
+  Self.Enabled := False;
+  try
+    if SettingsForm.WaitEdit.Value > 0 then
+    begin
+      StateEdit.Caption := 'State: Waiting...';
+      Sleep(SettingsForm.WaitEdit.Value);
+    end;
+  finally
+    Self.Enabled := True;
+    StateEdit.Caption := LCaption;
+  end;
 end;
 
 end.

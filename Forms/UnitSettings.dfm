@@ -3,7 +3,7 @@ object SettingsForm: TSettingsForm
   Top = 0
   BorderStyle = bsToolWindow
   Caption = 'Settings'
-  ClientHeight = 191
+  ClientHeight = 224
   ClientWidth = 312
   Color = 5066061
   DoubleBuffered = True
@@ -18,7 +18,7 @@ object SettingsForm: TSettingsForm
   OnCreate = FormCreate
   DesignSize = (
     312
-    191)
+    224)
   PixelsPerInch = 96
   TextHeight = 13
   object CheckUpdateBtn: TsCheckBox
@@ -49,7 +49,7 @@ object SettingsForm: TSettingsForm
   end
   object sButton1: TsButton
     Left = 223
-    Top = 158
+    Top = 191
     Width = 81
     Height = 25
     Anchors = [akRight, akBottom]
@@ -57,7 +57,7 @@ object SettingsForm: TSettingsForm
     TabOrder = 2
     OnClick = sButton1Click
     SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 161
+    ExplicitTop = 158
   end
   object DontDoubleDownloadBtn: TsCheckBox
     Left = 8
@@ -87,7 +87,7 @@ object SettingsForm: TSettingsForm
   end
   object SkinList: TsComboBox
     Left = 223
-    Top = 131
+    Top = 164
     Width = 81
     Height = 21
     Anchors = [akRight, akBottom]
@@ -121,11 +121,11 @@ object SettingsForm: TSettingsForm
       'Dark'
       'Light'
       'None')
-    ExplicitTop = 134
+    ExplicitTop = 131
   end
   object ThreadList: TsComboBox
     Left = 134
-    Top = 131
+    Top = 164
     Width = 51
     Height = 21
     Anchors = [akRight, akBottom]
@@ -171,7 +171,7 @@ object SettingsForm: TSettingsForm
       '14'
       '15'
       '16')
-    ExplicitTop = 134
+    ExplicitTop = 131
   end
   object DontCheckBtn: TsCheckBox
     Left = 8
@@ -183,6 +183,38 @@ object SettingsForm: TSettingsForm
     SkinData.SkinSection = 'CHECKBOX'
     ImgChecked = 0
     ImgUnchecked = 0
+  end
+  object WaitEdit: TsSpinEdit
+    Left = 234
+    Top = 133
+    Width = 70
+    Height = 21
+    Alignment = taCenter
+    Color = 15917239
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlack
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    NumbersOnly = True
+    ParentFont = False
+    TabOrder = 8
+    Text = '0'
+    SkinData.SkinSection = 'EDIT'
+    BoundLabel.Active = True
+    BoundLabel.Caption = 'Wait between downloads to prevent ban (ms):'
+    BoundLabel.Indent = 0
+    BoundLabel.Font.Charset = DEFAULT_CHARSET
+    BoundLabel.Font.Color = clWindowText
+    BoundLabel.Font.Height = -11
+    BoundLabel.Font.Name = 'Tahoma'
+    BoundLabel.Font.Style = []
+    BoundLabel.Layout = sclLeft
+    BoundLabel.MaxWidth = 0
+    BoundLabel.UseSkinColor = True
+    MaxValue = 0
+    MinValue = 0
+    Value = 0
   end
   object sSkinProvider1: TsSkinProvider
     AddedTitle.Font.Charset = DEFAULT_CHARSET
