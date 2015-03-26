@@ -123,9 +123,9 @@ begin
         LIdHTTP.Request.UserAgent := 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36';
         LIdHTTP.Get(URL, LMS);
         LMS.SaveToFile(FileName);
-      except on E: EIdHTTPProtocolException do
+      except on E: Exception do
         begin
-          FErrorMsg := LIdHTTP.ResponseText + ' [' + FloatToStr(LIdHTTP.ResponseCode) + '] Error msg: ' + E.ErrorMessage;
+          FErrorMsg := LIdHTTP.ResponseText + ' [' + FloatToStr(LIdHTTP.ResponseCode) + '] Error msg: ' + E.Message;
           Synchronize(ReportError);
         end;
       end;
