@@ -1,5 +1,5 @@
 { *
-  * Copyright (C) 2014 ozok <ozok26@gmail.com>
+  * Copyright (C) 2014-2015 ozok <ozok26@gmail.com>
   *
   * This file is part of InstagramSaver.
   *
@@ -30,7 +30,8 @@ uses
   sCustomComboEdit, sToolEdit, Vcl.Buttons, sBitBtn, sEdit, Vcl.ComCtrls,
   sStatusBar, sGauge, sBevel, sPanel, JvComputerInfoEx, IniFiles, sLabel, ShellAPI, windows7taskbar,
   Generics.Collections, JvThread, Vcl.Menus, UnitPhotoDownloaderThread, System.Types,
-  JvTrayIcon, MediaInfoDll, acProgressBar, UnitEncoder, JvThreadTimer;
+  JvTrayIcon, MediaInfoDll, acProgressBar, UnitEncoder, JvThreadTimer, sMemo, sPageControl, sGroupBox, sButton,
+  sDialogs;
 
 type
   TURLType = (Img=0, Video=1);
@@ -54,7 +55,6 @@ type
     UserNameEdit: TsEdit;
     Info: TJvComputerInfoEx;
     DonateBtn: TsBitBtn;
-    LogBtn: TsBitBtn;
     VideoLinkDownloader2: TJvHttpUrlGrabber;
     VideoLinkDownloader1: TJvHttpUrlGrabber;
     UpdateThread: TJvThread;
@@ -68,7 +68,7 @@ type
     S1: TMenuItem;
     TrayIcon: TJvTrayIcon;
     sPanel3: TsPanel;
-    GroupBox1: TGroupBox;
+    GroupBox1: TsGroupBox;
     TotalBar: TsProgressBar;
     CurrentLinkEdit: TsLabel;
     StateEdit: TsLabel;
@@ -92,6 +92,16 @@ type
     ImagePageDownloader1: TJvHttpUrlGrabber;
     ImagePageDownloader2: TJvHttpUrlGrabber;
     TimeTimer: TJvThreadTimer;
+    sPageControl1: TsPageControl;
+    sTabSheet1: TsTabSheet;
+    LogList: TsMemo;
+    sTabSheet2: TsTabSheet;
+    ThreadsList: TsMemo;
+    sSaveDialog1: TsSaveDialog;
+    sPanel4: TsPanel;
+    sButton1: TsButton;
+    sButton2: TsButton;
+    sLabel2: TsLabel;
     procedure DownloadBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -132,6 +142,8 @@ type
     procedure FileCheckTimerTimer(Sender: TObject);
     procedure ImagePageDownloader1DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
     procedure ImagePageDownloader2DoneFile(Sender: TObject; FileName: string; FileSize: Integer; Url: string);
+    procedure sButton2Click(Sender: TObject);
+    procedure sButton3Click(Sender: TObject);
   private
     { Private declarations }
     FImageIndex: integer;
@@ -212,7 +224,7 @@ implementation
 
 {$R *.dfm}
 
-uses UnitSettings, UnitAbout, UnitLog, UnitFavs;
+uses UnitSettings, UnitAbout, UnitFavs;
 
 procedure TMainForm.A1Click(Sender: TObject);
 begin
@@ -234,11 +246,11 @@ begin
   // dont add date if msg is empty
   if Length(Line) > 0 then
   begin
-    LogForm.LogList.Lines.Add('[' + DateTimeToStr(Now) + '] ' + Line)
+    LogList.Lines.Add('[' + DateTimeToStr(Now) + '] ' + Line)
   end
   else
   begin
-    LogForm.LogList.Lines.Add('');
+    LogList.Lines.Add('');
   end;
 end;
 
@@ -389,7 +401,7 @@ begin
         CurrentLinkEdit.Caption := 'Link: http://websta.me/n/' + FFavs[FFavIndex] + '/?vm=list';
         SetProgressState(Handle, tbpsNormal);
 
-        if LogForm.LogList.Lines.Count > 0 then
+        if LogList.Lines.Count > 0 then
         begin
           AddToProgramLog('');
         end;
@@ -489,7 +501,7 @@ begin
     CurrentLinkEdit.Caption := 'Link: http://websta.me/n/' + UserNameEdit.Text + '/?vm=list';
     SetProgressState(Handle, tbpsNormal);
     FDownloadingFavs := False;
-    if LogForm.LogList.Lines.Count > 0 then
+    if LogList.Lines.Count > 0 then
     begin
       AddToProgramLog('');
     end;
@@ -573,7 +585,7 @@ begin
         end;
         if LResults.Count > 0 then
         begin
-          LogForm.Show;
+          Show;
           TrayIcon.Active := True;
           TrayIcon.BalloonHint('InstagramSaver', 'InstagramSaver finished downloading. Some problems occured. Please see logs.', btError, 5000, True);
         end
@@ -740,13 +752,13 @@ end;
 procedure TMainForm.ImagePageDownloader1Error(Sender: TObject;
   ErrorMsg: string);
 begin
-  LogForm.LogList.Lines.Add('IPD1: ' + ErrorMsg);
+  LogList.Lines.Add('IPD1: ' + ErrorMsg);
 end;
 
 procedure TMainForm.ImagePageDownloader2Error(Sender: TObject;
   ErrorMsg: string);
 begin
-  LogForm.LogList.Lines.Add('IPD2: ' + ErrorMsg);
+  LogList.Lines.Add('IPD2: ' + ErrorMsg);
 end;
 
 function TMainForm.IntegerToTime(const Time: Integer): string;
@@ -1533,7 +1545,7 @@ end;
 
 procedure TMainForm.LogBtnClick(Sender: TObject);
 begin
-  LogForm.Show;
+  Show;
 end;
 
 procedure TMainForm.OpenOutputBtnClick(Sender: TObject);
@@ -1755,6 +1767,29 @@ begin
     end;
   finally
     LSetFile.Free;
+  end;
+end;
+
+procedure TMainForm.sButton2Click(Sender: TObject);
+begin
+  case sPageControl1.ActivePageIndex of
+    0:
+      LogList.Lines.Clear;
+    1:
+      ThreadsList.Lines.Clear;
+  end;
+end;
+
+procedure TMainForm.sButton3Click(Sender: TObject);
+begin
+  if sSaveDialog1.Execute then
+  begin
+    case sPageControl1.ActivePageIndex of
+      0:
+        LogList.Lines.SaveToFile(sSaveDialog1.FileName);
+      1:
+        ThreadsList.Lines.SaveToFile(sSaveDialog1.FileName);
+    end;
   end;
 end;
 
@@ -2043,12 +2078,15 @@ end;
 procedure TMainForm.VideoLinkDownloader1Error(Sender: TObject;
   ErrorMsg: string);
 begin
-  LogForm.LogList.Lines.Add('VPD1: ' + ErrorMsg);
+  LogList.Lines.Add('VPD1: ' + ErrorMsg);
 end;
 
 procedure TMainForm.VideoLinkDownloader1Progress(Sender: TObject; Position, TotalSize: Int64; Url: string; var Continue: Boolean);
 begin
-  TotalBar.Position := (100 * FVideoPageIndex) div FPageURLs.Count;
+  if FPageURLs.Count > 0 then
+  begin
+    TotalBar.Position := (100 * FVideoPageIndex) div FPageURLs.Count;
+  end;
 end;
 
 procedure TMainForm.VideoLinkDownloader2DoneFile(Sender: TObject;
@@ -2186,12 +2224,15 @@ end;
 procedure TMainForm.VideoLinkDownloader2Error(Sender: TObject;
   ErrorMsg: string);
 begin
-  LogForm.LogList.Lines.Add('VPD2: ' + ErrorMsg);
+  LogList.Lines.Add('VPD2: ' + ErrorMsg);
 end;
 
 procedure TMainForm.VideoLinkDownloader2Progress(Sender: TObject; Position, TotalSize: Int64; Url: string; var Continue: Boolean);
 begin
+  if FPageURLs.Count > 0 then
+  begin
   TotalBar.Position := (100 * FVideoPageIndex) div FPageURLs.Count;
+  end;
 end;
 
 procedure TMainForm.Wait;

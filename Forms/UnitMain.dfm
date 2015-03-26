@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'InstagramSaver'
-  ClientHeight = 197
+  ClientHeight = 473
   ClientWidth = 754
   Color = 5066061
   DoubleBuffered = True
@@ -27,7 +27,7 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 754
-    Height = 197
+    Height = 473
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
@@ -35,7 +35,7 @@ object MainForm: TMainForm
     SkinData.SkinSection = 'CHECKBOX'
     DesignSize = (
       754
-      197)
+      473)
     object sLabel1: TsLabel
       Left = 5
       Top = 8
@@ -59,7 +59,7 @@ object MainForm: TMainForm
     end
     object FileCheckProgressBar: TsProgressBar
       Left = 0
-      Top = 182
+      Top = 458
       Width = 754
       Height = 15
       Align = alBottom
@@ -68,7 +68,7 @@ object MainForm: TMainForm
     end
     object StopFileCheckBtn: TsBitBtn
       Left = 624
-      Top = 146
+      Top = 422
       Width = 125
       Height = 30
       Anchors = [akRight, akBottom]
@@ -82,7 +82,7 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 754
-    Height = 197
+    Height = 473
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
@@ -438,7 +438,7 @@ object MainForm: TMainForm
           Hint = 'Instagram account you want to download'
           Alignment = taCenter
           Anchors = [akLeft, akTop, akRight]
-          Color = 15917239
+          Color = 16771226
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clBlack
           Font.Height = -11
@@ -552,96 +552,6 @@ object MainForm: TMainForm
         SkinData.SkinSection = 'TOOLBUTTON'
         Reflected = True
       end
-      object LogBtn: TsBitBtn
-        Left = 454
-        Top = 0
-        Width = 75
-        Height = 60
-        Cursor = crHandPoint
-        Hint = 'See program log. Useful in case of a problem'
-        Align = alRight
-        Caption = 'Logs'
-        Glyph.Data = {
-          36090000424D3609000000000000360000002800000018000000180000000100
-          2000000000000009000000000000000000000000000000000000DCDCDCFFDCDC
-          DCFFDCDCDCFFDCDCDCFFDCDCDCFFDCDCDCFFDCDCDCFFDCDCDCFFDCDCDCFFDCDC
-          DCFFDCDCDCFFDBDCDCFFDDDCDCFFDCDCDCFFDCDCDCFFDDDDDDFFDCDCDCFFDCDC
-          DCFFDCDCDCFFDCDCDCFFDCDCDCFFDCDCDCFFDCDCDCFFDCDCDCFFECECECFFECEC
-          ECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFE8E9E9FF9094A4FFACB7C0FFD2D4D4FFD5D4D4FFDCDCDCFFEAEAEAFFECEC
-          ECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFE7E8E9FF88A6BAFF86CDE3FF9BD9E7FFB5CACFFFC4C6C6FFCFCFCFFFE2E2
-          E2FFEBEBEBFFECECECFFEBEBEBFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFE9ECEDFFBDEFF9FFA7EFFFFF90ECFFFF7CCFE2FF93A6ABFFC2C2C1FFC6C6
-          C7FFD7D7D7FFE8E8E8FFECECECFFECECECFFEBEBEBFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFEBEBEBFFEBE8E6FFEAE6E4FFEAE6E4FFEAE6E4FFEBE6
-          E4FFE8E7E5FFBAEDF9FFA6E7F7FF7EAEB9FF293E43FF212324FFA9A7A5FFC3C0
-          BDFFC2BFBDFFCBCBCBFFDFDFDFFFEBEBEBFFECECECFFEBEBEBFFECECECFFECEC
-          ECFFECECECFFECECECFFEBEAE9FFE3C4AFFFE0B598FFE0B699FFE0B699FFE0B5
-          99FFDEB99EFFAFCBCDFF98ADB2FF444646FF232020FF020202FF57483FFFB996
-          7EFFBC9F8CFFC1BFBEFFC4C5C5FFD3D3D3FFE7E7E7FFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFEBE9E7FFDEB295FFD99D75FFDA9E77FFDA9E77FFDA9E
-          77FFDA9F78FFAD907BFF919090FF6F6E6EFF313130FF131211FF100C09FF8E68
-          4FFFB99176FFC2BEBCFFC2C3C3FFC2C2C2FFD6D6D6FFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFEBEAE9FFE4CEC0FFE1C4B1FFE1C4B2FFE1C4B2FFE1C4
-          B2FFE2C5B2FFD8C1B2FF969594FF949494FF4A4949FF292928FF040404FF4235
-          2CFFBDA99CFFC2C1C0FFC2C2C2FFC2C2C2FFD8D8D8FFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFEBEBEBFFEAE4DFFFE9E1DBFFE9E1DBFFE9E1DBFFE9E1
-          DBFFE9E1DBFFEAE2DCFFC0B8B3FF8F8E8EFF7E7E7EFF353535FF1B1A1AFF0A0A
-          0AFF9B9998FFD9D9D8FFCDCDCDFFD6D6D6FFE8E8E8FFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFEBE9E8FFE2BFA7FFDEAE8DFFDFAE8EFFDFAE8EFFDFAE
-          8EFFDFAE8EFFDFAF8EFFDAAC8DFF9C8D83FF959696FF565555FF2D2C2BFF0807
-          07FF353230FFD7D6D5FFEBECEBFFEBEBEBFFECECECFFEBEBEBFFECECECFFECEC
-          ECFFECECECFFECECECFFEBE8E7FFDDB193FFD89C74FFD99D76FFD99D76FFD99D
-          76FFD99D76FFD99D76FFDA9E76FFC19476FF8E8A87FF898888FF3A3939FF1F1D
-          1CFF121113FFA19FA9FFEDEDEEFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFEBEAEAFFE6D8CEFFE5D1C4FFE5D2C5FFE5D2C5FFE5D2
-          C5FFE5D2C5FFE5D2C5FFE5D2C5FFE4D2C6FFAAA7A5FF939393FF696968FF5B5C
-          63FF6864A2FF5855D0FFD1D1EAFFEDEDECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFEBEBEAFFE8DDD5FFE7D7CCFFE7D7CCFFE7D7CCFFE7D7
-          CCFFE7D7CCFFE7D7CCFFE7D7CCFFE8D8CDFFD5C5BAFF9B989AFF9DA1C8FF5C5F
-          EAFF1313EBFF2C2CD9FFD8D8EAFFEDEDECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFEBE9E8FFE1BBA1FFDDA885FFDDA986FFDDA986FFDDA9
-          86FFDDA986FFDDA986FFDDA986FFDDA986FFDFAA85FFAF93AFFF2F2EF4FF0000
-          FDFF1512E2FF9897E2FFEDEDECFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFEBE8E7FFDEB397FFD99F79FFD9A07BFFD9A07BFFD9A0
-          7BFFD9A07BFFD9A07BFFD9A07BFFD9A07BFFD9A17BFFCF9980FF9D729BFF8963
-          A5FFB38FA2FFE9E6E5FFECECECFFEBEBECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFEBEBEBFFE9E2DEFFE8DFD9FFE8DFD9FFE8DFD9FFE8DF
-          D9FFE8DFD9FFE8DFD9FFE8DFD9FFE8DFD9FFE8DFD9FFE9E0D9FFEBE2D8FFECE2
-          D7FFEBE3DCFFEBEBEAFFECECECFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFEBEAEAFFE7D4C7FFE5CBB9FFE5CBBAFFE5CBBAFFE5CB
-          BAFFE5CBBAFFE5CBBAFFE5CBBAFFE5CBBAFFE5CBBAFFE5CBBAFFE5CBBAFFE5CB
-          B9FFE6D2C4FFEBE9E8FFECECECFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFEBE9E8FFE0B89CFFDCA47FFFDCA580FFDCA580FFDCA5
-          80FFDCA580FFDCA580FFDCA580FFDCA580FFDCA580FFDCA580FFDCA580FFDCA4
-          7FFFDFB395FFEBE7E5FFECECECFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFEBE9E7FFDEB89EFFDAA683FFDAA785FFDAA785FFDAA7
-          85FFDAA785FFDAA785FFDAA785FFDAA785FFDAA785FFDAA785FFDAA785FFDAA6
-          83FFDDB498FFEAE7E5FFECECECFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFEBEBEBFFEAE8E6FFEAE6E4FFEAE6E4FFEAE6E4FFEAE6
-          E4FFEAE6E4FFEAE6E4FFEAE6E4FFEAE6E4FFEAE6E4FFEAE6E4FFEAE6E4FFEAE6
-          E4FFEAE7E5FFEBEBEBFFECECECFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFEBEBEBFFEBEB
-          EBFFEBEBEBFFEBEBEBFFEBEBEBFFEBEBEBFFEBEBEBFFEBEBEBFFEBEBEBFFEBEB
-          EBFFEBEBEBFFEBEBEBFFEBEBEBFFEBEBEBFFEBEBEBFFEBEBEBFFEBEBEBFFEBEB
-          EBFFEBEBEBFFEBEBEBFFEBEBEBFFEBEBEBFFEBEBEBFFEBEBEBFFECECECFFECEC
-          ECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFECEC
-          ECFFECECECFFECECECFFECECECFFECECECFFECECECFFECECECFFF2F2F2FFF2F2
-          F2FFF2F2F2FFF2F2F2FFF2F2F2FFF2F2F2FFF2F2F2FFF2F2F2FFF2F2F2FFF2F2
-          F2FFF2F2F2FFF2F2F2FFF2F2F2FFF2F2F2FFF2F2F2FFF2F2F2FFF2F2F2FFF2F2
-          F2FFF2F2F2FFF2F2F2FFF2F2F2FFF2F2F2FFF2F2F2FFF2F2F2FF}
-        Layout = blGlyphTop
-        TabOrder = 6
-        OnClick = LogBtnClick
-        SkinData.SkinSection = 'TOOLBUTTON'
-        Reflected = True
-      end
       object FavBtn: TsBitBtn
         Left = 375
         Top = 0
@@ -727,7 +637,7 @@ object MainForm: TMainForm
           43FFFB9443FFFB9443FFFB9443FFFB9443FFFB9443FFFB9443FFFB9443FFFB94
           43FFFB9443FFFB9443FFFB9443FFFB9443FFFB9443FFFB9443FF}
         Layout = blGlyphTop
-        TabOrder = 7
+        TabOrder = 6
         OnClick = FavBtnClick
         SkinData.SkinSection = 'TOOLBUTTON'
         Reflected = True
@@ -737,26 +647,28 @@ object MainForm: TMainForm
       Left = 0
       Top = 60
       Width = 754
-      Height = 137
+      Height = 413
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 1
       SkinData.SkinSection = 'CHECKBOX'
       DesignSize = (
         754
-        137)
-      object GroupBox1: TGroupBox
+        413)
+      object GroupBox1: TsGroupBox
         Left = 0
-        Top = 33
+        Top = 35
         Width = 754
-        Height = 104
+        Height = 112
         Align = alBottom
         Caption = 'Progress'
         TabOrder = 0
+        SkinData.SkinSection = 'GROUPBOX'
+        Checked = False
         object CurrentLinkEdit: TsLabel
           AlignWithMargins = True
           Left = 5
-          Top = 33
+          Top = 41
           Width = 744
           Height = 13
           Hint = 'Currently processed link'
@@ -768,7 +680,7 @@ object MainForm: TMainForm
         object StateEdit: TsLabel
           AlignWithMargins = True
           Left = 5
-          Top = 14
+          Top = 22
           Width = 744
           Height = 13
           Hint = 'Current state of download process'
@@ -780,7 +692,7 @@ object MainForm: TMainForm
         object ProgressEdit: TsLabel
           AlignWithMargins = True
           Left = 5
-          Top = 52
+          Top = 60
           Width = 744
           Height = 13
           Align = alBottom
@@ -791,7 +703,7 @@ object MainForm: TMainForm
         object TimeLabel: TsLabel
           AlignWithMargins = True
           Left = 5
-          Top = 71
+          Top = 79
           Width = 744
           Height = 13
           Align = alBottom
@@ -800,7 +712,7 @@ object MainForm: TMainForm
         end
         object TotalBar: TsProgressBar
           Left = 2
-          Top = 87
+          Top = 95
           Width = 750
           Height = 15
           Hint = 'Total download progress'
@@ -829,7 +741,7 @@ object MainForm: TMainForm
         Hint = 'Output folder where downloaded files will be stored'
         Anchors = [akLeft, akTop, akRight]
         AutoSize = False
-        Color = 15917239
+        Color = 16771226
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -11
@@ -839,6 +751,7 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 2
         Text = ''
+        CheckOnExit = True
         BoundLabel.Active = True
         BoundLabel.Caption = 'Output folder:'
         BoundLabel.Indent = 0
@@ -854,6 +767,133 @@ object MainForm: TMainForm
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
         Root = 'rfDesktop'
+      end
+      object sPageControl1: TsPageControl
+        Left = 0
+        Top = 147
+        Width = 754
+        Height = 266
+        ActivePage = sTabSheet1
+        Align = alBottom
+        TabOrder = 3
+        SkinData.SkinSection = 'PAGECONTROL'
+        object sTabSheet1: TsTabSheet
+          Caption = 'General log'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
+          object LogList: TsMemo
+            Left = 0
+            Top = 0
+            Width = 746
+            Height = 203
+            Align = alClient
+            BorderStyle = bsNone
+            Color = 16179892
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clBlack
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ReadOnly = True
+            ScrollBars = ssBoth
+            TabOrder = 0
+            BoundLabel.Indent = 0
+            BoundLabel.Font.Charset = DEFAULT_CHARSET
+            BoundLabel.Font.Color = clWindowText
+            BoundLabel.Font.Height = -11
+            BoundLabel.Font.Name = 'Tahoma'
+            BoundLabel.Font.Style = []
+            BoundLabel.Layout = sclLeft
+            BoundLabel.MaxWidth = 0
+            BoundLabel.UseSkinColor = True
+            SkinData.SkinSection = 'EDIT'
+            ExplicitHeight = 238
+          end
+          object sPanel4: TsPanel
+            Left = 0
+            Top = 203
+            Width = 746
+            Height = 35
+            Align = alBottom
+            TabOrder = 1
+            SkinData.SkinSection = 'PANEL'
+            object sLabel2: TsLabel
+              AlignWithMargins = True
+              Left = 646
+              Top = 4
+              Width = 96
+              Height = 27
+              Align = alRight
+              Caption = 'InstagramSaver 1.6'
+              Layout = tlCenter
+              ExplicitLeft = 655
+              ExplicitTop = 1
+              ExplicitHeight = 13
+            end
+            object sButton1: TsButton
+              Left = 1
+              Top = 1
+              Width = 75
+              Height = 33
+              Align = alLeft
+              Caption = 'Clear'
+              TabOrder = 0
+              OnClick = sButton2Click
+              SkinData.SkinSection = 'BUTTON'
+              ExplicitLeft = 6
+              ExplicitTop = 6
+              ExplicitHeight = 25
+            end
+            object sButton2: TsButton
+              Left = 76
+              Top = 1
+              Width = 75
+              Height = 33
+              Align = alLeft
+              Caption = 'Save'
+              TabOrder = 1
+              OnClick = sButton3Click
+              SkinData.SkinSection = 'BUTTON'
+              ExplicitLeft = 417
+              ExplicitTop = 6
+              ExplicitHeight = 25
+            end
+          end
+        end
+        object sTabSheet2: TsTabSheet
+          Caption = 'Downloader Errors'
+          SkinData.CustomColor = False
+          SkinData.CustomFont = False
+          object ThreadsList: TsMemo
+            Left = 0
+            Top = 0
+            Width = 746
+            Height = 238
+            Align = alClient
+            BorderStyle = bsNone
+            Color = 16179892
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clBlack
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ReadOnly = True
+            ScrollBars = ssBoth
+            TabOrder = 0
+            BoundLabel.Indent = 0
+            BoundLabel.Font.Charset = DEFAULT_CHARSET
+            BoundLabel.Font.Color = clWindowText
+            BoundLabel.Font.Height = -11
+            BoundLabel.Font.Name = 'Tahoma'
+            BoundLabel.Font.Style = []
+            BoundLabel.Layout = sclLeft
+            BoundLabel.MaxWidth = 0
+            BoundLabel.UseSkinColor = True
+            SkinData.SkinSection = 'EDIT'
+          end
+        end
       end
     end
   end
@@ -3761,6 +3801,7 @@ object MainForm: TMainForm
     ThirdParty.ThirdUpDown = 'TSpinButton'#13#10'TUpDown'#13#10'TJvUpDown'#13#10'TJvDomainUpDown'#13#10
     ThirdParty.ThirdScrollBar = 'TScrollBar'#13#10
     ThirdParty.ThirdStaticText = 'TStaticText'#13#10
+    ThirdParty.ThirdNativePaint = ' '
     OnActivate = sSkinManager1Activate
     Left = 384
     Top = 34
@@ -3912,12 +3953,18 @@ object MainForm: TMainForm
     ProxyIgnoreList = '<local>'
     OnDoneFile = ImagePageDownloader2DoneFile
     OnError = ImagePageDownloader2Error
-    Left = 176
-    Top = 120
+    Left = 168
+    Top = 112
   end
   object TimeTimer: TJvThreadTimer
     OnTimer = TimeTimerTimer
     Left = 640
     Top = 112
+  end
+  object sSaveDialog1: TsSaveDialog
+    DefaultExt = '*.txt'
+    Filter = 'Text Files|*.txt'
+    Left = 696
+    Top = 144
   end
 end

@@ -1,5 +1,5 @@
 { *
-  * Copyright (C) 2014 ozok <ozok26@gmail.com>
+  * Copyright (C) 2014-2015 ozok <ozok26@gmail.com>
   *
   * This file is part of InstagramSaver.
   *
@@ -22,7 +22,9 @@ unit UnitPhotoDownloaderThread;
 
 interface
 
-uses Classes, Windows, SysUtils, Messages, StrUtils, Vcl.ComCtrls, Generics.Collections, IdHTTP, IdComponent;
+uses Classes, Windows, SysUtils, Messages, StrUtils, Vcl.ComCtrls, Generics.Collections, IdHTTP, IdComponent,
+  IdBaseComponent, IdIOHandler, IdIOHandlerSocket,
+  IdIOHandlerStack, IdSSL, IdSSLOpenSSL;
 
 type
   TDownloadStatus = (idle = 0, downloading = 1, done = 2, error = 3, gettinginfo = 4);
@@ -72,7 +74,7 @@ type
 implementation
 
 { TPhotoDownloadThread }
-uses UnitLog;
+uses UnitMain;
 
 constructor TPhotoDownloadThread.Create(const URLs: TStringList; const OutputFiles: TStringList; const WaitMS: integer);
 begin
@@ -109,12 +111,15 @@ procedure TPhotoDownloadThread.DownloadFile(const URL, FileName: string);
 var
   LMS: TMemoryStream;
   LIdHTTP: TIdHTTP;
+  LSSLHandler: TIdSSLIOHandlerSocketOpenSSL;
 begin
   LIdHTTP := TIdHTTP.Create(nil);
+  LSSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
   try
     LMS := TMemoryStream.Create;
     try
       try
+        LIdHTTP.IOHandler := LSSLHandler;
         LIdHTTP.Request.UserAgent := 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36';
         LIdHTTP.Get(URL, LMS);
         LMS.SaveToFile(FileName);
@@ -128,6 +133,7 @@ begin
       LMS.Free;
     end;
   finally
+    LSSLHandler.Free;
     LIdHTTP.Free;
   end;
 end;
@@ -178,7 +184,7 @@ end;
 
 procedure TPhotoDownloadThread.ReportError;
 begin
-  LogForm.ThreadsList.Lines.Add('[PhotoDownloaderThread_' + FloatToStr(FID) + '] ' + FErrorMsg + ' Link: ' + FURLs[FProgress]);
+  MainForm.ThreadsList.Lines.Add('[PhotoDownloaderThread_' + FloatToStr(FID) + '] ' + FErrorMsg + ' Link: ' + FURLs[FProgress]);
   FErrorMsg := '';
 end;
 

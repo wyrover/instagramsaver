@@ -11,7 +11,6 @@ uses
   UnitSettings in 'Forms\UnitSettings.pas' {SettingsForm},
   UnitAbout in 'Forms\UnitAbout.pas' {AboutForm},
   windows7taskbar in 'Units\windows7taskbar.pas',
-  UnitLog in 'Forms\UnitLog.pas' {LogForm},
   UnitImageTypeExtractor in 'Units\UnitImageTypeExtractor.pas',
   UnitPhotoDownloaderThread in 'Units\UnitPhotoDownloaderThread.pas',
   MediaInfoDLL in 'Units\MediaInfoDLL.pas',
@@ -27,7 +26,6 @@ begin
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TSettingsForm, SettingsForm);
   Application.CreateForm(TAboutForm, AboutForm);
-  Application.CreateForm(TLogForm, LogForm);
   Application.CreateForm(TFavForm, FavForm);
   Application.Run;
 end.
