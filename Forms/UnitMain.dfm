@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'InstagramSaver'
-  ClientHeight = 473
+  ClientHeight = 503
   ClientWidth = 754
   Color = 5066061
   DoubleBuffered = True
@@ -27,7 +27,7 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 754
-    Height = 473
+    Height = 503
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
@@ -35,7 +35,7 @@ object MainForm: TMainForm
     SkinData.SkinSection = 'CHECKBOX'
     DesignSize = (
       754
-      473)
+      503)
     object sLabel1: TsLabel
       Left = 5
       Top = 8
@@ -59,7 +59,7 @@ object MainForm: TMainForm
     end
     object FileCheckProgressBar: TsProgressBar
       Left = 0
-      Top = 458
+      Top = 488
       Width = 754
       Height = 15
       Align = alBottom
@@ -68,7 +68,7 @@ object MainForm: TMainForm
     end
     object StopFileCheckBtn: TsBitBtn
       Left = 624
-      Top = 422
+      Top = 452
       Width = 125
       Height = 30
       Anchors = [akRight, akBottom]
@@ -82,7 +82,7 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 754
-    Height = 473
+    Height = 503
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
@@ -647,19 +647,20 @@ object MainForm: TMainForm
       Left = 0
       Top = 60
       Width = 754
-      Height = 413
+      Height = 443
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 1
       SkinData.SkinSection = 'CHECKBOX'
       DesignSize = (
         754
-        413)
+        443)
       object GroupBox1: TsGroupBox
-        Left = 0
-        Top = 35
-        Width = 754
-        Height = 112
+        AlignWithMargins = True
+        Left = 3
+        Top = 28
+        Width = 748
+        Height = 135
         Align = alBottom
         Caption = 'Progress'
         TabOrder = 0
@@ -668,8 +669,8 @@ object MainForm: TMainForm
         object CurrentLinkEdit: TsLabel
           AlignWithMargins = True
           Left = 5
-          Top = 41
-          Width = 744
+          Top = 45
+          Width = 738
           Height = 13
           Hint = 'Currently processed link'
           Align = alBottom
@@ -680,8 +681,8 @@ object MainForm: TMainForm
         object StateEdit: TsLabel
           AlignWithMargins = True
           Left = 5
-          Top = 22
-          Width = 744
+          Top = 26
+          Width = 738
           Height = 13
           Hint = 'Current state of download process'
           Align = alBottom
@@ -692,8 +693,8 @@ object MainForm: TMainForm
         object ProgressEdit: TsLabel
           AlignWithMargins = True
           Left = 5
-          Top = 60
-          Width = 744
+          Top = 64
+          Width = 738
           Height = 13
           Align = alBottom
           Caption = 'Progress: 0/0'
@@ -703,20 +704,32 @@ object MainForm: TMainForm
         object TimeLabel: TsLabel
           AlignWithMargins = True
           Left = 5
-          Top = 79
-          Width = 744
+          Top = 83
+          Width = 738
           Height = 13
           Align = alBottom
           Caption = 'Time: 00:00:00'
           ExplicitWidth = 73
         end
+        object SpeedLabel: TsLabel
+          AlignWithMargins = True
+          Left = 5
+          Top = 102
+          Width = 738
+          Height = 13
+          Align = alBottom
+          Caption = 'Downloaded: 0 MB'
+          ExplicitWidth = 89
+        end
         object TotalBar: TsProgressBar
           Left = 2
-          Top = 95
-          Width = 750
+          Top = 118
+          Width = 744
           Height = 15
           Hint = 'Total download progress'
           Align = alBottom
+          Smooth = True
+          SmoothReverse = True
           TabOrder = 0
           SkinData.SkinSection = 'GAUGE'
         end
@@ -770,9 +783,9 @@ object MainForm: TMainForm
       end
       object sPageControl1: TsPageControl
         Left = 0
-        Top = 147
+        Top = 166
         Width = 754
-        Height = 266
+        Height = 242
         ActivePage = sTabSheet1
         Align = alBottom
         TabOrder = 3
@@ -785,7 +798,7 @@ object MainForm: TMainForm
             Left = 0
             Top = 0
             Width = 746
-            Height = 203
+            Height = 214
             Align = alClient
             BorderStyle = bsNone
             Color = 16179892
@@ -808,57 +821,6 @@ object MainForm: TMainForm
             BoundLabel.MaxWidth = 0
             BoundLabel.UseSkinColor = True
             SkinData.SkinSection = 'EDIT'
-            ExplicitHeight = 238
-          end
-          object sPanel4: TsPanel
-            Left = 0
-            Top = 203
-            Width = 746
-            Height = 35
-            Align = alBottom
-            TabOrder = 1
-            SkinData.SkinSection = 'PANEL'
-            object sLabel2: TsLabel
-              AlignWithMargins = True
-              Left = 646
-              Top = 4
-              Width = 96
-              Height = 27
-              Align = alRight
-              Caption = 'InstagramSaver 1.6'
-              Layout = tlCenter
-              ExplicitLeft = 655
-              ExplicitTop = 1
-              ExplicitHeight = 13
-            end
-            object sButton1: TsButton
-              Left = 1
-              Top = 1
-              Width = 75
-              Height = 33
-              Align = alLeft
-              Caption = 'Clear'
-              TabOrder = 0
-              OnClick = sButton2Click
-              SkinData.SkinSection = 'BUTTON'
-              ExplicitLeft = 6
-              ExplicitTop = 6
-              ExplicitHeight = 25
-            end
-            object sButton2: TsButton
-              Left = 76
-              Top = 1
-              Width = 75
-              Height = 33
-              Align = alLeft
-              Caption = 'Save'
-              TabOrder = 1
-              OnClick = sButton3Click
-              SkinData.SkinSection = 'BUTTON'
-              ExplicitLeft = 417
-              ExplicitTop = 6
-              ExplicitHeight = 25
-            end
           end
         end
         object sTabSheet2: TsTabSheet
@@ -869,7 +831,7 @@ object MainForm: TMainForm
             Left = 0
             Top = 0
             Width = 746
-            Height = 238
+            Height = 214
             Align = alClient
             BorderStyle = bsNone
             Color = 16179892
@@ -893,6 +855,48 @@ object MainForm: TMainForm
             BoundLabel.UseSkinColor = True
             SkinData.SkinSection = 'EDIT'
           end
+        end
+      end
+      object sPanel4: TsPanel
+        Left = 0
+        Top = 408
+        Width = 754
+        Height = 35
+        Align = alBottom
+        TabOrder = 4
+        SkinData.SkinSection = 'PANEL'
+        object sLabel2: TsLabel
+          AlignWithMargins = True
+          Left = 654
+          Top = 4
+          Width = 96
+          Height = 27
+          Align = alRight
+          Caption = 'InstagramSaver 1.6'
+          Layout = tlCenter
+          ExplicitHeight = 13
+        end
+        object sButton1: TsButton
+          Left = 1
+          Top = 1
+          Width = 75
+          Height = 33
+          Align = alLeft
+          Caption = 'Clear'
+          TabOrder = 0
+          OnClick = sButton2Click
+          SkinData.SkinSection = 'BUTTON'
+        end
+        object sButton2: TsButton
+          Left = 76
+          Top = 1
+          Width = 75
+          Height = 33
+          Align = alLeft
+          Caption = 'Save'
+          TabOrder = 1
+          OnClick = sButton3Click
+          SkinData.SkinSection = 'BUTTON'
         end
       end
     end
@@ -3803,8 +3807,8 @@ object MainForm: TMainForm
     ThirdParty.ThirdStaticText = 'TStaticText'#13#10
     ThirdParty.ThirdNativePaint = ' '
     OnActivate = sSkinManager1Activate
-    Left = 384
-    Top = 34
+    Left = 272
+    Top = 346
   end
   object sSkinProvider1: TsSkinProvider
     AddedTitle.Font.Charset = DEFAULT_CHARSET
@@ -3814,12 +3818,12 @@ object MainForm: TMainForm
     AddedTitle.Font.Style = []
     SkinData.SkinSection = 'FORM'
     TitleButtons = <>
-    Left = 304
-    Top = 34
+    Left = 296
+    Top = 258
   end
   object Info: TJvComputerInfoEx
-    Left = 480
-    Top = 40
+    Left = 472
+    Top = 248
   end
   object VideoLinkDownloader2: TJvHttpUrlGrabber
     FileName = 'output.txt'
@@ -3833,7 +3837,7 @@ object MainForm: TMainForm
     OnError = VideoLinkDownloader2Error
     OnProgress = VideoLinkDownloader2Progress
     Left = 160
-    Top = 16
+    Top = 352
   end
   object VideoLinkDownloader1: TJvHttpUrlGrabber
     FileName = 'output.txt'
@@ -3846,8 +3850,8 @@ object MainForm: TMainForm
     OnDoneFile = VideoLinkDownloader1DoneFile
     OnError = VideoLinkDownloader1Error
     OnProgress = VideoLinkDownloader1Progress
-    Left = 40
-    Top = 24
+    Left = 56
+    Top = 272
   end
   object UpdateThread: TJvThread
     Exclusive = True
@@ -3855,8 +3859,8 @@ object MainForm: TMainForm
     RunOnCreate = True
     FreeOnTerminate = True
     OnExecute = UpdateThreadExecute
-    Left = 632
-    Top = 16
+    Left = 624
+    Top = 344
   end
   object UpdateDownloader: TJvHttpUrlGrabber
     FileName = 'output.txt'
@@ -3866,12 +3870,12 @@ object MainForm: TMainForm
     ProxyAddresses = 'proxyserver'
     ProxyIgnoreList = '<local>'
     OnDoneStream = UpdateDownloaderDoneStream
-    Left = 584
-    Top = 16
+    Left = 640
+    Top = 240
   end
   object AboutMenu: TPopupMenu
-    Left = 352
-    Top = 104
+    Left = 360
+    Top = 352
     object A1: TMenuItem
       Caption = 'About'
       OnClick = A1Click
@@ -3901,21 +3905,21 @@ object MainForm: TMainForm
     Enabled = False
     Interval = 250
     OnTimer = PosTimerTimer
-    Left = 712
-    Top = 64
+    Left = 568
+    Top = 328
   end
   object TrayIcon: TJvTrayIcon
     IconIndex = 0
     OnBalloonHide = TrayIconBalloonHide
     OnBalloonClick = TrayIconBalloonClick
-    Left = 288
-    Top = 104
+    Left = 456
+    Top = 344
   end
   object FavMenu: TPopupMenu
-    Left = 408
-    Top = 104
+    Left = 392
+    Top = 256
     object D1: TMenuItem
-      Caption = 'Download/Update Favourites'
+      Caption = 'Download/Update All Favourites'
       OnClick = D1Click
     end
     object E1: TMenuItem
@@ -3927,8 +3931,8 @@ object MainForm: TMainForm
     Enabled = False
     Interval = 100
     OnTimer = FileCheckTimerTimer
-    Left = 560
-    Top = 112
+    Left = 536
+    Top = 240
   end
   object ImagePageDownloader1: TJvHttpUrlGrabber
     FileName = 'output.txt'
@@ -3941,7 +3945,7 @@ object MainForm: TMainForm
     OnDoneFile = ImagePageDownloader1DoneFile
     OnError = ImagePageDownloader1Error
     Left = 48
-    Top = 128
+    Top = 336
   end
   object ImagePageDownloader2: TJvHttpUrlGrabber
     FileName = 'output.txt'
@@ -3953,18 +3957,18 @@ object MainForm: TMainForm
     ProxyIgnoreList = '<local>'
     OnDoneFile = ImagePageDownloader2DoneFile
     OnError = ImagePageDownloader2Error
-    Left = 168
-    Top = 112
+    Left = 184
+    Top = 256
   end
   object TimeTimer: TJvThreadTimer
     OnTimer = TimeTimerTimer
-    Left = 640
-    Top = 112
+    Left = 512
+    Top = 344
   end
   object sSaveDialog1: TsSaveDialog
     DefaultExt = '*.txt'
     Filter = 'Text Files|*.txt'
-    Left = 696
-    Top = 144
+    Left = 680
+    Top = 344
   end
 end

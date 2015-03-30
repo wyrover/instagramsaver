@@ -1,3 +1,9 @@
+--1.6.0
+-Fixed: Couldn't download due to lack of ssl support
+-Fixed: Program could crash if closed during a download
+-Fixed: Some errors were not logged properly
+-Removed: Logs window and moved logs to the main interface
+
 --1.5.1
 -Fixed: Could not download photo or video
 

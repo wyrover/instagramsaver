@@ -4,7 +4,7 @@ object FavForm: TFavForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Favourites'
-  ClientHeight = 197
+  ClientHeight = 456
   ClientWidth = 646
   Color = 5066061
   DoubleBuffered = True
@@ -22,20 +22,20 @@ object FavForm: TFavForm
   OnShow = FormShow
   DesignSize = (
     646
-    197)
+    456)
   PixelsPerInch = 96
   TextHeight = 13
   object FavList: TsCheckListBox
     Left = 8
     Top = 35
     Width = 630
-    Height = 123
+    Height = 382
     Hint = 
       'List of your favourite Instagram accounts. Check ones will be do' +
       'wnloaded'
     Anchors = [akLeft, akTop, akRight, akBottom]
     BorderStyle = bsSingle
-    Color = 15917239
+    Color = 16179892
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -11
@@ -55,6 +55,7 @@ object FavForm: TFavForm
     BoundLabel.UseSkinColor = True
     SkinData.SkinSection = 'EDIT'
     OnClickCheck = FavListClickCheck
+    ExplicitHeight = 123
   end
   object NewFavEdit: TsEdit
     Left = 128
@@ -63,7 +64,7 @@ object FavForm: TFavForm
     Height = 21
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
-    Color = 15917239
+    Color = 16771226
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -11
@@ -100,7 +101,7 @@ object FavForm: TFavForm
   end
   object SaveBtn: TsButton
     Left = 563
-    Top = 164
+    Top = 423
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -108,10 +109,11 @@ object FavForm: TFavForm
     TabOrder = 3
     OnClick = SaveBtnClick
     SkinData.SkinSection = 'BUTTON'
+    ExplicitTop = 164
   end
   object CancelBtn: TsButton
     Left = 482
-    Top = 164
+    Top = 423
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -119,10 +121,11 @@ object FavForm: TFavForm
     TabOrder = 4
     OnClick = CancelBtnClick
     SkinData.SkinSection = 'BUTTON'
+    ExplicitTop = 164
   end
   object ClearBtn: TsButton
     Left = 8
-    Top = 164
+    Top = 423
     Width = 75
     Height = 25
     Hint = 'Remove all favourites'
@@ -131,10 +134,11 @@ object FavForm: TFavForm
     TabOrder = 5
     OnClick = ClearBtnClick
     SkinData.SkinSection = 'BUTTON'
+    ExplicitTop = 164
   end
   object RemoveBtn: TsButton
     Left = 89
-    Top = 164
+    Top = 423
     Width = 75
     Height = 25
     Hint = 'Remove selected favourites'
@@ -143,10 +147,11 @@ object FavForm: TFavForm
     TabOrder = 6
     OnClick = RemoveBtnClick
     SkinData.SkinSection = 'BUTTON'
+    ExplicitTop = 164
   end
   object UpBtn: TsButton
     Left = 170
-    Top = 164
+    Top = 423
     Width = 75
     Height = 25
     Anchors = [akLeft, akBottom]
@@ -154,10 +159,11 @@ object FavForm: TFavForm
     TabOrder = 7
     OnClick = UpBtnClick
     SkinData.SkinSection = 'BUTTON'
+    ExplicitTop = 164
   end
   object DownBtn: TsButton
     Left = 251
-    Top = 164
+    Top = 423
     Width = 75
     Height = 25
     Anchors = [akLeft, akBottom]
@@ -165,10 +171,11 @@ object FavForm: TFavForm
     TabOrder = 8
     OnClick = DownBtnClick
     SkinData.SkinSection = 'BUTTON'
+    ExplicitTop = 164
   end
   object DownloadBtn: TsButton
     Left = 351
-    Top = 164
+    Top = 423
     Width = 125
     Height = 25
     Anchors = [akRight, akBottom]
@@ -176,6 +183,7 @@ object FavForm: TFavForm
     TabOrder = 9
     OnClick = DownloadBtnClick
     SkinData.SkinSection = 'BUTTON'
+    ExplicitTop = 164
   end
   object sSkinProvider1: TsSkinProvider
     AddedTitle.Font.Charset = DEFAULT_CHARSET

@@ -553,7 +553,7 @@ object AboutForm: TAboutForm
     Height = 13
     Align = alTop
     Alignment = taCenter
-    Caption = 'InstagramSaver 1.5.1'
+    Caption = 'InstagramSaver 1.6.0'
     ExplicitWidth = 106
   end
   object sLabel2: TsLabel
@@ -635,7 +635,7 @@ object AboutForm: TAboutForm
     AddedTitle.Font.Style = []
     SkinData.SkinSection = 'FORM'
     TitleButtons = <>
-    Left = 144
-    Top = 24
+    Left = 168
+    Top = 8
   end
 end

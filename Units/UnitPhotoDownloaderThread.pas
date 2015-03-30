@@ -45,6 +45,7 @@ type
     FDownloadedImgCount: Cardinal;
     FIgnoredImgCount: Cardinal;
     FWaitMS: integer;
+    FDownloadSize: int64;
 
     // sync
     procedure ReportError;
@@ -64,6 +65,7 @@ type
     property DontDoubleDownload: Boolean read FDontDoubleDownload write FDontDoubleDownload;
     property DownloadedImgCount: Cardinal read FDownloadedImgCount;
     property IgnoredImgCount: Cardinal read FIgnoredImgCount;
+    property DownloadSize: int64 read FDownloadSize;
 
     constructor Create(const URLs: TStringList; const OutputFiles: TStringList; const WaitMS: integer);
     destructor Destroy; override;
@@ -122,6 +124,7 @@ begin
         LIdHTTP.IOHandler := LSSLHandler;
         LIdHTTP.Request.UserAgent := 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36';
         LIdHTTP.Get(URL, LMS);
+        FDownloadSize := FDownloadSize + LMS.Size;
         LMS.SaveToFile(FileName);
       except on E: Exception do
         begin
@@ -144,6 +147,7 @@ var
 begin
   FDownloadedImgCount := 0;
   FIgnoredImgCount := 0;
+  FDownloadSize := 0;
   FDownloading := True;
   FStatus := downloading;
   try

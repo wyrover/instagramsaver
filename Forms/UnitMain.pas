@@ -102,6 +102,7 @@ type
     sButton1: TsButton;
     sButton2: TsButton;
     sLabel2: TsLabel;
+    SpeedLabel: TsLabel;
     procedure DownloadBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -161,6 +162,7 @@ type
     FIgnoredImgCount: Cardinal;
     FDownloadedImgCount: Cardinal;
     FStopFileCheck: Boolean;
+    FTotalDownloadedSize: int64;
 
     FDownloadThreads: array[0..15] of TPhotoDownloadThread;
     FURLs: array[0..15] of  TStringList;
@@ -217,8 +219,8 @@ var
   MainForm: TMainForm;
 
 const
-  BuildInt = 575;
-  Portable = False;
+  BuildInt = 604;
+  Portable = True;
 
 implementation
 
@@ -375,6 +377,7 @@ begin
         FDownloadedImgCount := 0;
         FIgnoredImgCount := 0;
         TotalBar.Position := 0;
+    FTotalDownloadedSize := 0;
 
         // delete temp files
         if FileExists(ImagePageDownloader1.FileName) then
@@ -475,6 +478,7 @@ begin
     TotalBar.Position := 0;
     FDownloadedImgCount := 0;
     FIgnoredImgCount := 0;
+    FTotalDownloadedSize := 0;
 
     // delete temp files
     if FileExists(ImagePageDownloader1.FileName) then
@@ -542,6 +546,7 @@ begin
   CurrentLinkEdit.Caption := 'Link: ';
   StateEdit.Caption := 'State: ';
   Self.Caption := 'InstagramSaver';
+  SpeedLabel.Caption := 'Downloaded:';
   SetProgressValue(Handle, 0, MaxInt);
   SetProgressState(Handle, tbpsNone);
   TimeLabel.Caption := 'Time: 00:00:00';
@@ -850,6 +855,7 @@ begin
   LStreamReader := TStreamReader.Create(FileName, True);
   LNextPageLink := '';
   try
+    Inc(FTotalDownloadedSize, FileSize);
     while not LStreamReader.EndOfStream do
     begin
       LLine := Trim(LStreamReader.ReadLine);
@@ -1116,6 +1122,7 @@ begin
   LStreamReader := TStreamReader.Create(FileName, True);
   LNextPageLink := '';
   try
+    Inc(FTotalDownloadedSize, FileSize);
     while not LStreamReader.EndOfStream do
     begin
       LLine := Trim(LStreamReader.ReadLine);
@@ -1849,9 +1856,25 @@ begin
 end;
 
 procedure TMainForm.TimeTimerTimer(Sender: TObject);
+var
+  i: integer;
 begin
   Inc(FTime);
   TimeLabel.Caption := 'Time: ' + IntegerToTime(FTime);
+
+
+  for I := Low(FDownloadThreads) to High(FDownloadThreads) do
+  begin
+    if Assigned(FDownloadThreads[i]) then
+    begin
+      Inc(FTotalDownloadedSize, FDownloadThreads[i].DownloadSize);
+    end;
+  end;
+
+    if FTotalDownloadedSize > 0 then
+    begin
+      SpeedLabel.Caption := 'Downloaded: ' + FloatToStr(FTotalDownloadedSize div 1024 div 1024) + ' MB';
+    end;
 end;
 
 procedure TMainForm.TrayIconBalloonClick(Sender: TObject);
@@ -1957,6 +1980,7 @@ begin
   begin
     LStreamReader := TStreamReader.Create(FileName, True);
     try
+    Inc(FTotalDownloadedSize, FileSize);
       while not LStreamReader.EndOfStream do
       begin
         LLine := Trim(LStreamReader.ReadLine);
@@ -2103,6 +2127,7 @@ begin
   begin
     LStreamReader := TStreamReader.Create(FileName, True);
     try
+    Inc(FTotalDownloadedSize, FileSize);
       while not LStreamReader.EndOfStream do
       begin
         LLine := Trim(LStreamReader.ReadLine);
