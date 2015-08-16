@@ -54,7 +54,6 @@ type
     sPanel2: TsPanel;
     UserNameEdit: TsEdit;
     Info: TJvComputerInfoEx;
-    DonateBtn: TsBitBtn;
     VideoLinkDownloader2: TJvHttpUrlGrabber;
     VideoLinkDownloader1: TJvHttpUrlGrabber;
     UpdateThread: TJvThread;
@@ -103,6 +102,7 @@ type
     sButton2: TsButton;
     sLabel2: TsLabel;
     SpeedLabel: TsLabel;
+    DonateBtn: TsBitBtn;
     procedure DownloadBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -220,7 +220,7 @@ var
 
 const
   BuildInt = 604;
-  Portable = True;
+  Portable = false;
 
 implementation
 
@@ -377,7 +377,7 @@ begin
         FDownloadedImgCount := 0;
         FIgnoredImgCount := 0;
         TotalBar.Position := 0;
-    FTotalDownloadedSize := 0;
+        FTotalDownloadedSize := 0;
 
         // delete temp files
         if FileExists(ImagePageDownloader1.FileName) then
@@ -454,8 +454,7 @@ end;
 
 procedure TMainForm.DonateBtnClick(Sender: TObject);
 begin
-  // open google play link
-  ShellExecute(0, 'open', 'https://play.google.com/store/apps/details?id=com.mopa.instasaver', nil, nil, SW_SHOWNORMAL);
+  ShellExecute(0, 'open', 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=6MSWEDR4AGBQG', nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TMainForm.DownloadBtnClick(Sender: TObject);
