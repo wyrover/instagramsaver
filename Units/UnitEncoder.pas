@@ -21,7 +21,8 @@ unit UnitEncoder;
 
 interface
 
-uses Classes, Windows, SysUtils, JvCreateProcess, Messages, StrUtils;
+uses
+  Classes, Windows, SysUtils, JvCreateProcess, Messages, StrUtils;
 
 // current state of the process
 type
@@ -55,10 +56,8 @@ type
     property FilesDone: integer read FCommandIndex;
     property ProcessID: integer read GetProcessID;
     property CommandCount: integer read GetCommandCount;
-
     constructor Create();
     destructor Destroy(); override;
-
     procedure Start();
     procedure Stop();
     procedure ResetValues();

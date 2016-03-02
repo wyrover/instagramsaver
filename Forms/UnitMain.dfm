@@ -438,7 +438,7 @@ object MainForm: TMainForm
           Hint = 'Instagram account you want to download'
           Alignment = taCenter
           Anchors = [akLeft, akTop, akRight]
-          Color = 16771226
+          Color = 16768656
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clBlack
           Font.Height = -11
@@ -446,20 +446,13 @@ object MainForm: TMainForm
           Font.Style = []
           ParentFont = False
           TabOrder = 0
+          Text = 'realbarbarapalvin'
           TextHint = 'Account to download'
           OnKeyDown = UserNameEditKeyDown
           SkinData.SkinSection = 'EDIT'
           BoundLabel.Active = True
           BoundLabel.Caption = 'User name:'
-          BoundLabel.Indent = 0
-          BoundLabel.Font.Charset = DEFAULT_CHARSET
-          BoundLabel.Font.Color = clWindowText
-          BoundLabel.Font.Height = -11
-          BoundLabel.Font.Name = 'Tahoma'
-          BoundLabel.Font.Style = []
           BoundLabel.Layout = sclTopCenter
-          BoundLabel.MaxWidth = 0
-          BoundLabel.UseSkinColor = True
         end
       end
       object FavBtn: TsBitBtn
@@ -754,7 +747,7 @@ object MainForm: TMainForm
         Hint = 'Output folder where downloaded files will be stored'
         Anchors = [akLeft, akTop, akRight]
         AutoSize = False
-        Color = 16771226
+        Color = 16768656
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -11
@@ -767,15 +760,6 @@ object MainForm: TMainForm
         CheckOnExit = True
         BoundLabel.Active = True
         BoundLabel.Caption = 'Output folder:'
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'EDIT'
         GlyphMode.Blend = 0
         GlyphMode.Grayed = False
@@ -801,7 +785,7 @@ object MainForm: TMainForm
             Height = 214
             Align = alClient
             BorderStyle = bsNone
-            Color = 16179892
+            Color = 15521962
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -11
@@ -811,15 +795,6 @@ object MainForm: TMainForm
             ReadOnly = True
             ScrollBars = ssBoth
             TabOrder = 0
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
             SkinData.SkinSection = 'EDIT'
           end
         end
@@ -834,7 +809,7 @@ object MainForm: TMainForm
             Height = 214
             Align = alClient
             BorderStyle = bsNone
-            Color = 16179892
+            Color = 16768656
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -11
@@ -844,15 +819,6 @@ object MainForm: TMainForm
             ReadOnly = True
             ScrollBars = ssBoth
             TabOrder = 0
-            BoundLabel.Indent = 0
-            BoundLabel.Font.Charset = DEFAULT_CHARSET
-            BoundLabel.Font.Color = clWindowText
-            BoundLabel.Font.Height = -11
-            BoundLabel.Font.Name = 'Tahoma'
-            BoundLabel.Font.Style = []
-            BoundLabel.Layout = sclLeft
-            BoundLabel.MaxWidth = 0
-            BoundLabel.UseSkinColor = True
             SkinData.SkinSection = 'EDIT'
           end
         end
@@ -903,6 +869,7 @@ object MainForm: TMainForm
   end
   object sSkinManager1: TsSkinManager
     ExtendedBorders = True
+    Brightness = -10
     Saturation = 180
     InternalSkins = <
       item
@@ -3971,5 +3938,12 @@ object MainForm: TMainForm
     Filter = 'Text Files|*.txt'
     Left = 680
     Top = 344
+  end
+  object MediaLinkExtTimer: TTimer
+    Enabled = False
+    Interval = 50
+    OnTimer = MediaLinkExtTimerTimer
+    Left = 416
+    Top = 136
   end
 end

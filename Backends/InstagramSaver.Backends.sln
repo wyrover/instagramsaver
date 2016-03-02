@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstagramSaver", "InstagramSaver\InstagramSaver.csproj", "{7D060771-B56D-4D75-803E-3A60B73E321D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstagramSaver.Downloader", "InstagramSaver.Downloader\InstagramSaver.Downloader.csproj", "{1AA60837-A2EF-45D0-9921-EB884C9E59F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstagramSaver.Constants", "ImstagramSaver.Constants\InstagramSaver.Constants.csproj", "{10F79548-B9E3-4706-909B-3130C39264BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstagramSaver.PhotoLinkExtractor", "InstagramSaver.PhotoLinkExtractor\InstagramSaver.PhotoLinkExtractor.csproj", "{37EE9B8B-E26D-4A27-B446-23F2C97A4190}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstagramSaver.CommonTypes", "InstagramSaver.CommonTypes\InstagramSaver.CommonTypes.csproj", "{3F0219D3-D7FF-48B6-ADB9-1BB31FB88C24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstagramSaver.PhotoDownloader", "InstagramSaver.PhotoDownloader\InstagramSaver.PhotoDownloader.csproj", "{3F810588-AA74-4C41-BC1C-00C5E70D3560}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstagramSaver.MediaLinkExtractor", "InstagramSaver.MediaLinkExtractorLauncher\InstagramSaver.MediaLinkExtractor.csproj", "{8824874A-94C1-41B3-AB41-73297316D7B4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7D060771-B56D-4D75-803E-3A60B73E321D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D060771-B56D-4D75-803E-3A60B73E321D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D060771-B56D-4D75-803E-3A60B73E321D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D060771-B56D-4D75-803E-3A60B73E321D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AA60837-A2EF-45D0-9921-EB884C9E59F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AA60837-A2EF-45D0-9921-EB884C9E59F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AA60837-A2EF-45D0-9921-EB884C9E59F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AA60837-A2EF-45D0-9921-EB884C9E59F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10F79548-B9E3-4706-909B-3130C39264BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10F79548-B9E3-4706-909B-3130C39264BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10F79548-B9E3-4706-909B-3130C39264BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10F79548-B9E3-4706-909B-3130C39264BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37EE9B8B-E26D-4A27-B446-23F2C97A4190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37EE9B8B-E26D-4A27-B446-23F2C97A4190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37EE9B8B-E26D-4A27-B446-23F2C97A4190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37EE9B8B-E26D-4A27-B446-23F2C97A4190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F0219D3-D7FF-48B6-ADB9-1BB31FB88C24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F0219D3-D7FF-48B6-ADB9-1BB31FB88C24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F0219D3-D7FF-48B6-ADB9-1BB31FB88C24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F0219D3-D7FF-48B6-ADB9-1BB31FB88C24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F810588-AA74-4C41-BC1C-00C5E70D3560}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F810588-AA74-4C41-BC1C-00C5E70D3560}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F810588-AA74-4C41-BC1C-00C5E70D3560}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F810588-AA74-4C41-BC1C-00C5E70D3560}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8824874A-94C1-41B3-AB41-73297316D7B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8824874A-94C1-41B3-AB41-73297316D7B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8824874A-94C1-41B3-AB41-73297316D7B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8824874A-94C1-41B3-AB41-73297316D7B4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

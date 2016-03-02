@@ -18,23 +18,24 @@
   *
   * }
 
+
+
 unit UnitImageTypeExtractor;
 
 interface
 
-uses Classes, Windows, SysUtils, Messages, StrUtils, MediaInfoDll;
+uses
+  Classes, Windows, SysUtils, Messages, StrUtils, MediaInfoDll;
 
 type
   TImageTypeEx = class(TObject)
   private
     FType: string;
     FErrorCode: integer;
-
     function ReadType(const ImagePath: string; const DeepCheck: Boolean): string;
   public
     property ImageType: string read FType;
     property ErrorCode: integer read FErrorCode;
-
     constructor Create(const ImagePath: string; const DeepCheck: Boolean);
     destructor Destroy; override;
   end;
@@ -48,6 +49,7 @@ const
   ERROR_INVALID_FILE = 3;
 
 { TImageTypeEx }
+
 
 constructor TImageTypeEx.Create(const ImagePath: string; const DeepCheck: Boolean);
 begin
@@ -121,3 +123,4 @@ begin
 end;
 
 end.
+

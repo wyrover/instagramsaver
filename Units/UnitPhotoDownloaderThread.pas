@@ -18,12 +18,15 @@
   *
   * }
 
+
+
 unit UnitPhotoDownloaderThread;
 
 interface
 
-uses Classes, Windows, SysUtils, Messages, StrUtils, Vcl.ComCtrls, Generics.Collections, IdHTTP, IdComponent,
-  IdBaseComponent, IdIOHandler, IdIOHandlerSocket,
+uses
+  Classes, Windows, SysUtils, Messages, StrUtils, Vcl.ComCtrls, Generics.Collections,
+  IdHTTP, IdComponent, IdBaseComponent, IdIOHandler, IdIOHandlerSocket,
   IdIOHandlerStack, IdSSL, IdSSLOpenSSL;
 
 type
@@ -33,6 +36,8 @@ type
   TPhotoDownloadThread = class(TThread)
   private
     { Private declarations }
+
+
     FStatus: TDownloadStatus;
     FErrorMsg: string;
     FURLs: TStringList;
@@ -50,8 +55,9 @@ type
     // sync
     procedure ReportError;
     // force directory creation everytime a file is downloaded
-    procedure CreateOutputFolder(const FileName: string);
 
+
+    procedure CreateOutputFolder(const FileName: string);
     procedure DownloadFile(const URL: string; const FileName: string);
     procedure Wait;
   protected
@@ -66,17 +72,16 @@ type
     property DownloadedImgCount: Cardinal read FDownloadedImgCount;
     property IgnoredImgCount: Cardinal read FIgnoredImgCount;
     property DownloadSize: int64 read FDownloadSize;
-
     constructor Create(const URLs: TStringList; const OutputFiles: TStringList; const WaitMS: integer);
     destructor Destroy; override;
-
     procedure Stop();
   end;
 
 implementation
 
 { TPhotoDownloadThread }
-uses UnitMain;
+uses
+  UnitMain;
 
 constructor TPhotoDownloadThread.Create(const URLs: TStringList; const OutputFiles: TStringList; const WaitMS: integer);
 begin
@@ -126,7 +131,8 @@ begin
         LIdHTTP.Get(URL, LMS);
         FDownloadSize := FDownloadSize + LMS.Size;
         LMS.SaveToFile(FileName);
-      except on E: Exception do
+      except
+        on E: Exception do
         begin
           FErrorMsg := LIdHTTP.ResponseText + ' [' + FloatToStr(LIdHTTP.ResponseCode) + '] Error msg: ' + E.Message;
           Synchronize(ReportError);
@@ -151,7 +157,7 @@ begin
   FDownloading := True;
   FStatus := downloading;
   try
-    for I := 0 to FURLs.Count-1 do
+    for I := 0 to FURLs.Count - 1 do
     begin
       FProgress := i;
       FURL := FURLs[i];
@@ -209,3 +215,4 @@ begin
 end;
 
 end.
+

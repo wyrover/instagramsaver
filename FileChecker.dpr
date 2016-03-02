@@ -37,19 +37,19 @@ begin
       if FileExists(FFileListFilePath) then
       begin
         FFileListFile := TStringList.Create;
-        try       
+        try
           FFileListFile.LoadFromFile(FFileListFilePath);
           FResults := TStringList.Create;
-          try  
-            for i := 0 to FFileListFile.Count-1 do
-            begin  
+          try
+            for i := 0 to FFileListFile.Count - 1 do
+            begin
               // write progress info
-              Writeln(FloatToStr(i+1) + '/' + FloatToStr(FFileListFile.Count) + '|' + ExtractFileName(FFileListFile[i]));
+              Writeln(FloatToStr(i + 1) + '/' + FloatToStr(FFileListFile.Count) + '|' + ExtractFileName(FFileListFile[i]));
               // check file
               FImageTypeEx := TImageTypeEx.Create(FFileListFile[i], true);
               try
                 if Length(FImageTypeEx.ImageType) < 1 then
-                begin          
+                begin
                   case FImageTypeEx.ErrorCode of
                     1:
                       FResults.Add('[ERROR] Unkown file type: ' + FFileListFile[i]);
@@ -85,3 +85,4 @@ begin
       Writeln(E.ClassName, ': ', E.Message);
   end;
 end.
+

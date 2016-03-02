@@ -18,14 +18,15 @@
   *
   * }
 
+
 unit UnitAbout;
 
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, sSkinProvider, Vcl.StdCtrls, sLabel,
-  acPNG, Vcl.ExtCtrls, ShellAPI, sButton;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, sSkinProvider, Vcl.StdCtrls,
+  sLabel, acPNG, Vcl.ExtCtrls, ShellAPI, sButton;
 
 type
   TAboutForm = class(TForm)
@@ -46,8 +47,10 @@ type
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
+
   public
     { Public declarations }
+
   end;
 
 var
@@ -57,7 +60,9 @@ implementation
 
 {$R *.dfm}
 
-uses UnitMain;
+
+uses
+  UnitMain;
 
 procedure TAboutForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -68,11 +73,14 @@ end;
 procedure TAboutForm.FormCreate(Sender: TObject);
 begin
   {$IFDEF WIN32}
-    sLabel1.Caption := 'InstagramSaver 1.5.1 32bit';
+
+  sLabel1.Caption := 'InstagramSaver 1.6 32bit';
   {$ENDIF}
   {$IFDEF WIN64}
-    sLabel1.Caption := 'InstagramSaver 1.5.1 64bit';
+
+  sLabel1.Caption := 'InstagramSaver 1.6 64bit';
   {$ENDIF}
+
 end;
 
 procedure TAboutForm.sButton1Click(Sender: TObject);
@@ -96,3 +104,4 @@ begin
 end;
 
 end.
+

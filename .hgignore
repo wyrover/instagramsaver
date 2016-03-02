@@ -1,0 +1,15 @@
+syntax: glob
+__history/*
+*.pdb
+Backends/ImstagramSaver.Constants/obj/*
+*.dll
+Backends/InstagramSaver.Downloader/obj/*
+Backends/InstagramSaver.CommonTypes/obj/*
+Backends/InstagramSaver.MediaLinkExtractorLauncher/obj/*
+*.exe
+Backends/InstagramSaver.Parser/*
+Backends/InstagramSaver.PhotoDownloader/obj/*
+Backends/InstagramSaver.PhotoLinkExtractor/obj/*
+Backends/InstagramSaver/obj/*
+Backends/MediaLinkExtractorLauncher.cs/obj/*
+*.dcu

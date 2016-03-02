@@ -57,7 +57,6 @@ object SettingsForm: TSettingsForm
     TabOrder = 2
     OnClick = sButton1Click
     SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 158
   end
   object DontDoubleDownloadBtn: TsCheckBox
     Left = 8
@@ -94,19 +93,10 @@ object SettingsForm: TSettingsForm
     Alignment = taLeftJustify
     BoundLabel.Active = True
     BoundLabel.Caption = 'Look:'
-    BoundLabel.Indent = 0
-    BoundLabel.Font.Charset = DEFAULT_CHARSET
-    BoundLabel.Font.Color = clWindowText
-    BoundLabel.Font.Height = -11
-    BoundLabel.Font.Name = 'Tahoma'
-    BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
     SkinData.SkinSection = 'COMBOBOX'
     VerticalAlignment = taAlignTop
     Style = csDropDownList
-    Color = 15917239
+    Color = 16768656
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -11
@@ -121,7 +111,6 @@ object SettingsForm: TSettingsForm
       'Dark'
       'Light'
       'None')
-    ExplicitTop = 131
   end
   object ThreadList: TsComboBox
     Left = 134
@@ -132,19 +121,10 @@ object SettingsForm: TSettingsForm
     Alignment = taCenter
     BoundLabel.Active = True
     BoundLabel.Caption = 'Parallel download count:'
-    BoundLabel.Indent = 0
-    BoundLabel.Font.Charset = DEFAULT_CHARSET
-    BoundLabel.Font.Color = clWindowText
-    BoundLabel.Font.Height = -11
-    BoundLabel.Font.Name = 'Tahoma'
-    BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
     SkinData.SkinSection = 'COMBOBOX'
     VerticalAlignment = taAlignTop
     Style = csDropDownList
-    Color = 15917239
+    Color = 16768656
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -11
@@ -171,7 +151,6 @@ object SettingsForm: TSettingsForm
       '14'
       '15'
       '16')
-    ExplicitTop = 131
   end
   object DontCheckBtn: TsCheckBox
     Left = 8
@@ -190,7 +169,7 @@ object SettingsForm: TSettingsForm
     Width = 70
     Height = 21
     Alignment = taCenter
-    Color = 15917239
+    Color = 16768656
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -11
@@ -203,15 +182,6 @@ object SettingsForm: TSettingsForm
     SkinData.SkinSection = 'EDIT'
     BoundLabel.Active = True
     BoundLabel.Caption = 'Wait between downloads to prevent ban (ms):'
-    BoundLabel.Indent = 0
-    BoundLabel.Font.Charset = DEFAULT_CHARSET
-    BoundLabel.Font.Color = clWindowText
-    BoundLabel.Font.Height = -11
-    BoundLabel.Font.Name = 'Tahoma'
-    BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
     MaxValue = 0
     MinValue = 0
     Value = 0
@@ -222,6 +192,7 @@ object SettingsForm: TSettingsForm
     AddedTitle.Font.Height = -11
     AddedTitle.Font.Name = 'Tahoma'
     AddedTitle.Font.Style = []
+    FormHeader.AdditionalHeight = 0
     SkinData.SkinSection = 'PANEL'
     TitleButtons = <>
     Left = 208

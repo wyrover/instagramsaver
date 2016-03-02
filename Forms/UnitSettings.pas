@@ -18,14 +18,15 @@
   *
   * }
 
+
 unit UnitSettings;
 
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, sSkinProvider, Vcl.StdCtrls, sButton,
-  sCheckBox, IniFiles, sComboBox, sEdit, sSpinEdit;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, sSkinProvider, Vcl.StdCtrls,
+  sButton, sCheckBox, IniFiles, sComboBox, sEdit, sSpinEdit;
 
 type
   TSettingsForm = class(TForm)
@@ -45,10 +46,12 @@ type
     procedure SkinListChange(Sender: TObject);
   private
     { Private declarations }
+
     procedure LoadSettings;
     procedure SaveSettings;
   public
     { Public declarations }
+
   end;
 
 var
@@ -58,7 +61,9 @@ implementation
 
 {$R *.dfm}
 
-uses UnitMain;
+
+uses
+  UnitMain;
 
 procedure TSettingsForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -86,14 +91,14 @@ begin
       OpenOutBtn.Checked := ReadBool('general', 'openout', True);
       DontDoubleDownloadBtn.Checked := ReadBool('general', 'nodouble', True);
       DownloadVideoBtn.Checked := ReadBool('general', 'video', False);
-      SkinList.ItemIndex := ReadInteger('general', 'skin', 0);
+      SkinList.ItemIndex := ReadInteger('general', 'skin2', 2);
       if CPUCount > 16 then
       begin
         ThreadList.ItemIndex := ReadInteger('general', 'thread', 15);
       end
       else
       begin
-        ThreadList.ItemIndex := ReadInteger('general', 'thread', CPUCount-1);
+        ThreadList.ItemIndex := ReadInteger('general', 'thread', CPUCount - 1);
       end;
       DontCheckBtn.Checked := ReadBool('general', 'check', False);
       WaitEdit.Text := ReadString('general', 'wait', '0');
@@ -152,3 +157,4 @@ begin
 end;
 
 end.
+
