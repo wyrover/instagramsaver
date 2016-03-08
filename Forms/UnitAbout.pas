@@ -1,12 +1,11 @@
 { *
-  * Copyright (C) 2014-2015 ozok <ozok26@gmail.com>
+  * Copyright (C) 2014-2016 ozok <ozok26@gmail.com>
   *
   * This file is part of InstagramSaver.
   *
   * InstagramSaver is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
-  * the Free Software Foundation, either version 2 of the License, or
-  * (at your option) any later version.
+  * the Free Software Foundation, either version 2 of the License.
   *
   * InstagramSaver is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,26 +18,26 @@
   * }
 
 
+
 unit UnitAbout;
 
 interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, sSkinProvider, Vcl.StdCtrls,
-  sLabel, acPNG, Vcl.ExtCtrls, ShellAPI, sButton;
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
+  ShellAPI;
 
 type
   TAboutForm = class(TForm)
-    sSkinProvider1: TsSkinProvider;
     Image1: TImage;
-    sLabel1: TsLabel;
-    sLabel2: TsLabel;
-    sLabel3: TsLabel;
-    sLabel4: TsLabel;
-    sButton1: TsButton;
-    sButton2: TsButton;
-    sButton3: TsButton;
+    sLabel1: TLabel;
+    sLabel2: TLabel;
+    sLabel3: TLabel;
+    sLabel4: TLabel;
+    sButton1: TButton;
+    sButton2: TButton;
+    sButton3: TButton;
     procedure sButton1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure sLabel4Click(Sender: TObject);
@@ -48,8 +47,10 @@ type
   private
     { Private declarations }
 
+
   public
     { Public declarations }
+
 
   end;
 
@@ -74,12 +75,18 @@ procedure TAboutForm.FormCreate(Sender: TObject);
 begin
   {$IFDEF WIN32}
 
+
+
   sLabel1.Caption := 'InstagramSaver 1.6 32bit';
   {$ENDIF}
   {$IFDEF WIN64}
 
+
+
   sLabel1.Caption := 'InstagramSaver 1.6 64bit';
   {$ENDIF}
+
+
 
 end;
 

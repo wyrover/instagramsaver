@@ -5,8 +5,8 @@ object FavForm: TFavForm
   BorderStyle = bsSingle
   Caption = 'Favourites'
   ClientHeight = 456
-  ClientWidth = 646
-  Color = 5066061
+  ClientWidth = 654
+  Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,180 +20,117 @@ object FavForm: TFavForm
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnShow = FormShow
-  DesignSize = (
-    646
-    456)
   PixelsPerInch = 96
   TextHeight = 13
-  object FavList: TsCheckListBox
-    Left = 8
-    Top = 35
-    Width = 630
-    Height = 382
+  object FavList: TCheckListBox
+    Left = 0
+    Top = 65
+    Width = 654
+    Height = 391
     Hint = 
       'List of your favourite Instagram accounts. Check ones will be do' +
       'wnloaded'
-    Anchors = [akLeft, akTop, akRight, akBottom]
-    BorderStyle = bsSingle
-    Color = 16179892
+    OnClickCheck = FavListClickCheck
+    Align = alClient
+    Color = clWhite
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    MultiSelect = True
+    ItemHeight = 13
     ParentFont = False
     TabOrder = 0
-    BoundLabel.Indent = 0
-    BoundLabel.Font.Charset = DEFAULT_CHARSET
-    BoundLabel.Font.Color = clWindowText
-    BoundLabel.Font.Height = -11
-    BoundLabel.Font.Name = 'Tahoma'
-    BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
-    SkinData.SkinSection = 'EDIT'
-    OnClickCheck = FavListClickCheck
-    ExplicitHeight = 123
   end
-  object NewFavEdit: TsEdit
-    Left = 128
-    Top = 8
-    Width = 429
-    Height = 21
-    Alignment = taCenter
-    Anchors = [akLeft, akTop, akRight]
-    Color = 16771226
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
+  object ToolBar: TPanel
+    Left = 0
+    Top = 0
+    Width = 654
+    Height = 65
+    Align = alTop
     TabOrder = 1
-    TextHint = 'New favourite account'
-    OnKeyDown = NewFavEditKeyDown
-    SkinData.SkinSection = 'EDIT'
-    BoundLabel.Active = True
-    BoundLabel.Caption = 'New favourite account:'
-    BoundLabel.Indent = 0
-    BoundLabel.Font.Charset = DEFAULT_CHARSET
-    BoundLabel.Font.Color = clWindowText
-    BoundLabel.Font.Height = -11
-    BoundLabel.Font.Name = 'Tahoma'
-    BoundLabel.Font.Style = []
-    BoundLabel.Layout = sclLeft
-    BoundLabel.MaxWidth = 0
-    BoundLabel.UseSkinColor = True
-  end
-  object AddBtn: TsBitBtn
-    Left = 563
-    Top = 8
-    Width = 75
-    Height = 21
-    Hint = 'Add this as a new account'
-    Anchors = [akTop, akRight]
-    Caption = 'Add'
-    TabOrder = 2
-    OnClick = AddBtnClick
-    SkinData.SkinSection = 'BUTTON'
-  end
-  object SaveBtn: TsButton
-    Left = 563
-    Top = 423
-    Width = 75
-    Height = 25
-    Anchors = [akRight, akBottom]
-    Caption = 'Save'
-    TabOrder = 3
-    OnClick = SaveBtnClick
-    SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 164
-  end
-  object CancelBtn: TsButton
-    Left = 482
-    Top = 423
-    Width = 75
-    Height = 25
-    Anchors = [akRight, akBottom]
-    Caption = 'Cancel'
-    TabOrder = 4
-    OnClick = CancelBtnClick
-    SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 164
-  end
-  object ClearBtn: TsButton
-    Left = 8
-    Top = 423
-    Width = 75
-    Height = 25
-    Hint = 'Remove all favourites'
-    Anchors = [akLeft, akBottom]
-    Caption = 'Clear Favs'
-    TabOrder = 5
-    OnClick = ClearBtnClick
-    SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 164
-  end
-  object RemoveBtn: TsButton
-    Left = 89
-    Top = 423
-    Width = 75
-    Height = 25
-    Hint = 'Remove selected favourites'
-    Anchors = [akLeft, akBottom]
-    Caption = 'Remove'
-    TabOrder = 6
-    OnClick = RemoveBtnClick
-    SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 164
-  end
-  object UpBtn: TsButton
-    Left = 170
-    Top = 423
-    Width = 75
-    Height = 25
-    Anchors = [akLeft, akBottom]
-    Caption = 'Move Up'
-    TabOrder = 7
-    OnClick = UpBtnClick
-    SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 164
-  end
-  object DownBtn: TsButton
-    Left = 251
-    Top = 423
-    Width = 75
-    Height = 25
-    Anchors = [akLeft, akBottom]
-    Caption = 'Move Down'
-    TabOrder = 8
-    OnClick = DownBtnClick
-    SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 164
-  end
-  object DownloadBtn: TsButton
-    Left = 351
-    Top = 423
-    Width = 125
-    Height = 25
-    Anchors = [akRight, akBottom]
-    Caption = 'Download Selected'
-    TabOrder = 9
-    OnClick = DownloadBtnClick
-    SkinData.SkinSection = 'BUTTON'
-    ExplicitTop = 164
-  end
-  object sSkinProvider1: TsSkinProvider
-    AddedTitle.Font.Charset = DEFAULT_CHARSET
-    AddedTitle.Font.Color = clNone
-    AddedTitle.Font.Height = -11
-    AddedTitle.Font.Name = 'Tahoma'
-    AddedTitle.Font.Style = []
-    SkinData.SkinSection = 'FORM'
-    TitleButtons = <>
-    Left = 240
-    Top = 64
+    object AddBtn: TBitBtn
+      Left = 1
+      Top = 1
+      Width = 75
+      Height = 63
+      Hint = 'Add this as a new account'
+      Align = alLeft
+      Caption = 'Add'
+      TabOrder = 0
+      OnClick = AddBtnClick
+    end
+    object CancelBtn: TButton
+      Left = 576
+      Top = 1
+      Width = 75
+      Height = 63
+      Align = alLeft
+      Caption = 'Cancel'
+      TabOrder = 1
+      OnClick = CancelBtnClick
+    end
+    object ClearBtn: TButton
+      Left = 76
+      Top = 1
+      Width = 75
+      Height = 63
+      Hint = 'Remove all favourites'
+      Align = alLeft
+      Caption = 'Clear Favs'
+      TabOrder = 2
+      OnClick = ClearBtnClick
+    end
+    object DownBtn: TButton
+      Left = 301
+      Top = 1
+      Width = 75
+      Height = 63
+      Align = alLeft
+      Caption = 'Move Down'
+      TabOrder = 3
+      OnClick = DownBtnClick
+    end
+    object DownloadBtn: TButton
+      Left = 376
+      Top = 1
+      Width = 125
+      Height = 63
+      Align = alLeft
+      Caption = 'Download Selected'
+      TabOrder = 4
+      OnClick = DownloadBtnClick
+    end
+    object RemoveBtn: TButton
+      Left = 151
+      Top = 1
+      Width = 75
+      Height = 63
+      Hint = 'Remove selected favourites'
+      Align = alLeft
+      Caption = 'Remove'
+      TabOrder = 5
+      OnClick = RemoveBtnClick
+    end
+    object SaveBtn: TButton
+      Left = 501
+      Top = 1
+      Width = 75
+      Height = 63
+      Align = alLeft
+      Caption = 'Save'
+      TabOrder = 6
+      OnClick = SaveBtnClick
+    end
+    object UpBtn: TButton
+      Left = 226
+      Top = 1
+      Width = 75
+      Height = 63
+      Align = alLeft
+      Caption = 'Move Up'
+      TabOrder = 7
+      OnClick = UpBtnClick
+    end
   end
 end

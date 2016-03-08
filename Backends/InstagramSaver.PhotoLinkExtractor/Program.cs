@@ -25,7 +25,7 @@ namespace InstagramSaver.PhotoLinkExtractor
 
         private static void Log(string msg)
         {
-            using (StreamWriter sw = File.CreateText("C:\\ppe.txt"))
+            using (StreamWriter sw = File.CreateText("ppe.txt"))
             {
                 sw.WriteLine(String.Format("[{0}] {1}", DateTime.Now, msg));
             }

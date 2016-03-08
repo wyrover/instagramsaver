@@ -10,14 +10,11 @@ uses
   UnitMain in 'Forms\UnitMain.pas' {MainForm},
   UnitSettings in 'Forms\UnitSettings.pas' {SettingsForm},
   UnitAbout in 'Forms\UnitAbout.pas' {AboutForm},
-  windows7taskbar in 'Units\windows7taskbar.pas',
-  UnitImageTypeExtractor in 'Units\UnitImageTypeExtractor.pas',
-  UnitPhotoDownloaderThread in 'Units\UnitPhotoDownloaderThread.pas',
-  MediaInfoDLL in 'Units\MediaInfoDLL.pas',
   UnitFavs in 'Forms\UnitFavs.pas' {FavForm},
-  UnitEncoder in 'Units\UnitEncoder.pas',
   UnitPhotoPageLinkExtractorLauncher in 'Units\UnitPhotoPageLinkExtractorLauncher.pas',
-  UnitMediaLinkExtLauncher in 'Units\UnitMediaLinkExtLauncher.pas';
+  UnitMediaLinkExtLauncher in 'Units\UnitMediaLinkExtLauncher.pas',
+  UnitPhotoDownloadLauncher in 'Units\UnitPhotoDownloadLauncher.pas',
+  UnitFileCheckerLauncher in 'Units\UnitFileCheckerLauncher.pas';
 
 {$R *.res}
 

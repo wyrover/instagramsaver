@@ -1,25 +1,43 @@
+{ *
+  * Copyright (C) 2014-2016 ozok <ozok26@gmail.com>
+  *
+  * This file is part of InstagramSaver.
+  *
+  * InstagramSaver is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation, either version 2 of the License.
+  *
+  * InstagramSaver is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  *
+  * You should have received a copy of the GNU General Public License
+  * along with InstagramSaver.  If not, see <http://www.gnu.org/licenses/>.
+  *
+  * }
+
 unit UnitFavs;
 
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, sButton, Vcl.Buttons,
-  sBitBtn, sEdit, sListBox, sCheckListBox, sSkinProvider;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons,
+  Vcl.CheckLst, Vcl.ExtCtrls;
 
 type
   TFavForm = class(TForm)
-    sSkinProvider1: TsSkinProvider;
-    FavList: TsCheckListBox;
-    NewFavEdit: TsEdit;
-    AddBtn: TsBitBtn;
-    SaveBtn: TsButton;
-    CancelBtn: TsButton;
-    ClearBtn: TsButton;
-    RemoveBtn: TsButton;
-    UpBtn: TsButton;
-    DownBtn: TsButton;
-    DownloadBtn: TsButton;
+    FavList: TCheckListBox;
+    AddBtn: TBitBtn;
+    SaveBtn: TButton;
+    CancelBtn: TButton;
+    ClearBtn: TButton;
+    RemoveBtn: TButton;
+    UpBtn: TButton;
+    DownBtn: TButton;
+    DownloadBtn: TButton;
+    ToolBar: TPanel;
     procedure CancelBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure AddBtnClick(Sender: TObject);
@@ -35,9 +53,13 @@ type
     procedure DownloadBtnClick(Sender: TObject);
   private
     { Private declarations }
+
+
     FEdited: Boolean;
   public
     { Public declarations }
+
+
   end;
 
 var
@@ -47,18 +69,21 @@ implementation
 
 {$R *.dfm}
 
-uses UnitMain;
+
+uses
+  UnitMain;
 
 procedure TFavForm.AddBtnClick(Sender: TObject);
+var
+  LNewProfile: string;
 begin
-  if Length(NewFavEdit.Text) > 0 then
+  LNewProfile := InputBox('Add a new fav profile', 'Add', '');
+  if Length(LNewProfile) > 0 then
   begin
-    NewFavEdit.Text := LowerCase(NewFavEdit.Text);
+    LNewProfile := LowerCase(LNewProfile).Replace(' ', '');
 
-    FavList.Items.Add(NewFavEdit.Text);
+    FavList.Items.Add(LNewProfile);
     FavList.Checked[FavList.Items.Count - 1] := True;
-
-    NewFavEdit.Text := '';
 
     FEdited := True;
   end
@@ -261,3 +286,5 @@ begin
 end;
 
 end.
+
+

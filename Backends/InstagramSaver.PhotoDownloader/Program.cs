@@ -22,6 +22,7 @@ namespace InstagramSaver.PhotoDownloader
             catch (Exception exception)
             {
                 Console.WriteLine(exception.Message);
+                Environment.Exit(1);
             }
         }
     }

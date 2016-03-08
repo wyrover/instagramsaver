@@ -1,12 +1,11 @@
 { *
-  * Copyright (C) 2014-2015 ozok <ozok26@gmail.com>
+  * Copyright (C) 2014-2016 ozok <ozok26@gmail.com>
   *
   * This file is part of InstagramSaver.
   *
   * InstagramSaver is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
-  * the Free Software Foundation, either version 2 of the License, or
-  * (at your option) any later version.
+  * the Free Software Foundation, either version 2 of the License.
   *
   * InstagramSaver is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,32 +24,31 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, sSkinProvider, Vcl.StdCtrls,
-  sButton, sCheckBox, IniFiles, sComboBox, sEdit, sSpinEdit;
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, IniFiles,
+  Vcl.Samples.Spin;
 
 type
   TSettingsForm = class(TForm)
-    sSkinProvider1: TsSkinProvider;
-    CheckUpdateBtn: TsCheckBox;
-    OpenOutBtn: TsCheckBox;
-    sButton1: TsButton;
-    DontDoubleDownloadBtn: TsCheckBox;
-    DownloadVideoBtn: TsCheckBox;
-    SkinList: TsComboBox;
-    ThreadList: TsComboBox;
-    DontCheckBtn: TsCheckBox;
-    WaitEdit: TsSpinEdit;
+    CheckUpdateBtn: TCheckBox;
+    OpenOutBtn: TCheckBox;
+    sButton1: TButton;
+    DontDoubleDownloadBtn: TCheckBox;
+    DownloadVideoBtn: TCheckBox;
+    ThreadList: TComboBox;
+    DontCheckBtn: TCheckBox;
+    Label1: TLabel;
     procedure sButton1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure SkinListChange(Sender: TObject);
   private
     { Private declarations }
+
 
     procedure LoadSettings;
     procedure SaveSettings;
   public
     { Public declarations }
+
 
   end;
 
@@ -74,8 +72,6 @@ end;
 
 procedure TSettingsForm.FormCreate(Sender: TObject);
 begin
-  WaitEdit.MinValue := 0;
-  WaitEdit.MaxValue := MaxInt;
   LoadSettings;
 end;
 
@@ -91,7 +87,6 @@ begin
       OpenOutBtn.Checked := ReadBool('general', 'openout', True);
       DontDoubleDownloadBtn.Checked := ReadBool('general', 'nodouble', True);
       DownloadVideoBtn.Checked := ReadBool('general', 'video', False);
-      SkinList.ItemIndex := ReadInteger('general', 'skin2', 2);
       if CPUCount > 16 then
       begin
         ThreadList.ItemIndex := ReadInteger('general', 'thread', 15);
@@ -101,7 +96,6 @@ begin
         ThreadList.ItemIndex := ReadInteger('general', 'thread', CPUCount - 1);
       end;
       DontCheckBtn.Checked := ReadBool('general', 'check', False);
-      WaitEdit.Text := ReadString('general', 'wait', '0');
     end;
   finally
     LSetFile.Free;
@@ -120,40 +114,17 @@ begin
       WriteBool('general', 'openout', OpenOutBtn.Checked);
       WriteBool('general', 'nodouble', DontDoubleDownloadBtn.Checked);
       WriteBool('general', 'video', DownloadVideoBtn.Checked);
-      WriteInteger('general', 'skin', SkinList.ItemIndex);
       WriteInteger('general', 'thread', ThreadList.ItemIndex);
       WriteBool('general', 'check', DontCheckBtn.Checked);
-      WriteString('general', 'wait', WaitEdit.Text);
     end;
   finally
     LSetFile.Free;
-    SkinListChange(Self);
   end;
 end;
 
 procedure TSettingsForm.sButton1Click(Sender: TObject);
 begin
   Close;
-end;
-
-procedure TSettingsForm.SkinListChange(Sender: TObject);
-begin
-  case SkinList.ItemIndex of
-    0:
-      begin
-        MainForm.sSkinManager1.Active := True;
-        MainForm.sSkinManager1.SkinName := 'DarkMetro (internal)';
-      end;
-    1:
-      begin
-        MainForm.sSkinManager1.Active := True;
-        MainForm.sSkinManager1.SkinName := 'AlterMetro (internal)';
-      end;
-    2:
-      begin
-        MainForm.sSkinManager1.Active := False;
-      end;
-  end;
 end;
 
 end.

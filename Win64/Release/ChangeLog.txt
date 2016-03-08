@@ -1,3 +1,9 @@
+--1.7.0
+-Added: Media link extraction process is multithreaded as well
+-Added: Re-written all download logic
+-Improved: Smaller exe size
+-Removed: Skins
+
 --1.6.0
 -Fixed: Couldn't download due to lack of ssl support
 -Fixed: Program could crash if closed during a download

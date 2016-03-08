@@ -19,7 +19,7 @@ namespace InstagramSaver.MediaLinkExtractorLauncher
 
         private static void Log(string msg)
         {
-            using (StreamWriter sw = File.CreateText("C:\\mle.txt"))
+            using (StreamWriter sw = File.CreateText("mle.txt"))
             {
                 sw.WriteLine(String.Format("[{0}] {1}", DateTime.Now, msg));
             }

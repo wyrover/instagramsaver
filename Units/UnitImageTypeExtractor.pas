@@ -25,7 +25,7 @@ unit UnitImageTypeExtractor;
 interface
 
 uses
-  Classes, Windows, SysUtils, Messages, StrUtils, MediaInfoDll;
+  Classes, Windows, SysUtils, Messages, StrUtils;
 
 type
   TImageTypeEx = class(TObject)
