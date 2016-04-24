@@ -23,13 +23,13 @@ namespace InstagramSaver.PhotoLinkExtractor
 
         private static string _profileName;
 
-        private static void Log(string msg)
-        {
-            using (StreamWriter sw = File.CreateText("ppe.txt"))
-            {
-                sw.WriteLine(String.Format("[{0}] {1}", DateTime.Now, msg));
-            }
-        }
+        //private static void Log(string msg)
+        //{
+        //    using (StreamWriter sw = File.CreateText("ppe.txt"))
+        //    {
+        //        sw.WriteLine(String.Format("[{0}] {1}", DateTime.Now, msg));
+        //    }
+        //}
 
         static void Main(string[] args)
         {
@@ -90,7 +90,7 @@ namespace InstagramSaver.PhotoLinkExtractor
                             }
                             catch (Exception exception)
                             {
-                                Log(exception.Message);
+                                //Log(exception.Message);
                             }
 
                             _nextPageLink = null;
@@ -104,7 +104,7 @@ namespace InstagramSaver.PhotoLinkExtractor
                             }
                             catch (Exception exception)
                             {
-                                Log(exception.Message);
+                                //Log(exception.Message);
                             }
                         }
                     }
@@ -112,7 +112,7 @@ namespace InstagramSaver.PhotoLinkExtractor
             }
             catch (Exception exception)
             {
-                Log(exception.Message);
+                //Log(exception.Message);
             }
 
         }

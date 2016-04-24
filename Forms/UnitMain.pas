@@ -17,19 +17,6 @@
   *
   * }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 unit UnitMain;
 
 interface
@@ -83,8 +70,6 @@ type
     sPageControl1: TPageControl;
     sTabSheet1: TTabSheet;
     LogList: TMemo;
-    sTabSheet2: TTabSheet;
-    ThreadsList: TMemo;
     sPanel4: TPanel;
     sButton1: TButton;
     sButton2: TButton;
@@ -111,8 +96,6 @@ type
     procedure UserNameEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure AboutBtnClick(Sender: TObject);
     procedure DonateBtnClick(Sender: TObject);
-    procedure ImagePageDownloader2Error(Sender: TObject; ErrorMsg: string);
-    procedure ImagePageDownloader1Error(Sender: TObject; ErrorMsg: string);
     procedure LogBtnClick(Sender: TObject);
     procedure UpdateThreadExecute(Sender: TObject; Params: Pointer);
     procedure UpdateDownloaderDoneStream(Sender: TObject; Stream: TStream; StreamSize: Integer; Url: string);
@@ -124,7 +107,6 @@ type
     procedure S1Click(Sender: TObject);
     procedure TrayIconBalloonClick(Sender: TObject);
     procedure TrayIconBalloonHide(Sender: TObject);
-    procedure sSkinManager1Activate(Sender: TObject);
     procedure E1Click(Sender: TObject);
     procedure FavBtnClick(Sender: TObject);
     procedure D1Click(Sender: TObject);
@@ -173,10 +155,6 @@ type
     // clears temp folder
     procedure ClearTempFolder;
 
-    // adds msg to log
-    // todo: save logs to text file
-    procedure AddToProgramLog(const Line: string);
-
     // int to hh:mm:ss
     function IntegerToTime(const Time: Integer): string;
   public
@@ -190,14 +168,18 @@ type
     FPhotoPageLinks: TStringList;
     FOutputFileLinks: TStringList;
     FOKFileCount, FBrokenFileCount: integer;
+
+    // adds msg to log
+    // todo: save logs to text file
+    procedure AddToProgramLog(const Line: string);
   end;
 
 var
   MainForm: TMainForm;
 
 const
-  BuildInt = 604;
-  Portable = false;
+  BuildInt = 674;
+  Portable = False;
 
 implementation
 
@@ -527,11 +509,12 @@ begin
       Taskbar1.ProgressValue := TotalBar.Position;
       Self.Caption := FloatToStr(TotalBar.Position) + '% [InstagramSaver]';
     end;
-    // when all lines are processed
-    // start downloading
+
+    // finished downloading images
     if LProgress = FMediaLinks.Count then
     begin
       DownloadTimer.Enabled := False;
+      // check downloaded files
       if not SettingsForm.DontCheckBtn.Checked then
       begin
         FOKFileCount := 0;
@@ -545,12 +528,14 @@ begin
           FFileCheckerLaunchers[i].ResetValues;
         end;
 
+        // add command lines
         for I := 0 to FOutputFileLinks.Count - 1 do
         begin
-          FFileCheckerLaunchers[i mod FThreadCount].CommandLines.Add('"' + FOutputFileLinks[i] + '"');
+          FFileCheckerLaunchers[i mod FThreadCount].FilesToCheck.Add('"' + FOutputFileLinks[i] + '"');
           FFileCheckerLaunchers[i mod FThreadCount].Paths.Add(FFileCheckerPath);
         end;
 
+        // start processes
         for I := Low(FFileCheckerLaunchers) to High(FFileCheckerLaunchers) do
         begin
           if FFileCheckerLaunchers[i].CommandCount > 0 then
@@ -563,6 +548,7 @@ begin
       end
       else
       begin
+        // do not check files, report process end
         AddToProgramLog(Format('Finished downloading. It took %s.', [IntegerToTime(FTime)]));
         AddToProgramLog('');
         EnableUI;
@@ -778,17 +764,7 @@ end;
 
 procedure TMainForm.H1Click(Sender: TObject);
 begin
-  ShellExecute(Handle, 'open', 'https://sourceforge.net/projects/instagramsaver/', nil, nil, SW_SHOWNORMAL);
-end;
-
-procedure TMainForm.ImagePageDownloader1Error(Sender: TObject; ErrorMsg: string);
-begin
-  LogList.Lines.Add('IPD1: ' + ErrorMsg);
-end;
-
-procedure TMainForm.ImagePageDownloader2Error(Sender: TObject; ErrorMsg: string);
-begin
-  LogList.Lines.Add('IPD2: ' + ErrorMsg);
+  ShellExecute(Handle, 'open', 'http://www.ozok26.com/categories/6/instagramsaver', nil, nil, SW_SHOWNORMAL);
 end;
 
 function TMainForm.IntegerToTime(const Time: Integer): string;
@@ -1036,24 +1012,14 @@ end;
 
 procedure TMainForm.sButton2Click(Sender: TObject);
 begin
-  case sPageControl1.ActivePageIndex of
-    0:
-      LogList.Lines.Clear;
-    1:
-      ThreadsList.Lines.Clear;
-  end;
+  LogList.Lines.Clear;
 end;
 
 procedure TMainForm.sButton3Click(Sender: TObject);
 begin
   if SaveDialog1.Execute then
   begin
-    case sPageControl1.ActivePageIndex of
-      0:
-        LogList.Lines.SaveToFile(SaveDialog1.FileName);
-      1:
-        ThreadsList.Lines.SaveToFile(SaveDialog1.FileName);
-    end;
+    LogList.Lines.SaveToFile(SaveDialog1.FileName);
   end;
 end;
 
@@ -1061,11 +1027,6 @@ procedure TMainForm.SettingsBtnClick(Sender: TObject);
 begin
   Self.Enabled := False;
   SettingsForm.Show;
-end;
-
-procedure TMainForm.sSkinManager1Activate(Sender: TObject);
-begin
-  MainForm.Repaint;
 end;
 
 procedure TMainForm.StopBtnClick(Sender: TObject);

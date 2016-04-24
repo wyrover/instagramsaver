@@ -431,7 +431,6 @@ object MainForm: TMainForm
           Font.Style = []
           ParentFont = False
           TabOrder = 0
-          Text = 'realbarbarapalvin'
           TextHint = 'Account to download'
           OnKeyDown = UserNameEditKeyDown
         end
@@ -522,6 +521,7 @@ object MainForm: TMainForm
           43FFFB9443FFFB9443FFFB9443FFFB9443FFFB9443FFFB9443FF}
         Layout = blGlyphTop
         TabOrder = 5
+        Visible = False
         OnClick = FavBtnClick
       end
       object DonateBtn: TBitBtn
@@ -715,26 +715,6 @@ object MainForm: TMainForm
             TabOrder = 0
           end
         end
-        object sTabSheet2: TTabSheet
-          Caption = 'Downloader Errors'
-          object ThreadsList: TMemo
-            Left = 0
-            Top = 0
-            Width = 746
-            Height = 214
-            Align = alClient
-            BorderStyle = bsNone
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clBlack
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            ReadOnly = True
-            ScrollBars = ssBoth
-            TabOrder = 0
-          end
-        end
       end
       object sPanel4: TPanel
         Left = 0
@@ -745,13 +725,14 @@ object MainForm: TMainForm
         TabOrder = 2
         object sLabel2: TLabel
           AlignWithMargins = True
-          Left = 654
+          Left = 622
           Top = 4
-          Width = 96
+          Width = 128
           Height = 27
           Align = alRight
-          Caption = 'InstagramSaver 1.6'
+          Caption = 'InstagramSaver 1.7.0.674'
           Layout = tlCenter
+          ExplicitLeft = 640
           ExplicitHeight = 13
         end
         object sButton1: TButton

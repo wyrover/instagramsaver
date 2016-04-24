@@ -17,13 +17,13 @@ namespace InstagramSaver.MediaLinkExtractorLauncher
         // html page content
         private static string _currentPageContent;
 
-        private static void Log(string msg)
-        {
-            using (StreamWriter sw = File.CreateText("mle.txt"))
-            {
-                sw.WriteLine(String.Format("[{0}] {1}", DateTime.Now, msg));
-            }
-        }
+        //private static void Log(string msg)
+        //{
+        //    using (StreamWriter sw = File.CreateText("mle.txt"))
+        //    {
+        //        sw.WriteLine(String.Format("[{0}] {1}", DateTime.Now, msg));
+        //    }
+        //}
 
         static void Main(string[] args)
         {
@@ -63,7 +63,7 @@ namespace InstagramSaver.MediaLinkExtractorLauncher
             }
             catch (Exception exception)
             {
-                Log(exception.Message);
+                //Log(exception.Message);
             }
         }
     }

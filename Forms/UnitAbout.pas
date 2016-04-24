@@ -74,21 +74,12 @@ end;
 procedure TAboutForm.FormCreate(Sender: TObject);
 begin
   {$IFDEF WIN32}
-
-
-
-  sLabel1.Caption := 'InstagramSaver 1.6 32bit';
+  sLabel1.Caption := 'InstagramSaver 1.7.0.674 32bit';
   {$ENDIF}
   {$IFDEF WIN64}
-
-
-
-  sLabel1.Caption := 'InstagramSaver 1.6 64bit';
+  sLabel1.Caption := 'InstagramSaver 1.7.0.674 64bit';
   {$ENDIF}
-
-
-
-end;
+end;
 
 procedure TAboutForm.sButton1Click(Sender: TObject);
 begin
@@ -97,7 +88,7 @@ end;
 
 procedure TAboutForm.sButton2Click(Sender: TObject);
 begin
-  ShellExecute(Handle, 'open', 'https://sourceforge.net/projects/instagramsaver/', nil, nil, SW_SHOWNORMAL);
+  ShellExecute(Handle, 'open', 'http://www.ozok26.com/categories/6/instagramsaver', nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TAboutForm.sButton3Click(Sender: TObject);

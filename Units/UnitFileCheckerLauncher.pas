@@ -29,7 +29,7 @@ type
     // process
     FProcess: TJvCreateProcess;
     // list of command lines to be executed
-    FCommandLines: TStringList;
+    FFilesToCheck: TStringList;
     // list of executables
     FPaths: TStringList;
     // index of current command line. Also progress.
@@ -44,7 +44,7 @@ type
     function GetProcessID: integer;
     function GetCommandCount: integer;
   public
-    property CommandLines: TStringList read FCommandLines write FCommandLines;
+    property FilesToCheck: TStringList read FFilesToCheck write FFilesToCheck;
     property Paths: TStringList read FPaths write FPaths;
     property FilesDone: integer read FCommandIndex;
     property ProcessID: integer read GetProcessID;
@@ -90,7 +90,7 @@ begin
     WaitForTerminate := true;
   end;
 
-  FCommandLines := TStringList.Create;
+  FFilesToCheck := TStringList.Create;
   FPaths := TStringList.Create;
   FCommandIndex := 0;
   FRunning := False;
@@ -99,14 +99,14 @@ end;
 destructor TFileCheckerLauncher.Destroy;
 begin
   inherited Destroy;
-  FreeAndNil(FCommandLines);
+  FreeAndNil(FFilesToCheck);
   FreeAndNil(FPaths);
   FProcess.Free;
 end;
 
 function TFileCheckerLauncher.GetCommandCount: integer;
 begin
-  Result := FCommandLines.Count;
+  Result := FFilesToCheck.Count;
 end;
 
 function TFileCheckerLauncher.GetConsoleOutput: TStrings;
@@ -135,13 +135,15 @@ begin
   end
   else
   begin
+    MainForm.AddToProgramLog('Problematic file: ' + FFilesToCheck[FCommandIndex]);
     Inc(MainForm.FBrokenFileCount);
   end;
+
+  // check the next file
   Inc(FCommandIndex);
-  if FCommandIndex < FCommandLines.Count then
+  if FCommandIndex < FFilesToCheck.Count then
   begin
-    FProcess.CommandLine := FPaths[FCommandIndex] + ' ' + FCommandLines[FCommandIndex];
-//        FProcess.CommandLine := FCommandLines[0];
+    FProcess.CommandLine := FPaths[FCommandIndex] + ' ' + FFilesToCheck[FCommandIndex];
     FProcess.Run;
     FRunning := True;
   end
@@ -154,7 +156,7 @@ end;
 procedure TFileCheckerLauncher.ResetValues;
 begin
   // reset all lists, indexes etc
-  FCommandLines.Clear;
+  FFilesToCheck.Clear;
   FPaths.Clear;
   FCommandIndex := 0;
   FProcess.ConsoleOutput.Clear;
@@ -164,11 +166,11 @@ procedure TFileCheckerLauncher.Start;
 begin
   if FProcess.ProcessInfo.hProcess = 0 then
   begin
-    if FCommandLines.Count > 0 then
+    if FFilesToCheck.Count > 0 then
     begin
       if FileExists(FPaths[0]) then
       begin
-        FProcess.CommandLine := FPaths[0] + ' ' + FCommandLines[0];
+        FProcess.CommandLine := FPaths[0] + ' ' + FFilesToCheck[0];
 //        FProcess.CommandLine := FCommandLines[0];
         FProcess.Run;
         FRunning := True;
